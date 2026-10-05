@@ -11,7 +11,8 @@ const CONFIG = {
     ZOOM_13: { minZoom: 13, maxZoom: 13, detailLevel: 'detailed' },
     ZOOM_15: { minZoom: 15, maxZoom: 17, detailLevel: 'full' },
   },
-  // Filter keys matching spec
+  // Zoom threshold: only fetch live data at detailed zoom levels (spec item 6)
+  MIN_LIVE_ZOOM: 9,
   FILTERS: {
     FENCED: 'fenced',
     TOILETS: 'toilets',
@@ -468,29 +469,39 @@ function initMap() {
 
 async function loadFromViewport() {
   if (state.loadingViewport) return;
+  const zoom = state.map.getZoom();
   state.loadingViewport = true;
-  resultCount.textContent = 'Laster…';
-  try {
-    const bounds = state.map.getBounds();
-    const { playgrounds, errors } = await loadForViewport(bounds);
-    // Merge with seed so the map is never empty
-    state.playgrounds = mergeWithSeed(playgrounds, window.SEED_PLAYGROUNDS || []);
-    state.sourceErrors = errors;
-    syncMapSource();
-    renderPlaygroundList();
-  } catch (err) {
-    console.warn('Lekesafari viewport load failed:', err);
-    state.sourceErrors.push(String(err));
-    // Fall back to seed only
+
+  // At a low zoom the seed (hardcoded) playgrounds fill the view; we only
+  // query live sources once the user zooms in enough for a bounded fetch
+  // to be cheap (spec item 6: viewport-based loading).
+  if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
+    resultCount.textContent = 'Laster…';
+    try {
+      const bounds = state.map.getBounds();
+      const { playgrounds, errors } = await loadForViewport(bounds);
+      state.playgrounds = mergeWithSeed(playgrounds, window.SEED_PLAYGROUNDS || []);
+      state.sourceErrors = errors;
+    } catch (err) {
+      console.warn('Lekesafari viewport load failed:', err);
+      state.sourceErrors = [String(err)];
+      state.playgrounds = window.SEED_PLAYGROUNDS || [];
+    }
+  } else {
+    // Low zoom: show seed-only so the map is never empty
     state.playgrounds = window.SEED_PLAYGROUNDS || [];
-    syncMapSource();
-    renderPlaygroundList();
-  } finally {
-    state.loadingViewport = false;
+    state.sourceErrors = [];
   }
+
+  renderPlaygroundList();
+  syncMapSource();
+  state.loadingViewport = false;
 }
 
 function syncMapSource() {
+  if (!state.map) return;
+  const src = state.map.getSource('playgrounds');
+  if (!src) return; // map not loaded yet
   const fc = {
     type: 'FeatureCollection',
     features: state.playgrounds.map(p => ({
@@ -499,10 +510,11 @@ function syncMapSource() {
       properties: { id: p.id, name: p.name, source: p.source, rating: p.rating.average },
     })),
   };
-  state.map.getSource('playgrounds').setData(fc);
+  src.setData(fc);
 }
 
 function mergeWithSeed(live, seed) {
+  seed = seed || [];
   if (!seed.length) return live;
   const ids = new Set(live.map(p => p.id));
   // Seed records fill gaps: seed items not already covered by live data
