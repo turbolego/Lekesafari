@@ -481,18 +481,32 @@ async function loadFromViewport() {
   syncMapSource();
 
   const zoom = state.map.getZoom();
-  // Only query live sources once zoomed in enough that a bounded fetch is
-  // cheap (spec item 6: viewport-based loading).
-  if (zoom < CONFIG.MIN_LIVE_ZOOM) return;
+  const bounds = state.map.getBounds();
 
+  // The baked static layer is same-origin and cheap, so we load it at any
+  // zoom — the default Norway-wide view now shows real OSM playgrounds
+  // instead of only the 10 seed pins. Live Overpass (unbounded) and
+  // Geonorge are gated to MIN_LIVE_ZOOM because a whole-country query is
+  // too broad.
   resultCount.textContent = 'Laster…';
   try {
-    const bounds = state.map.getBounds();
-    const { playgrounds, errors } = await loadForViewport(bounds);
+    let layers;
+    if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
+      // Zoomed in: add live sources on top of the static baseline.
+      const { playgrounds, errors } = await loadForViewport(bounds);
+      layers = { playgrounds, errors };
+    } else {
+      // Wide view: static layer only (fast, reliable, no public mirror).
+      const stat = await loadStatic(bounds);
+      layers = {
+        playgrounds: mergeSources([stat]),
+        errors: stat.error ? [stat.error] : [],
+      };
+    }
     // If the user panned since we started, this result is stale — discard.
     if (gen !== state.loadGen) return;
-    state.playgrounds = mergeWithSeed(playgrounds, seed);
-    state.sourceErrors = errors;
+    state.playgrounds = mergeWithSeed(layers.playgrounds, seed);
+    state.sourceErrors = layers.errors;
   } catch (err) {
     if (gen !== state.loadGen) return;
     console.warn('Lekesafari viewport load failed:', err);

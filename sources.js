@@ -239,39 +239,52 @@ async function loadStatic(bounds) {
     const r = await fetch('data/playgrounds.geojson', { cache: 'no-store' });
     if (!r.ok) return { source: 'static', playgrounds: [], error: `static-${r.status}` };
     const fc = await r.json();
+
     const [s, n, w, e] = bounds
       ? [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()]
       : [undefined, undefined, undefined, undefined];
     const inView = (lat, lng) =>
       s === undefined || (lat >= s && lat <= n && lng >= w && lng <= e);
-    const out = (fc.features || [])
-      .map(f => {
-        const p = f.properties || {};
-        if (!f.geometry || f.geometry.type !== 'Point') return null;
-        const [lng, lat] = f.geometry.coordinates;
-        if (!inView(lat, lng)) return null;
-        return normalizePlayground({
-          id: p.id,
-          name: p.name,
-          source: p.source || 'static',
-          sourceId: p.id,
-          images: p.images,
-          age: p.age,
-          opening: p.opening,
-          equipment: p.equipment,
-          rating: p.rating,
-          accessibility: p.accessibility,
-          fenced: p.fenced,
-          toilets: p.toilets,
-          parking: p.parking,
-          dogs: p.dogs,
-          wheelchair: p.accessibility && p.accessibility.wheelchair,
-          municipality: p.municipality,
-          verified: p.verified,
-          lastVerified: p.lastVerified || (p.sources && p.sources[0] && p.sources[0].retrievedAt),
-        });
-      })
-      .filter(Boolean);
+
+    const normalize = f => {
+      const p = f.properties || {};
+      if (!f.geometry || f.geometry.type !== 'Point') return null;
+      const [lng, lat] = f.geometry.coordinates;
+      return { lat, lng, rec: normalizePlayground({
+        id: p.id,
+        name: p.name,
+        source: p.source || 'static',
+        sourceId: p.id,
+        images: p.images,
+        age: p.age,
+        opening: p.opening,
+        equipment: p.equipment,
+        rating: p.rating,
+        accessibility: p.accessibility,
+        fenced: p.fenced,
+        toilets: p.toilets,
+        parking: p.parking,
+        dogs: p.dogs,
+        wheelchair: p.accessibility && p.accessibility.wheelchair,
+        municipality: p.municipality,
+        verified: p.verified,
+        lastVerified: p.lastVerified || (p.sources && p.sources[0] && p.sources[0].retrievedAt),
+      }) };
+    };
+
+    const features = fc.features || [];
+    // A baseline layer must never empty the map. Filter to the viewport only
+    // when that genuinely narrows the set; otherwise (or if it would drop to
+    // zero) fall back to the full dataset.
+    const filtered = features
+      .map(normalize)
+      .filter(Boolean)
+      .filter(x => inView(x.lat, x.lng))
+      .map(x => x.rec);
+    const out = filtered.length > 0
+      ? filtered
+      : features.map(normalize).filter(Boolean).map(x => x.rec);
+
     return { source: 'static', playgrounds: out, error: null };
   } catch (e) {
     return { source: 'static', playgrounds: [], error: 'static-' + String(e).slice(0, 40) };
