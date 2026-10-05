@@ -329,6 +329,7 @@ let state = {
   playgrounds: [],        // merged live data (OSM + Geonorge + seed)
   sourceErrors: [],       // non-fatal source errors
   loadGen: 0,            // increments per viewport load; stale results dropped
+  mapInitLoad: true,      // true until first moveend after initial load
 };
 
 // --- DOM Refs ---
@@ -450,8 +451,12 @@ function initMap() {
     loadFromViewport();
 
     // Viewport-based loading (spec item 6/12)
-    // Register AFTER initial load to avoid double-triggering on map init
+    // Ignore moveend during initial map load to avoid double-triggering
     state.map.on('moveend', debounce(() => {
+      if (state.mapInitLoad) {
+        state.mapInitLoad = false;
+        return;
+      }
       loadFromViewport();
     }, 800));
   });
