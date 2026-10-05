@@ -446,13 +446,14 @@ function initMap() {
       if (pg) openDetail(pg);
     });
 
+    // Initial data load based on current viewport
+    loadFromViewport();
+
     // Viewport-based loading (spec item 6/12)
+    // Register AFTER initial load to avoid double-triggering on map init
     state.map.on('moveend', debounce(() => {
       loadFromViewport();
     }, 800));
-
-    // Initial data load based on current viewport
-    loadFromViewport();
   });
 
   // Locate button

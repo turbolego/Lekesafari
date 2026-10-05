@@ -53,6 +53,7 @@ async function overpassFetch(query) {
 }
 
 async function loadOSM(bounds) {
+  if (!bounds) return { source: 'osm', playgrounds: [], error: 'overpass-failed' };
   const [s, n, w, e] = [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()];
   const q = `[out:json][timeout:10];` +
     `(node["leisure"="playground"](${s},${w},${n},${e});` +
@@ -123,6 +124,149 @@ function normYesNoLimited(v) {
   return 'unknown';
 }
 
+// --- WMS Tilgjengelighet adapter (CORS *) ---
+// Geonorge's wms.tilgjengelighet3 supports CORS for GetMap/GetFeatureInfo,
+// so we can fetch it directly from the browser without a proxy.
+// Layers: friluft (grillbalplass, friluftsomrade, turisthytte, etc.),
+//         felles (toalett, sittegruppebenk),
+//         t_vei_r (accessibility assessment)
+const WMS_BASE = 'https://wms.geonorge.no/skwms1/wms.tilgjengelighet3';
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function tagText(str, tag) {
+  const alts = tag === 'Name' ? '(?:Name|n)' : tag;
+  const m = str.match(new RegExp(`<${alts}[^>]*>([\\s\\S]*?)<\\/${alts}>`));
+  return m ? m[1].trim() : '';
+}
+
+function decodeEntities(str) {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"');
+}
+
+function parseCapabilities(xml) {
+  const results = [];
+  let i = 0;
+  while (i < xml.length) {
+    const start = xml.indexOf('<Layer', i);
+    if (start === -1) break;
+    let depth = 1, j = start + 6;
+    while (j < xml.length && depth > 0) {
+      const no = xml.indexOf('<Layer', j), nc = xml.indexOf('</Layer>', j);
+      if (nc === -1) { j = xml.length; break; }
+      if (no !== -1 && no < nc) { depth++; j = no + 6; }
+      else { depth--; j = nc + 8; }
+    }
+    const block = xml.slice(start, j);
+    const firstNested = block.indexOf('<Layer', 6);
+    const header = firstNested > -1 ? block.slice(0, firstNested) : block;
+    const name = tagText(header, 'Name');
+    const title = tagText(header, 'Title') || name;
+    let legendUrl = '';
+    const styleBlock = header.match(/<Style>([\s\S]*?)<\/Style>/);
+    if (styleBlock) {
+      const hrefMatch = styleBlock[1].match(/xlink:href="([^"]+)"/);
+      if (hrefMatch) legendUrl = decodeEntities(hrefMatch[1]);
+    }
+    const innerStart = block.indexOf('>') + 1;
+    const innerEnd = block.lastIndexOf('</Layer>');
+    const innerXml = innerStart < innerEnd ? block.slice(innerStart, innerEnd) : '';
+    if (name || innerXml.includes('<Layer')) {
+      results.push({ name, title, legendUrl, innerXml });
+    }
+    i = j;
+  }
+  return results;
+}
+
+function parseFeatureInfoText(text) {
+  const features = [];
+  const lines = text.split('\n');
+  let currentLayer = null, currentProps = {}, currentId = '';
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (line.startsWith('LayerName') || (!line.includes(':') && line.match(/^[a-z]/i))) {
+      if (currentLayer && Object.keys(currentProps).length > 0) {
+        features.push({ layerName: currentLayer, featureId: currentId, props: new Map(Object.entries(currentProps).filter(([,v]) => v !== undefined)), images: [] });
+      }
+      currentLayer = trimmed.replace(/[\r\n]/g, '');
+      currentProps = {};
+      currentId = '';
+      continue;
+    }
+    const match = line.match(/^\s{2,}(\w+)\s*:\s*(.+)$/);
+    if (match) {
+      const [, key, val] = match;
+      const v = val.replace(/[\r\n]/g, '').trim();
+      if (!currentId) currentId = v;
+      currentProps[key] = v;
+    }
+  }
+  if (currentLayer && Object.keys(currentProps).length > 0) {
+    features.push({ layerName: currentLayer, featureId: currentId, props: new Map(Object.entries(currentProps).filter(([,v]) => v !== undefined)), images: [] });
+  }
+  return features;
+}
+
+function gridPoints(bounds, strideDeg = 0.008) {
+  const points = [];
+  for (let lng = bounds.getWest(); lng < bounds.getEast(); lng += strideDeg) {
+    for (let lat = bounds.getSouth(); lat < bounds.getNorth(); lat += strideDeg) {
+      points.push([lng, lat]);
+    }
+  }
+  return points;
+}
+
+async function loadWmsTilgjengelighet(bounds) {
+  const playgrounds = [];
+  try {
+    const capsResp = await fetch(WMS_BASE + '?request=GetCapabilities&service=WMS&version=1.1.0');
+    if (!capsResp.ok) throw new Error('GetCapabilities failed: ' + capsResp.status);
+    const capsXml = await capsResp.text();
+    parseCapabilities(capsXml);
+    const points = gridPoints(bounds, 0.008);
+    const batchSize = 12;
+    for (let i = 0; i < points.length; i += batchSize) {
+      const batch = points.slice(i, i + batchSize);
+      const promises = batch.map(([lng, lat]) => {
+        const bbox = [lng - 0.004, lat - 0.004, lng + 0.004, lat + 0.004].join(',');
+        const url = WMS_BASE + '?service=WMS&request=GetFeatureInfo&version=1.1.0&layers=friluft,felles&query_layers=friluft,felles&info_format=text/plain&width=1&height=1';
+        return fetch(url + '&bbox=' + bbox, { method: 'GET' }).then(r => r.ok ? r.text() : '').catch(() => '');
+      });
+      const results = await Promise.allSettled(promises);
+      for (const res of results) {
+        if (res.status === 'fulfilled' && res.value) {
+          const feats = parseFeatureInfoText(res.value);
+          for (const f of feats) {
+            const props = Object.fromEntries(f.props.entries());
+            const normalized = normalizePlayground({
+              name: props['Navn'] || props['Name'] || f.layerName || 'Ukjent',
+              lat: parseFloat(bounds.getCenter().lat.toFixed(6)),
+              lng: parseFloat(bounds.getCenter().lng.toFixed(6)),
+              description: props['Beskrivelse'] || '',
+              source: 'wms-tilgjengelighet',
+            });
+            if (normalized) playgrounds.push(normalized);
+          }
+        }
+      }
+    }
+  } catch (e) { console.warn('loadWmsTilgjengelighet:', e); }
+  return { playgrounds, error: null };
+}
+
 // --- Geonorge / Kartverket adapter ---
 // Geonorge's OGC Features endpoint is not CORS-open to arbitrary
 // origins, so we attempt it but always degrade to "no data" rather
@@ -132,6 +276,7 @@ async function loadGeonorge(bounds) {
   const endpoints = [
     'https://data.geonorge.no/geonorge-dagligoppdatert-pub/api/v1/features',
   ];
+  if (!bounds) return { source: 'geonorge', playgrounds: [], error: 'geonorge-no-bounds' };
   for (const base of endpoints) {
     try {
       const r = await fetch(base + '?bbox=' + [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',') + '&limit=100');
