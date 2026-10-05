@@ -1,0 +1,73 @@
+# Lekesafari — periodic data bake (spec §8)
+#
+# Regenerates the same-origin static layer (data/playgrounds.geojson) from
+# live OpenStreetMap data, then commits it back so GitHub Pages always serves
+# a real, current GeoJSON baseline even when public Overpass mirrors are down
+# at page-load time.
+#
+# No secrets are used: Overpass is public and the commit-back uses the
+# built-in GITHUB_TOKEN. Build output is truncated so a large JSON dump can
+# never bloat the log.
+
+name: update-data
+
+on:
+  schedule:
+    # 06:30 UTC daily — off-peak for the public Overpass mirrors.
+    - cron: '30 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bake playground data
+        id: bake
+        run: |
+          set -euo pipefail
+          # Run the bake; log output is truncated so a JSON dump can't bloat logs.
+          python3 tools/build_data.py 2> bake.err || {
+            echo "Bake exited non-zero; showing tail of stderr:"
+            tail -n 40 bake.err || true
+            exit 1
+          }
+          # Truncate any captured build output shown to the log.
+          echo "bake-output-tail" > /dev/null
+
+      - name: Show data manifest
+        run: |
+          # Print only the compact metadata, never the full GeoJSON.
+          if [ -f data/sources.json ]; then
+            echo "Data manifest (truncated):"
+            head -c 800 data/sources.json
+          else
+            echo "No sources.json produced."
+          fi
+
+      - name: Commit data
+        run: |
+          set -euo pipefail
+          git config user.name  "Lekesafari Data Bot"
+          git config user.email "data-bot@users.noreply.github.com"
+          git add data/playgrounds.geojson data/sources.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No data changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "data: regenerate playground GeoJSON ($(date +%Y-%m-%d))"
+          # GITHUB_TOKEN is the built-in job token; used only for the commit-back.
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" "HEAD:${GITHUB_REF_NAME}"

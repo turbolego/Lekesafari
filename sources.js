@@ -5,17 +5,19 @@
 // ============================================================
 
 const OSM_EQUIPMENT = {
-  playground_slide: 'Rutschbane',
-  playground_seesaw: 'Vippe',
-  playground_swing: 'Gynge',
-  playground_springer: 'Hoppeslott',
-  playground_sandpit: 'Sandkasse',
-  playground_climbing_frame: 'Klatrestativ',
-  playground_maze: 'Labyrint',
-  playground_rope: 'Trosse',
-  playground_mechanized: 'Karussell',
-  playground_ball_court: 'Ballbane',
-  playground_sheltered: 'Sikringshus',
+  'playground:slide': 'Rutschbane',
+  'playground:seesaw': 'Vippe',
+  'playground:swing': 'Gynge',
+  'playground:springer': 'Hoppeslott',
+  'playground:sandpit': 'Sandkasse',
+  'playground:climbing_frame': 'Klatrestativ',
+  'playground:maze': 'Labyrint',
+  'playground:rope': 'Trosse',
+  'playground:mechanized': 'Karussell',
+  'playground:ball_court': 'Ballbane',
+  'playground:sheltered': 'Sikringshus',
+  'playground:water': 'Vannleke',
+  'playground:trampoline': 'Trampolin',
 };
 
 // --- OSM source adapter (live, Overpass, CORS *) ---
@@ -227,17 +229,68 @@ function mergeSources(results) {
   return merged;
 }
 
+// --- Static baked layer (same-origin, always available) ---
+// data/playgrounds.geojson is served by GitHub Pages same-origin (no CORS),
+// so it never hangs on public-mirror outages. It's the reliable baseline;
+// live OSM + Geonorge layers enrich it on top. Nightly CI bakes fresh OSM
+// into this file (see .github/workflows/update-data.yml).
+async function loadStatic(bounds) {
+  try {
+    const r = await fetch('data/playgrounds.geojson', { cache: 'no-store' });
+    if (!r.ok) return { source: 'static', playgrounds: [], error: `static-${r.status}` };
+    const fc = await r.json();
+    const [s, n, w, e] = bounds
+      ? [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()]
+      : [undefined, undefined, undefined, undefined];
+    const inView = (lat, lng) =>
+      s === undefined || (lat >= s && lat <= n && lng >= w && lng <= e);
+    const out = (fc.features || [])
+      .map(f => {
+        const p = f.properties || {};
+        if (!f.geometry || f.geometry.type !== 'Point') return null;
+        const [lng, lat] = f.geometry.coordinates;
+        if (!inView(lat, lng)) return null;
+        return normalizePlayground({
+          id: p.id,
+          name: p.name,
+          source: p.source || 'static',
+          sourceId: p.id,
+          images: p.images,
+          age: p.age,
+          opening: p.opening,
+          equipment: p.equipment,
+          rating: p.rating,
+          accessibility: p.accessibility,
+          fenced: p.fenced,
+          toilets: p.toilets,
+          parking: p.parking,
+          dogs: p.dogs,
+          wheelchair: p.accessibility && p.accessibility.wheelchair,
+          municipality: p.municipality,
+          verified: p.verified,
+          lastVerified: p.lastVerified || (p.sources && p.sources[0] && p.sources[0].retrievedAt),
+        });
+      })
+      .filter(Boolean);
+    return { source: 'static', playgrounds: out, error: null };
+  } catch (e) {
+    return { source: 'static', playgrounds: [], error: 'static-' + String(e).slice(0, 40) };
+  }
+}
+
 // --- One-shot loader the app calls on viewport change ---
 async function loadForViewport(bounds) {
-  const [osm, geo] = await Promise.all([
+  const [osm, geo, stat] = await Promise.all([
     loadOSM(bounds),
     loadGeonorge(bounds),
+    loadStatic(bounds),
   ]);
+  // Static is the reliable baseline; live OSM + Geonorge enrich it.
   // Seed is merged at the app layer so the user layer can be controlled
   // independently of the map sources.
-  const merged = mergeSources([osm, geo]);
+  const merged = mergeSources([stat, osm, geo]);
   return {
     playgrounds: merged,
-    errors: [osm.error, geo.error].filter(Boolean),
+    errors: [stat.error, osm.error, geo.error].filter(Boolean),
   };
 }
