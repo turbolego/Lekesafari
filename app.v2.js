@@ -328,7 +328,7 @@ let state = {
   viewportDebounce: null,
   playgrounds: [],        // merged live data (OSM + Geonorge + seed)
   sourceErrors: [],       // non-fatal source errors
-  loadingViewport: false,
+  loadGen: 0,            // increments per viewport load; stale results dropped
 };
 
 // --- DOM Refs ---
@@ -468,34 +468,41 @@ function initMap() {
 }
 
 async function loadFromViewport() {
-  if (state.loadingViewport) return;
-  const zoom = state.map.getZoom();
-  state.loadingViewport = true;
+  // Bump the generation so a slower, earlier viewport load can't overwrite
+  // a newer one while the user is panning.
+  const gen = ++state.loadGen;
 
-  // At a low zoom the seed (hardcoded) playgrounds fill the view; we only
-  // query live sources once the user zooms in enough for a bounded fetch
-  // to be cheap (spec item 6: viewport-based loading).
-  if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
-    resultCount.textContent = 'Laster…';
-    try {
-      const bounds = state.map.getBounds();
-      const { playgrounds, errors } = await loadForViewport(bounds);
-      state.playgrounds = mergeWithSeed(playgrounds, window.SEED_PLAYGROUNDS || []);
-      state.sourceErrors = errors;
-    } catch (err) {
-      console.warn('Lekesafari viewport load failed:', err);
-      state.sourceErrors = [String(err)];
-      state.playgrounds = window.SEED_PLAYGROUNDS || [];
-    }
-  } else {
-    // Low zoom: show seed-only so the map is never empty
-    state.playgrounds = window.SEED_PLAYGROUNDS || [];
-    state.sourceErrors = [];
-  }
-
+  const seed = window.SEED_PLAYGROUNDS || [];
+  // Always show seed immediately so the map is never empty, even while
+  // live sources are still loading or rate-limited.
+  state.playgrounds = [...seed];
+  state.sourceErrors = [];
   renderPlaygroundList();
   syncMapSource();
-  state.loadingViewport = false;
+
+  const zoom = state.map.getZoom();
+  // Only query live sources once zoomed in enough that a bounded fetch is
+  // cheap (spec item 6: viewport-based loading).
+  if (zoom < CONFIG.MIN_LIVE_ZOOM) return;
+
+  resultCount.textContent = 'Laster…';
+  try {
+    const bounds = state.map.getBounds();
+    const { playgrounds, errors } = await loadForViewport(bounds);
+    // If the user panned since we started, this result is stale — discard.
+    if (gen !== state.loadGen) return;
+    state.playgrounds = mergeWithSeed(playgrounds, seed);
+    state.sourceErrors = errors;
+  } catch (err) {
+    if (gen !== state.loadGen) return;
+    console.warn('Lekesafari viewport load failed:', err);
+    state.sourceErrors = [String(err)];
+    // seed already shown; keep it
+  }
+  if (gen === state.loadGen) {
+    renderPlaygroundList();
+    syncMapSource();
+  }
 }
 
 function syncMapSource() {
