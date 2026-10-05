@@ -19,29 +19,45 @@ const OSM_EQUIPMENT = {
 };
 
 // --- OSM source adapter (live, Overpass, CORS *) ---
-async function loadOSM(bounds) {
-  const [s, n, w, e] = [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()];
-  const q = `[out:json][timeout:25];` +
-    `(node["leisure"="playground"](${s},${w},${n},${e});` +
-    `way["leisure"="playground"](${s},${w},${n},${e}););` +
-    `out tags center 300;`;
+// Overpass mirrors are public and frequently rate-limited; a single
+// stalled mirror must not hang the map. Every request gets a short
+// client-side abort timeout, and we try a pool of mirrors.
+const OSM_MIRRORS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+];
 
-  // Try a small mirror pool so a single busy endpoint can't nuke the map.
-  const mirrors = [
-    'https://overpass-api.de/api/interpreter',
-    'https://overpass.kumi.systems/api/interpreter',
-  ];
-  let data = null;
-  for (const mirror of mirrors) {
+async function overpassFetch(query) {
+  for (const mirror of OSM_MIRRORS) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 12000);
     try {
       const r = await fetch(mirror, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'data=' + encodeURIComponent(q),
+        body: 'data=' + encodeURIComponent(query),
+        signal: ctrl.signal,
       });
-      if (r.ok) { data = await r.json(); break; }
-    } catch (err) { /* try next mirror */ }
+      if (!r.ok) continue; // 504/429 → try next mirror
+      return await r.json();
+    } catch (err) {
+      // network / abort → next mirror
+    } finally {
+      clearTimeout(timer);
+    }
   }
+  return null;
+}
+
+async function loadOSM(bounds) {
+  const [s, n, w, e] = [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()];
+  const q = `[out:json][timeout:10];` +
+    `(node["leisure"="playground"](${s},${w},${n},${e});` +
+    `way["leisure"="playground"](${s},${w},${n},${e}););` +
+    `out tags center 500;`;
+
+  const data = await overpassFetch(q);
   if (!data) return { source: 'osm', playgrounds: [], error: 'overpass-failed' };
 
   const now = new Date().toISOString().slice(0, 10);
