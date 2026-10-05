@@ -633,7 +633,10 @@ function openDetail(p) {
   });
 
   // Close handlers
-  detailClose.addEventListener('click', closeModal);
+  detailClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeModal();
+  });
   detailModal.addEventListener('click', (e) => {
     if (e.target === detailModal) closeModal();
   });

@@ -78,6 +78,13 @@ body {
 
 .icon-btn:hover { background: var(--primary-hover); }
 
+/* --- App shell --- */
+.app-shell {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 60px);
+}
+
 /* --- Sidebar --- */
 .sidebar {
   width: 300px;
