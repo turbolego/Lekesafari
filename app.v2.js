@@ -329,7 +329,7 @@ let state = {
   playgrounds: [],        // merged live data (OSM + Geonorge + seed)
   sourceErrors: [],       // non-fatal source errors
   loadGen: 0,            // increments per viewport load; stale results dropped
-  mapInitLoad: true,      // true until first moveend after initial load
+  lastView: null,        // { lng, lat, zoom } of the viewport last loaded
 };
 
 // --- DOM Refs ---
@@ -450,11 +450,23 @@ function initMap() {
     // Initial data load based on current viewport
     loadFromViewport();
 
-    // Viewport-based loading (spec item 6/12)
-    // Ignore moveend during initial map load to avoid double-triggering
+    // Viewport-based loading (spec item 6/12).
+    // A pure container resize (e.g. the sidebar list re-rendering 6↔525
+    // items on mobile) does NOT change center/zoom, so MapLibre still
+    // fires moveend on it. Reloading on every one of those resets the map
+    // to seed and re-fills it → the visible 6↔525 / grey↔tiles loop.
+    // Only reload when the viewport itself actually moved.
     state.map.on('moveend', debounce(() => {
-      if (state.mapInitLoad) {
-        state.mapInitLoad = false;
+      if (state.map.isMoving()) return;
+      const m = state.map;
+      const c = m.getCenter();
+      const z = m.getZoom();
+      const last = state.lastView;
+      if (last &&
+          Math.abs(last.zoom - z) < 0.05 &&
+          Math.abs(last.lng - c.lng) < 1e-4 &&
+          Math.abs(last.lat - c.lat) < 1e-4) {
+        // Same viewport as the last load (just a re-render/resize). No-op.
         return;
       }
       loadFromViewport();
@@ -488,6 +500,10 @@ async function loadFromViewport() {
 
   const zoom = state.map.getZoom();
   const bounds = state.map.getBounds();
+  // Record the viewport we are loading so moveend can tell a real
+  // pan/zoom apart from a pure resize/re-render of the same viewport.
+  const _c = state.map.getCenter();
+  state.lastView = { lng: _c.lng, lat: _c.lat, zoom };
 
   // The baked static layer is same-origin and cheap, so we load it at any
   // zoom — the default Norway-wide view now shows real OSM playgrounds
