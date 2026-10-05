@@ -632,15 +632,6 @@ function openDetail(p) {
     window.open(`https://maps.apple.com/?ll=${p.location.lat},${p.location.lng}&q=${encodeURIComponent(p.name)}`, '_blank', 'noopener');
   });
 
-  // Close handlers
-  detailClose.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeModal();
-  });
-  detailModal.addEventListener('click', (e) => {
-    if (e.target === detailModal) closeModal();
-  });
-
   // Keyboard
   document.addEventListener('keydown', handleModalKey);
 }
@@ -797,6 +788,12 @@ function setupEvents() {
   $('#search-clear').addEventListener('click', () => {
     searchInput.value = '';
     renderPlaygroundList();
+  });
+
+  // Detail modal close handlers
+  detailClose.addEventListener('click', closeModal);
+  detailModal.addEventListener('click', (e) => {
+    if (e.target === detailModal) closeModal();
   });
 }
 
