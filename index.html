@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lekesafari – Kart over lekeplasser</title>
+  <meta name="description" content="Lekesafari – oppdag lekeplasser i Norge med kart, rating, bilder og filter.">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://unpkg.com">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">🧭</span>
+      <div>
+        <h1>Lekesafari</h1>
+        <p class="tagline">Oppdag lekeplasser i Norge</p>
+      </div>
+    </div>
+    <button id="locate-btn" class="icon-btn" title="Gå til min lokasjon" aria-label="Gå til min lokasjon">
+      📍
+    </button>
+  </header>
+
+  <div class="app-shell">
+    <!-- Sidebar / filter panel -->
+    <aside class="sidebar" id="sidebar">
+      <div class="search-block">
+        <input id="search-input" type="text" placeholder="Søk navn, by, apparat…" autocomplete="off" aria-label="Søk lekeplasser">
+        <button id="search-clear" class="clear-btn" title="Tøm søk" aria-label="Tøm søk">×</button>
+      </div>
+
+      <div class="filter-group">
+        <h2>Filter</h2>
+
+        <label class="filter-row">
+          <input type="checkbox" id="filter-fenced">
+          <span>Only fenced (Inngjerdet)</span>
+        </label>
+        <label class="filter-row">
+          <input type="checkbox" id="filter-dogs">
+          <span>Dogs allowed (Lov med hund)</span>
+        </label>
+        <label class="filter-row">
+          <input type="checkbox" id="filter-toilets">
+          <span>Toilets (Toaletter)</span>
+        </label>
+        <label class="filter-row">
+          <input type="checkbox" id="filter-free-parking">
+          <span>Free parking (Parkering gratis)</span>
+        </label>
+        <label class="filter-row">
+          <input type="checkbox" id="filter-paid-parking">
+          <span>Paid parking (Mot betaling)</span>
+        </label>
+
+        <div class="filter-field">
+          <label for="filter-age">Aldersgruppe</label>
+          <div class="age-row">
+            <input type="number" id="filter-age-min" placeholder="Min" min="0" max="18" inputmode="numeric">
+            <span class="dash">–</span>
+            <input type="number" id="filter-age-max" placeholder="Max" min="0" max="18" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="filter-field">
+          <label for="filter-equipment">Apparater (inkluder)</label>
+          <select id="filter-equipment" multiple size="4">
+            <option value="slide">Rutschbane (slide)</option>
+            <option value="swing">Gynge (swing)</option>
+            <option value="climb">Klatrestativ (climb)</option>
+            <option value="see-saw">Gåttrett (see-saw)</option>
+            <option value="spring">Hoppeslott (spring)</option>
+            <option value="sandbox">Sandkasse (sandbox)</option>
+            <option value="roundabout">Karussell (roundabout)</option>
+            <option value="basketball">Basketball (basketball)</option>
+          </select>
+          <small>Hold Ctrl/Cmd for multiple</small>
+        </div>
+
+        <div class="filter-field">
+          <label for="filter-rating">Minimum rating</label>
+          <select id="filter-rating">
+            <option value="0">All</option>
+            <option value="1">★</option>
+            <option value="2">★★</option>
+            <option value="3">★★★</option>
+            <option value="4">★★★★</option>
+          </select>
+        </div>
+
+        <button id="reset-filters" class="secondary-btn">Reset filters</button>
+      </div>
+
+      <div class="result-count" id="result-count"></div>
+
+      <div class="playground-list" id="playground-list"></div>
+    </aside>
+
+    <!-- Map -->
+    <main class="map-wrap">
+      <div id="map"></div>
+      <div class="map-attribution">
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> ·
+        <a href="https://maplibre.org" target="_blank" rel="noopener">MapLibre</a> ·
+        <a href="https://github.com/turbolego/Lekesafari" target="_blank" rel="noopener">Lekesafari</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Detail popup -->
+  <div class="modal" id="detail-modal" hidden>
+    <div class="modal-card">
+      <button class="modal-close" id="detail-close" aria-label="Lukk">×</button>
+      <div id="detail-content"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
