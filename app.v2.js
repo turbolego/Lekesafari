@@ -473,16 +473,21 @@ function initMap() {
     }, 800));
   });
 
-  // Locate button
-  locateBtn.addEventListener('click', () => {
-    if (!navigator.geolocation) {
-      showToast('Geolocation ikke støttet');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(pos => {
-      state.map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 14 });
-    });
-  });
+  // Auto-trigger geolocation on page load; on denied/unavailable, default
+  // to Norway-wide view (center ~10.75,59.91, zoom 5) so all 525 items show.
+  (function triggerGeolocationOnLoad() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        state.map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 12 });
+      },
+      () => {
+        // Denied or unavailable — default to full-Norway view already set in initMap.
+        state.map.flyTo({ center: [10.7522, 59.9139], zoom: 5 });
+      },
+      { timeout: 5000 }
+    );
+  })();
 }
 
 async function loadFromViewport() {
