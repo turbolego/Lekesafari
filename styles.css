@@ -321,6 +321,9 @@ body {
   padding: 1rem;
 }
 
+/* display:flex overrides the UA [hidden] style — keep it out of the way */
+.modal-overlay[hidden] { display: none; }
+
 .modal-card {
   background: white;
   border-radius: 12px;
