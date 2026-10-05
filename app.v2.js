@@ -42,8 +42,8 @@ const CONFIG = {
 };
 
 // --- Data Model ---
-// Each playground matches the spec data model with rich fields
-
+// Offline seed data (kvalitetssikre eksempler). Live data comes from
+// sources.js (OSM Overpass, Geonorge) and is merged on top of this.
 const PLAYGROUNDS = [
   {
     id: 'solbakken-oslo',
@@ -316,6 +316,8 @@ const PLAYGROUNDS = [
     ],
   },
 ];
+// Expose seed for source-layer fallback
+window.SEED_PLAYGROUNDS = PLAYGROUNDS;
 
 // --- State ---
 let state = {
@@ -323,6 +325,9 @@ let state = {
   markers: [],
   popup: null,
   viewportDebounce: null,
+  playgrounds: [],        // merged live data (OSM + Geonorge + seed)
+  sourceErrors: [],       // non-fatal source errors
+  loadingViewport: false,
 };
 
 // --- DOM Refs ---
@@ -379,18 +384,11 @@ function initMap() {
 
   state.map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-  // Markers layer
+  // Markers layer (live source, updated per viewport)
   state.map.on('load', () => {
     state.map.addSource('playgrounds', {
       type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: PLAYGROUNDS.map(p => ({
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [p.location.lng, p.location.lat] },
-          properties: { id: p.id, name: p.name, source: p.source, rating: p.rating.average },
-        })),
-      },
+      data: { type: 'FeatureCollection', features: [] },
     });
 
     state.map.addLayer({
@@ -421,16 +419,20 @@ function initMap() {
     state.map.on('mousemove', 'playground-pins', (e) => {
       const feat = e.features[0];
       if (!feat) return;
-      const pg = PLAYGROUNDS.find(p => p.id === feat.properties.id);
+      const pg = state.playgrounds.find(p => p.id === feat.properties.id);
       if (!pg) return;
+      const eqNames = pg.equipment.length ? pg.equipment.map(eq => eq.name).join(', ') : '—';
+      const ratingLine = pg.rating.count
+        ? `Rating: ${pg.rating.average} (${pg.rating.count})`
+        : 'Ingen rating';
       popup.setLngLat(e.lngLat)
         .setHTML(`
           <div style="font-weight:600;font-size:0.9rem;">${feat.properties.name}</div>
           <div style="font-size:0.8rem;color:#666;">
-            Rating: ${pg.rating.average} (${pg.rating.count})
+            ${ratingLine}
           </div>
           <div style="font-size:0.75rem;color:#999;margin-top:0.2rem;">
-            ${pg.equipment.map(e => e.name).join(', ')}
+            ${eqNames}
           </div>
         `)
         .addTo(state.map);
@@ -439,7 +441,8 @@ function initMap() {
     state.map.on('click', 'playground-pins', (e) => {
       const feat = e.features[0];
       if (!feat) return;
-      openDetail(PLAYGROUNDS.find(p => p.id === feat.properties.id));
+      const pg = state.playgrounds.find(p => p.id === feat.properties.id);
+      if (pg) openDetail(pg);
     });
 
     // Viewport-based loading (spec item 6/12)
@@ -463,11 +466,48 @@ function initMap() {
   });
 }
 
-function loadFromViewport() {
-  const bounds = state.map.getBounds();
-  const zoom = state.map.getZoom();
-  // Update result count in sidebar
-  renderPlaygroundList();
+async function loadFromViewport() {
+  if (state.loadingViewport) return;
+  state.loadingViewport = true;
+  resultCount.textContent = 'Laster…';
+  try {
+    const bounds = state.map.getBounds();
+    const { playgrounds, errors } = await loadForViewport(bounds);
+    // Merge with seed so the map is never empty
+    state.playgrounds = mergeWithSeed(playgrounds, window.SEED_PLAYGROUNDS || []);
+    state.sourceErrors = errors;
+    syncMapSource();
+    renderPlaygroundList();
+  } catch (err) {
+    console.warn('Lekesafari viewport load failed:', err);
+    state.sourceErrors.push(String(err));
+    // Fall back to seed only
+    state.playgrounds = window.SEED_PLAYGROUNDS || [];
+    syncMapSource();
+    renderPlaygroundList();
+  } finally {
+    state.loadingViewport = false;
+  }
+}
+
+function syncMapSource() {
+  const fc = {
+    type: 'FeatureCollection',
+    features: state.playgrounds.map(p => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [p.location.lng, p.location.lat] },
+      properties: { id: p.id, name: p.name, source: p.source, rating: p.rating.average },
+    })),
+  };
+  state.map.getSource('playgrounds').setData(fc);
+}
+
+function mergeWithSeed(live, seed) {
+  if (!seed.length) return live;
+  const ids = new Set(live.map(p => p.id));
+  // Seed records fill gaps: seed items not already covered by live data
+  const seedAdditions = seed.filter(s => !ids.has(s.id));
+  return [...live, ...seedAdditions];
 }
 
 function debounce(fn, ms) {
@@ -518,31 +558,28 @@ function filterPlaygrounds(plays, filters) {
     // Source filter
     if (filters.source !== 'alle' && p.source !== filters.source) return false;
 
-    // Fenced
+    // Fenced — only filters when the user toggles it on
     if (filters.fenced && !p.fenced) return false;
-    // Toilets
     if (filters.toilets && !p.toilets) return false;
-    // Free parking
-    if (filters.freeParking && !p.parking.free) return false;
-    // Paid parking
-    if (filters.paidParking && !p.parking.paid) return false;
-    // Dogs
-    if (filters.dogsAllowed && !p.dogs.allowed) return false;
-    if (filters.dogsLeash && !p.dogs.leash) return false;
+    if (filters.freeParking && !p.parking?.free) return false;
+    if (filters.paidParking && !p.parking?.paid) return false;
+    if (filters.dogsAllowed && !p.dogs?.allowed) return false;
+    if (filters.dogsLeash && !p.dogs?.leash) return false;
 
     // Age range (minAge/maxAge are the bounds of the age range slider)
-    if (p.age.min > filters.maxAge || p.age.max < filters.minAge) return false;
+    const minAge = p.age?.min ?? 0, maxAge = p.age?.max ?? 99;
+    if (minAge > filters.maxAge || maxAge < filters.minAge) return false;
 
     // Equipment
     if (filters.equipment.length > 0) {
       const hasEquipment = filters.equipment.some(reqEq =>
-        p.equipment.some(pgEq => pgEq.type === reqEq)
+        p.equipment?.some(pgEq => pgEq.type === reqEq)
       );
       if (!hasEquipment) return false;
     }
 
-    // Rating
-    if (p.rating.average < filters.ratingMin) return false;
+    // Rating (0 avg always passes a positive filter — i.e. treat unknown as low)
+    if (p.rating?.average && p.rating.average < filters.ratingMin) return false;
 
     return true;
   });
@@ -553,15 +590,15 @@ function searchPlaygrounds(plays, query) {
   const q = query.toLowerCase().trim();
   return plays.filter(p =>
     p.name.toLowerCase().includes(q) ||
-    p.municipality.toLowerCase().includes(q) ||
-    p.equipment.some(e => e.name.toLowerCase().includes(q))
+    (p.municipality || '').toLowerCase().includes(q) ||
+    p.equipment?.some(e => (e.name || '').toLowerCase().includes(q))
   );
 }
 
 function renderPlaygroundList() {
   const q = searchInput.value;
   const filters = getActiveFilters();
-  let plays = PLAYGROUNDS;
+  let plays = state.playgrounds;
 
   if (q) plays = searchPlaygrounds(plays, q);
   plays = filterPlaygrounds(plays, filters);
@@ -569,7 +606,7 @@ function renderPlaygroundList() {
   resultCount.textContent = `${plays.length} lekeplasser`;
 
   if (plays.length === 0) {
-    playgroundList.innerHTML = '<p style="color:var(--text-muted);padding:1rem;">Ingen lekeplasser matchede kravene.</p>';
+    playgroundList.innerHTML = '<p style="color:var(--text-muted);padding:1rem;">Ingen lekplasser matchet kriteriene.</p>';
     return;
   }
 
@@ -577,6 +614,10 @@ function renderPlaygroundList() {
     const eqList = p.equipment.map(e => `<span class="equip-chip">${e.name}</span>`).join('');
     const badge = getSourceBadge(p);
     const verif = p.verified ? '<span class="verified-badge">✓ Verifisert</span>' : '<span class="badge-no" style="padding:0.1rem 0.5rem;border-radius:4px;font-size:0.75rem;">Ikke verifisert</span>';
+    const ratingLine = p.rating.count
+      ? `⭐ ${p.rating.average} (${p.rating.count})`
+      : `Kilde: ${p.source}`;
+    const muni = p.municipality || 'Norge';
 
     return `
       <div class="playground-item" data-id="${p.id}">
@@ -586,7 +627,7 @@ function renderPlaygroundList() {
             <div class="pin-name">${p.name} ${verif}</div>
             <div class="pin-meta">
               <span class="pin-badge badge-${p.source}">${p.source}</span>
-              📍 ${p.municipality} · Alder ${p.age.min}-${p.age.max} · ⭐ ${p.rating.average} (${p.rating.count})
+              📍 ${muni} · Alder ${p.age.min}-${p.age.max} · ${ratingLine}
             </div>
             <div class="pin-meta" style="margin-top:0.2rem;">
               ${eqList}
@@ -601,7 +642,7 @@ function renderPlaygroundList() {
   document.querySelectorAll('.playground-item').forEach(item => {
     item.addEventListener('click', () => {
       const id = item.dataset.id;
-      const p = PLAYGROUNDS.find(p => p.id === id);
+      const p = state.playgrounds.find(p => p.id === id);
       if (p) openDetail(p);
     });
   });
