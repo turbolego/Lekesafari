@@ -253,6 +253,7 @@ async function loadStatic(bounds) {
       return { lat, lng, rec: normalizePlayground({
         id: p.id,
         name: p.name,
+        lat, lng, // location — normalizePlayground reads these
         source: p.source || 'static',
         sourceId: p.id,
         images: p.images,
