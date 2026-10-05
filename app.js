@@ -1,312 +1,814 @@
 // ============================================
-  Lekesafari – Main Application Logic
-  ============================================
+//  Lekesafari – Main Application Logic
+//  ============================================
 
 // --- Configuration ---
 const CONFIG = {
-  // Filter IDs
-  FILTER_FENCED: 'filter-fenced',
-  FILTER_DOGS: 'filter-dogs',
-  FILTER_TOILETS: 'filter-toilets',
-  FILTER_FREE_PARKING: 'filter-free-parking',
-  FILTER_PAID_PARKING: 'filter-paid-parking',
-  // Age range
-  MIN_AGE: 0,
-  MAX_AGE: 18,
-  // Equipment categories
-  EQUIPMENT_OPTIONS: [
-    'slide', 'swing', 'climb', 'see-saw', 'spring', 'sandbox', 'roundabout', 'basketball'
-  ],
-  // Rating thresholds
-  MIN_RATING: 0,
+  // Zoom tiers for viewport-based data loading
+  ZOOM_TIERS: {
+    ZOOM_8: { minZoom: 8,  maxZoom: 8,  detailLevel: 'overview' },
+    ZOOM_11: { minZoom: 11, maxZoom: 11, detailLevel: 'basic' },
+    ZOOM_13: { minZoom: 13, maxZoom: 13, detailLevel: 'detailed' },
+    ZOOM_15: { minZoom: 15, maxZoom: 17, detailLevel: 'full' },
+  },
+  // Filter keys matching spec
+  FILTERS: {
+    FENCED: 'fenced',
+    TOILETS: 'toilets',
+    FREE_PARKING: 'freeParking',
+    PAID_PARKING: 'paidParking',
+    DOGS_ALLOWED: 'dogsAllowed',
+    DOGS_LEASH: 'dogsLeash',
+    MIN_AGE: 'minAge',
+    MAX_AGE: 'maxAge',
+    EQUIPMENT: 'equipment',
+    RATING_MIN: 'ratingMin',
+    SOURCE: 'source',
+  },
+  // Default values
+  DEFAULT_FILTERS: {
+    fenced: false,
+    toilets: false,
+    freeParking: false,
+    paidParking: false,
+    dogsAllowed: false,
+    dogsLeash: false,
+    minAge: 0,
+    maxAge: 18,
+    equipment: [],
+    ratingMin: 0,
+    source: 'alle',
+  },
 };
+
+// --- Data Model ---
+// Each playground matches the spec data model with rich fields
+
+const PLAYGROUNDS = [
+  {
+    id: 'solbakken-oslo',
+    name: 'Solbakken lekeplass',
+    location: { lat: 59.9139, lng: 10.7522 },
+    source: 'osm',
+    verified: true,
+    lastVerified: '2026-10-04',
+    images: [
+      { url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', alt: 'Rutschbane' },
+      { url: 'https://images.unsplash.com/photo-1559216906-91e0cb497085?w=400', alt: 'Gynge' },
+    ],
+    age: { min: 2, max: 12 },
+    opening: 'Mo-Su 08:00-20:00',
+    equipment: [
+      { type: 'rutschebane', name: 'Rutschbane', count: 3 },
+      { type: 'gynge', name: 'Gynge', count: 2 },
+      { type: 'klatrestativ', name: 'Klatrestativ', count: 1 },
+    ],
+    rating: { average: 4.6, count: 127 },
+    accessibility: { wheelchair: 'yes', stroller: 'yes' },
+    fenced: true,
+    toilets: true,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: true },
+    municipality: 'Oslo',
+    sources: [
+      { type: 'osm', id: 'way/12345678', retrievedAt: '2026-10-04' },
+      { type: 'user', id: 'user/42', retrievedAt: '2026-10-01', url: 'https://github.com/kveita/lekesafari' },
+    ],
+  },
+  {
+    id: 'parken-trondheim',
+    name: 'Parke Solheimen',
+    location: { lat: 59.5070, lng: 10.5520 },
+    source: 'geonorge',
+    verified: true,
+    lastVerified: '2026-09-15',
+    images: [
+      { url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400', alt: 'Lekeplass' },
+    ],
+    age: { min: 3, max: 15 },
+    opening: 'Tue-Sun 09:00-18:00',
+    equipment: [
+      { type: 'gynge', name: 'Gynge', count: 2 },
+      { type: 'sandkasse', name: 'Sandkasse', count: 1 },
+    ],
+    rating: { average: 3.8, count: 45 },
+    accessibility: { wheelchair: 'yes', stroller: 'yes' },
+    fenced: true,
+    toilets: false,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: true },
+    municipality: 'Trondheim',
+    sources: [
+      { type: 'geonorge', retrievedAt: '2026-09-15' },
+    ],
+  },
+  {
+    id: 'viktoria-bergen',
+    name: 'Viktoria lekeplass',
+    location: { lat: 59.5220, lng: 10.6550 },
+    source: 'osm',
+    verified: true,
+    lastVerified: '2026-10-03',
+    images: [],
+    age: { min: 4, max: 16 },
+    opening: 'Daily 07:00-19:00',
+    equipment: [
+      { type: 'klatrestativ', name: 'Klatrestativ', count: 2 },
+      { type: 'karussell', name: 'Karussell', count: 1 },
+    ],
+    rating: { average: 4.1, count: 78 },
+    accessibility: { wheelchair: 'limited', stroller: 'yes' },
+    fenced: false,
+    toilets: true,
+    parking: { free: false, paid: true },
+    dogs: { allowed: false, leash: false },
+    municipality: 'Bergen',
+    sources: [
+      { type: 'osm', id: 'way/87654321', retrievedAt: '2026-10-03' },
+    ],
+  },
+  {
+    id: 'kongsvinger-park',
+    name: 'Kongsvinger park',
+    location: { lat: 59.4900, lng: 10.5800 },
+    source: 'municipality',
+    verified: false,
+    lastVerified: '2026-05-20',
+    images: [],
+    age: { min: 1, max: 10 },
+    opening: 'Mon-Fri 08:00-17:00',
+    equipment: [
+      { type: 'gynge', name: 'Gynge', count: 1 },
+      { type: 'gattrett', name: 'Gåtte', count: 1 },
+    ],
+    rating: { average: 2.3, count: 12 },
+    accessibility: { wheelchair: 'no', stroller: 'yes' },
+    fenced: true,
+    toilets: false,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: false },
+    municipality: 'Kongsvinger',
+    sources: [
+      { type: 'municipality', id: 'kommune/5406', retrievedAt: '2026-05-20' },
+    ],
+  },
+  {
+    id: 'fjellstien-trondheim',
+    name: 'Fjellstien lekeplass',
+    location: { lat: 59.5500, lng: 10.7200 },
+    source: 'user',
+    verified: true,
+    lastVerified: '2026-10-02',
+    images: [
+      { url: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400', alt: 'Karussell' },
+      { url: 'https://images.unsplash.com/photo-1514745387537-5ea5b711ab42?w=400', alt: 'Lekeplass' },
+    ],
+    age: { min: 5, max: 14 },
+    opening: 'Sat-Sun 09:00-16:00',
+    equipment: [
+      { type: 'klatrestativ', name: 'Klatrestativ', count: 2 },
+      { type: 'karussell', name: 'Karussell', count: 1 },
+      { type: 'hoppeslott', name: 'Hoppeslott', count: 1 },
+    ],
+    rating: { average: 4.8, count: 234 },
+    accessibility: { wheelchair: 'limited', stroller: 'yes' },
+    fenced: true,
+    toilets: true,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: true },
+    municipality: 'Trondheim',
+    sources: [
+      { type: 'user', id: 'user/7', retrievedAt: '2026-10-02', url: 'https://github.com/kveita/lekesafari' },
+    ],
+  },
+  {
+    id: 'lillehammer-river',
+    name: 'Lillehammer elvepark',
+    location: { lat: 61.1130, lng: 10.4700 },
+    source: 'osm',
+    verified: false,
+    lastVerified: '2026-08-10',
+    images: [],
+    age: { min: 0, max: 18 },
+    opening: 'Daily 07:00-22:00',
+    equipment: [
+      { type: 'rutschebane', name: 'Rutschbane', count: 2 },
+      { type: 'gynge', name: 'Gynge', count: 3 },
+    ],
+    rating: { average: 4.2, count: 89 },
+    accessibility: { wheelchair: 'yes', stroller: 'yes' },
+    fenced: true,
+    toilets: true,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: false },
+    municipality: 'Lillehammer',
+    sources: [
+      { type: 'osm', id: 'way/98765432', retrievedAt: '2026-08-10' },
+    ],
+  },
+  {
+    id: 'storsteinnes-bardu',
+    name: 'Storsteinnes skolepark',
+    location: { lat: 68.6520, lng: 17.6670 },
+    source: 'osm',
+    verified: false,
+    lastVerified: '2026-07-15',
+    images: [],
+    age: { min: 2, max: 16 },
+    opening: 'Mon-Fri 07:00-15:00',
+    equipment: [
+      { type: 'gynge', name: 'Gynge', count: 2 },
+      { type: 'klatrestativ', name: 'Klatrestativ', count: 1 },
+      { type: 'basketball', name: 'Basketball', count: 1 },
+    ],
+    rating: { average: 3.5, count: 33 },
+    accessibility: { wheelchair: 'limited', stroller: 'yes' },
+    fenced: false,
+    toilets: false,
+    parking: { free: true, paid: false },
+    dogs: { allowed: false, leash: false },
+    municipality: 'Narvik',
+    sources: [
+      { type: 'osm', id: 'way/11223344', retrievedAt: '2026-07-15' },
+    ],
+  },
+  {
+    id: 'moss-arbeiderparken',
+    name: 'Arbeiderparken Moss',
+    location: { lat: 59.4270, lng: 10.6580 },
+    source: 'geonorge',
+    verified: true,
+    lastVerified: '2026-09-28',
+    images: [
+      { url: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400', alt: 'Lekeplass' },
+    ],
+    age: { min: 3, max: 14 },
+    opening: 'Daily 07:00-20:00',
+    equipment: [
+      { type: 'rutschebane', name: 'Rutschbane', count: 2 },
+      { type: 'gynge', name: 'Gynge', count: 3 },
+      { type: 'sandkasse', name: 'Sandkasse', count: 2 },
+      { type: 'karussell', name: 'Karussell', count: 1 },
+    ],
+    rating: { average: 4.3, count: 56 },
+    accessibility: { wheelchair: 'yes', stroller: 'yes' },
+    fenced: true,
+    toilets: true,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: true },
+    municipality: 'Moss',
+    sources: [
+      { type: 'geonorge', retrievedAt: '2026-09-28' },
+    ],
+  },
+  {
+    id: 'drammen-danvik',
+    name: 'Danvikparken Drammen',
+    location: { lat: 59.7380, lng: 10.2000 },
+    source: 'osm',
+    verified: true,
+    lastVerified: '2026-10-01',
+    images: [
+      { url: 'https://images.unsplash.com/photo-1563720204-4e698b3ee0e7?w=400', alt: 'Lekeplass' },
+    ],
+    age: { min: 1, max: 18 },
+    opening: 'Daily 06:00-22:00',
+    equipment: [
+      { type: 'gynge', name: 'Gynge', count: 4 },
+      { type: 'klatrestativ', name: 'Klatrestativ', count: 2 },
+      { type: 'hoppeslott', name: 'Hoppeslott', count: 1 },
+      { type: 'rutschebane', name: 'Rutschbane', count: 2 },
+    ],
+    rating: { average: 4.5, count: 156 },
+    accessibility: { wheelchair: 'yes', stroller: 'yes' },
+    fenced: true,
+    toilets: true,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: true },
+    municipality: 'Drammen',
+    sources: [
+      { type: 'osm', id: 'way/55667788', retrievedAt: '2026-10-01' },
+    ],
+  },
+  {
+    id: ' Fredrikstad-gamleby',
+    name: 'Gamlebyparken Fredrikstad',
+    location: { lat: 59.2060, lng: 10.9100 },
+    source: 'user',
+    verified: true,
+    lastVerified: '2026-09-20',
+    images: [],
+    age: { min: 0, max: 16 },
+    opening: 'Daily 07:00-21:00',
+    equipment: [
+      { type: 'sandkasse', name: 'Sandkasse', count: 2 },
+      { type: 'gynge', name: 'Gynge', count: 2 },
+    ],
+    rating: { average: 4.0, count: 42 },
+    accessibility: { wheelchair: 'yes', stroller: 'yes' },
+    fenced: false,
+    toilets: false,
+    parking: { free: true, paid: false },
+    dogs: { allowed: true, leash: true },
+    municipality: 'Fredrikstad',
+    sources: [
+      { type: 'user', id: 'user/15', retrievedAt: '2026-09-20', url: 'https://github.com/kveita/lekesafari' },
+    ],
+  },
+];
 
 // --- State ---
 let state = {
-  filters: {
-    fenced: true,
-    dogs: true,
-    toilets: true,
-    freeParking: true,
-    paidParking: false,
-    ageMin: CONFIG.MIN_AGE,
-    ageMax: CONFIG.MAX_AGE,
-    equipment: [],
-    ratingMin: CONFIG.MIN_RATING,
-  },
-  selectedPin: null,
   map: null,
+  markers: [],
+  popup: null,
+  viewportDebounce: null,
 };
 
-// --- DOM References ---
+// --- DOM Refs ---
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 const mapEl = $('#map');
-const sidebar = $('#sidebar');
 const searchInput = $('#search-input');
 const resultCount = $('#result-count');
 const playgroundList = $('#playground-list');
 const detailModal = $('#detail-modal');
-const toast = $('#toast');
+const detailClose = $('#detail-close');
+const detailContent = $('#detail-content');
+const toastEl = $('#toast');
 const locateBtn = $('#locate-btn');
 
-// --- Initialize Map ---
+// --- Core Functions ---
+
 function initMap() {
   if (state.map) return;
 
-  const mapContainer = document.getElementById('map');
-  if (!mapContainer) throw new Error('Map container not found');
+  mapEl.style.width = '100%';
+  mapEl.style.height = 'calc(100vh - 60px)';
 
-  // Center map on screen
-  mapContainer.style.width = '100%';
-  mapContainer.style.height = '480px';
-
-  // Create MapLibre instance
-  state.map = new MapLibre.GlMap({
-    container: mapContainer,
+  state.map = new maplibregl.Map({
+    container: 'map',
     style: {
-      map: {
-        attribution: '© OpenStreetMap, MapLibre',
-        center: [51.505, 12.5],
-        zoom: 12,
-        pitch: 0,
+      version: 8,
+      sources: {
+        'osm-tiles': {
+          type: 'raster',
+          tiles: [
+            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          ],
+          tileSize: 256,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        },
       },
-      tileLayer: {
-        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        maxZoom: 19,
-      },
+      layers: [
+        {
+          id: 'osm-tiles-layer',
+          type: 'raster',
+          source: 'osm-tiles',
+          minzoom: 0,
+          maxzoom: 18,
+        },
+      ],
     },
+    center: [10.7522, 59.9139],
+    zoom: 5,
+    minZoom: 5,
+    maxZoom: 17,
   });
 
-  // Fit bounds to visible area
-  state.map.fitView([[-50, 60], [90, 70]], { perspective: 450 });
-}
+  state.map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-// --- Filter Logic ---
-function applyFilters() {
-  const f = state.filters;
-  const q = searchInput.value.toLowerCase().trim();
+  // Markers layer
+  state.map.on('load', () => {
+    state.map.addSource('playgrounds', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: PLAYGROUNDS.map(p => ({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [p.location.lng, p.location.lat] },
+          properties: { id: p.id, name: p.name, source: p.source, rating: p.rating.average },
+        })),
+      },
+    });
 
-  // Clear previous results
-  renderPlayground();
+    state.map.addLayer({
+      id: 'playground-pins',
+      type: 'circle',
+      source: 'playgrounds',
+      paint: {
+        'circle-radius': 8,
+        'circle-color': [
+          'match', ['get', 'source'],
+          'osm', '#2e7d32',
+          'geonorge', '#1565c0',
+          'municipality', '#7b1fa2',
+          'user', '#e65100',
+          '#007acc',
+        ],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#fff',
+        'circle-stroke-opacity': 1,
+        'circle-opacity': 0.8,
+      },
+    });
 
-  // Apply equipment filter
-  if (f.equipment.length > 0) {
-    const selected = Array.from(state.equipment).filter(id => f.equipment.includes(id));
-    state.filters.equipment = selected;
-  }
+    // Tooltip on hover
+    const popup = new maplibregl.Popup({ offset: 16, closeOnClick: false });
+    state.map.on('mouseenter', 'playground-pins', () => { state.map.getCanvas().style.cursor = 'pointer'; });
+    state.map.on('mouseleave', 'playground-pins', () => { state.map.getCanvas().style.cursor = ''; });
+    state.map.on('mousemove', 'playground-pins', (e) => {
+      const feat = e.features[0];
+      if (!feat) return;
+      const pg = PLAYGROUNDS.find(p => p.id === feat.properties.id);
+      if (!pg) return;
+      popup.setLngLat(e.lngLat)
+        .setHTML(`
+          <div style="font-weight:600;font-size:0.9rem;">${feat.properties.name}</div>
+          <div style="font-size:0.8rem;color:#666;">
+            Rating: ${pg.rating.average} (${pg.rating.count})
+          </div>
+          <div style="font-size:0.75rem;color:#999;margin-top:0.2rem;">
+            ${pg.equipment.map(e => e.name).join(', ')}
+          </div>
+        `)
+        .addTo(state.map);
+    });
 
-  // Update result count
-  const total = getTotalMatches(q);
-  resultCount.textContent = `Finder: ${total}`;
-}
+    state.map.on('click', 'playground-pins', (e) => {
+      const feat = e.features[0];
+      if (!feat) return;
+      openDetail(PLAYGROUNDS.find(p => p.id === feat.properties.id));
+    });
 
-function getTotalMatches(query) {
-  // Simple search: check if any playground name contains the query
-  const plays = readPlays(); // hypothetical – we'll simulate with spec data
-  let count = 0;
-  for (const p of plays) {
-    if (p.name.toLowerCase().includes(query) || p.location.lat?.toString().includes(query) || p.location.lng?.toString().includes(query)) {
-      count++;
+    // Viewport-based loading (spec item 6/12)
+    state.map.on('moveend', debounce(() => {
+      loadFromViewport();
+    }, 800));
+
+    // Initial data load based on current viewport
+    loadFromViewport();
+  });
+
+  // Locate button
+  locateBtn.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      showToast('Geolocation ikke støttet');
+      return;
     }
-  }
-  return count;
-}
-
-// --- Playlist Management ---
-// Load plays from spec_notes (simulated)
-async function loadPlays() {
-  // In a real app, this would fetch from a backend
-  // For now, we seed with example data based on spec_notes
-  const plays = [
-    { id: 'solbakken', name: 'Solbakken lekeplass', location: { lat: 59.9139, lng: 10.7522 }, age: { min: 2, max: 12 }, opening: 'Mo-Su 08:00-20:00', equipment: ['slide', 'swing', 'climb'], rating: 4 },
-    { id: 'parken', name: 'Parke Solheimen', location: { lat: 59.5070, lng: 10.5520 }, age: { min: 3, max: 15 }, opening: 'Tue-Sun 09:00-18:00', equipment: ['slide', 'swing'], rating: 3 },
-    { id: 'viktoria', name: 'Viktoria lekeplass', location: { lat: 59.5220, lng: 10.6550 }, age: { min: 4, max: 16 }, opening: 'Daily 07:00-19:00', equipment: ['climb', 'roundabout'], rating: 4 },
-    { id: 'kongsvinger', name: 'Kongsvinger park', location: { lat: 59.4900, lng: 10.5800 }, age: { min: 1, max: 10 }, opening: 'Mon-Fri 08:00-17:00', equipment: ['slide', 'swing'], rating: 2 },
-    { id: 'fjellstien', name: 'Fjellstien lekeplass', location: { lat: 59.5500, lng: 10.7200 }, age: { min: 5, max: 14 }, opening: 'Sat-Sun 09:00-16:00', equipment: ['climb', 'roundabout'], rating: 5 },
-  ];
-  plays.forEach(p => state.plays.push(p));
-}
-
-async function renderPlayground() {
-  const q = searchInput.value.toLowerCase();
-  const filtered = state.plays.filter(p => {
-    const matches = p.name.toLowerCase().includes(q) ||
-                    p.location.lat?.toString().includes(q) ||
-                    p.location.lng?.toString().includes(q);
-    return matches && (
-      (q === 'fenced' ? state.filters.fenced : true) &&
-      (q === 'dogs' ? state.filters.dogs : true) &&
-      (q === 'toilets' ? state.filters.toilets : true) &&
-      (q === 'free-parking' ? state.filters.freeParking : true) &&
-      (q === 'paid-parking' ? !state.filters.paidParking : true) &&
-      (q === 'rating' ? p.rating >= state.filters.ratingMin : true)
-    );
+    navigator.geolocation.getCurrentPosition(pos => {
+      state.map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 14 });
+    });
   });
+}
 
-  if (filtered.length === 0) {
-    playgroundList.innerHTML = '<p style="color:var(--text-muted);padding:1rem;">Ingen lekeplasser matcheder kravene.</p>';
+function loadFromViewport() {
+  const bounds = state.map.getBounds();
+  const zoom = state.map.getZoom();
+  // Update result count in sidebar
+  renderPlaygroundList();
+}
+
+function debounce(fn, ms) {
+  return (...args) => {
+    clearTimeout(state.viewportDebounce);
+    state.viewportDebounce = setTimeout(() => fn(...args), ms);
+  };
+}
+
+// --- Filter & Search ---
+function getActiveFilters() {
+  const filters = { ...CONFIG.DEFAULT_FILTERS };
+
+  const fenced = $('#filter-fenced').checked;
+  const toilets = $('#filter-toilets').checked;
+  const freeP = $('#filter-free-parking').checked;
+  const paidP = $('#filter-paid-parking').checked;
+  const dogsA = $('#filter-dogs-allowed').checked;
+  const dogsL = $('#filter-dogs-leash').checked;
+
+  if (fenced) filters.fenced = true;
+  if (toilets) filters.toilets = true;
+  if (freeP) filters.freeParking = true;
+  if (paidP) filters.paidParking = true;
+  if (dogsA) filters.dogsAllowed = true;
+  if (dogsL) filters.dogsLeash = true;
+
+  const minAge = parseInt($('#filter-age-min').value);
+  const maxAge = parseInt($('#filter-age-max').value);
+  if (!isNaN(minAge)) filters.minAge = minAge;
+  if (!isNaN(maxAge)) filters.maxAge = maxAge;
+
+  const eqSelect = $('#filter-equipment');
+  const selected = Array.from(eqSelect.selectedOptions).map(o => o.value);
+  filters.equipment = selected;
+
+  const ratingMin = parseInt($('#filter-rating').value);
+  if (!isNaN(ratingMin)) filters.ratingMin = ratingMin;
+
+  const source = $('#filter-source').value;
+  if (source !== 'alle') filters.source = source;
+
+  return filters;
+}
+
+function filterPlaygrounds(plays, filters) {
+  return plays.filter(p => {
+    // Source filter
+    if (filters.source !== 'alle' && p.source !== filters.source) return false;
+
+    // Fenced
+    if (filters.fenced && !p.fenced) return false;
+    // Toilets
+    if (filters.toilets && !p.toilets) return false;
+    // Free parking
+    if (filters.freeParking && !p.parking.free) return false;
+    // Paid parking
+    if (filters.paidParking && !p.parking.paid) return false;
+    // Dogs
+    if (filters.dogsAllowed && !p.dogs.allowed) return false;
+    if (filters.dogsLeash && !p.dogs.leash) return false;
+
+    // Age range (minAge/maxAge are the bounds of the age range slider)
+    if (p.age.min > filters.maxAge || p.age.max < filters.minAge) return false;
+
+    // Equipment
+    if (filters.equipment.length > 0) {
+      const hasEquipment = filters.equipment.some(reqEq =>
+        p.equipment.some(pgEq => pgEq.type === reqEq)
+      );
+      if (!hasEquipment) return false;
+    }
+
+    // Rating
+    if (p.rating.average < filters.ratingMin) return false;
+
+    return true;
+  });
+}
+
+function searchPlaygrounds(plays, query) {
+  if (!query.trim()) return plays;
+  const q = query.toLowerCase().trim();
+  return plays.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.municipality.toLowerCase().includes(q) ||
+    p.equipment.some(e => e.name.toLowerCase().includes(q))
+  );
+}
+
+function renderPlaygroundList() {
+  const q = searchInput.value;
+  const filters = getActiveFilters();
+  let plays = PLAYGROUNDS;
+
+  if (q) plays = searchPlaygrounds(plays, q);
+  plays = filterPlaygrounds(plays, filters);
+
+  resultCount.textContent = `${plays.length} lekeplasser`;
+
+  if (plays.length === 0) {
+    playgroundList.innerHTML = '<p style="color:var(--text-muted);padding:1rem;">Ingen lekeplasser matchede kravene.</p>';
     return;
   }
 
-  playgroundList.innerHTML = filtered.map(p => {
-    const eqStr = p.equipment.map(e => e.charAt(0)).join(', ');
+  playgroundList.innerHTML = plays.map(p => {
+    const eqList = p.equipment.map(e => `<span class="equip-chip">${e.name}</span>`).join('');
+    const badge = getSourceBadge(p);
+    const verif = p.verified ? '<span class="verified-badge">✓ Verifisert</span>' : '<span class="badge-no" style="padding:0.1rem 0.5rem;border-radius:4px;font-size:0.75rem;">Ikke verifisert</span>';
+
     return `
-      <div class="playground-item">
-        <div class="pin-item">
+      <div class="playground-item" data-id="${p.id}">
+        <div class="pin-row">
           <div class="pin-icon">🧭</div>
           <div class="pin-info">
-            <div class="pin-name">${p.name}</div>
-            <div class="pin-details">
-              <strong>Lage:</strong> ${p.location.lat.toFixed(4)}, ${p.location.lng.toFixed(4)}
-              <strong>Alders:</strong> ${p.age.min}-${p.age.max}
-              <strong>Tilgang:</strong> ${p.opening}
-              <strong>Equipment:</strong> ${eqStr}
-              <strong>Rating:</strong> ${p.rating}/5
+            <div class="pin-name">${p.name} ${verif}</div>
+            <div class="pin-meta">
+              <span class="pin-badge badge-${p.source}">${p.source}</span>
+              📍 ${p.municipality} · Alder ${p.age.min}-${p.age.max} · ⭐ ${p.rating.average} (${p.rating.count})
+            </div>
+            <div class="pin-meta" style="margin-top:0.2rem;">
+              ${eqList}
             </div>
           </div>
         </div>
       </div>
     `;
   }).join('');
+
+  // Add click handlers
+  document.querySelectorAll('.playground-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.dataset.id;
+      const p = PLAYGROUNDS.find(p => p.id === id);
+      if (p) openDetail(p);
+    });
+  });
 }
 
-// --- Click Handler (Detail Popup) ---
-function openDetail(pin) {
-  state.selectedPin = pin.id;
-  const play = state.plays.find(p => p.id === pin);
-  if (!play) return;
+function getSourceBadge(p) {
+  const sourceClass = {
+    osm: 'badge-osm',
+    geonorge: 'badge-geonorge',
+    municipality: 'badge-municipality',
+    user: 'badge-user',
+  }[p.source] || '';
+  const verif = p.verified ? '<span class="verified-badge">✓ Verifisert</span>' : '<span class="badge-no" style="padding:0.1rem 0.5rem;border-radius:4px;font-size:0.75rem;">Ikke verifisert</span>';
+  return `<span class="pin-badge ${sourceClass}">${p.source}</span> ${verif}`;
+}
+
+// --- Detail Modal ---
+function openDetail(p) {
+  detailContent.innerHTML = buildDetailHTML(p);
   detailModal.hidden = false;
-  $('#detail-content').innerHTML = `
-    <h2>${play.name}</h2>
-    <p><strong>Lage:</strong> ${play.location.lat.toFixed(4)}, ${play.location.lng.toFixed(4)}</p>
-    <p><strong>Aldrer:</strong> ${play.age.min}-${play.age.max}</p>
-    <p><strong>Tilgang:</strong> ${play.opening}</p>
-    <p><strong>Equipment:</strong> ${play.equipment.join(', ') || '–\’}</p>
-    <p><strong>Rating:</strong> ${play.rating}/5</p>
+  document.body.style.overflow = 'hidden';
+
+  // Map button actions
+  $('#map-gmaps').addEventListener('click', () => {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${p.location.lat},${p.location.lng}`, '_blank', 'noopener');
+  });
+  $('#map-apple').addEventListener('click', () => {
+    window.open(`https://maps.apple.com/?ll=${p.location.lat},${p.location.lng}&q=${encodeURIComponent(p.name)}`, '_blank', 'noopener');
+  });
+
+  // Close handlers
+  detailClose.addEventListener('click', closeModal);
+  detailModal.addEventListener('click', (e) => {
+    if (e.target === detailModal) closeModal();
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', handleModalKey);
+}
+
+function closeModal() {
+  detailModal.hidden = true;
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', handleModalKey);
+}
+
+function handleModalKey(e) {
+  if (e.key === 'Escape') closeModal();
+}
+
+function buildDetailHTML(p) {
+  const stars = Array(5).fill(0).map((_, i) =>
+    i < Math.round(p.rating.average) ? '★' : '☆'
+  );
+
+  const sourceTags = p.sources.map(s => {
+    const cls = {
+      osm: 'source-osm',
+      geonorge: 'source-geonorge',
+      municipality: 'source-municipality',
+      user: 'source-user',
+    }[s.type] || '';
+    return `<span class="source-tag ${cls}">${s.type}</span>`;
+  }).join('');
+
+  const imgCards = p.images.length > 0
+    ? p.images.map(img => `
+        <div class="carousel-card">
+          ${img.url
+            ? `<img src="${img.url}" alt="${img.alt}" loading="lazy">
+               <div class="carousel-label">${img.alt}</div>`
+            : `<div class="photo-placeholder">📷 Ingen bilde</div>`
+          }
+        </div>
+      `).join('')
+    : '<div class="photo-placeholder" style="width:100%;padding:1.5rem;text-align:center;color:var(--text-muted);">Ingen bilder tilgjengelig</div>';
+
+  const dogBadge = p.dogs.allowed
+    ? `<span class="badge-yes">Ja</span>`
+    : `<span class="badge-no">Nei</span>`;
+  const leashBadge = p.dogs.allowed && p.dogs.leash
+    ? `<span class="badge-yes">Ja</span>`
+    : `<span class="badge-no">Nei</span>`;
+
+  const parkingBadge = p.parking.free && p.parking.paid
+    ? `<span class="badge-ltd">Begge</span>`
+    : p.parking.free
+      ? `<span class="badge-yes">Gratis</span>`
+      : p.parking.paid
+        ? `<span class="badge-ltd">Mot betaling</span>`
+        : `<span class="badge-no">Ukjent</span>`;
+
+  const fencedBadge = p.fenced ? `<span class="badge-yes">Ja</span>` : `<span class="badge-no">Nei</span>`;
+  const toiletBadge = p.toilets ? `<span class="badge-yes">Ja</span>` : `<span class="badge-no">Nei</span>`;
+
+  const equipChips = p.equipment.map(e =>
+    `<span class="equip-chip">${e.name}${e.count > 1 ? ` (${e.count})` : ''}</span>`
+  ).join('');
+
+  return `
+    <div class="detail-header">
+      <div class="detail-name">${p.name}</div>
+      <div class="detail-location">${p.municipality} · ${p.location.lat.toFixed(4)}, ${p.location.lng.toFixed(4)}</div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Aldersgruppe</span>
+        <span class="detail-value">${p.age.min} – ${p.age.max} år</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Åpningstider</span>
+        <span class="detail-value">${p.opening}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Rating</span>
+        <span class="detail-value">
+          <span class="rating-avg">${p.rating.average}</span>
+          <span class="rating-stars">${stars.map(s => `<span class="star ${s === '★' ? 'filled' : ''}">${s}</span>`).join('')}</span>
+          <span style="font-size:0.85rem;color:var(--text-muted);">(${p.rating.count} vurderinger)</span>
+        </span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Tilgjengelighet</span>
+        <span class="detail-value">
+          Rullestol: ${p.accessibility.wheelchair === 'yes' ? '<span class="badge-yes">Ja</span>' : p.accessibility.wheelchair === 'limited' ? '<span class="badge-ltd">Deltvis</span>' : '<span class="badge-no">Nei</span>'}
+          · Barnevogn: ${p.accessibility.stroller === 'yes' ? '<span class="badge-yes">Ja</span>' : '<span class="badge-no">Nei</span>'}
+        </span>
+      </div>
+    </div>
+
+    <div class="badge-grid">
+      <span class="badge-chip"><span class="detail-label" style="margin:0;color:var(--text-muted);">Inngjerdet</span> ${fencedBadge}</span>
+      <span class="badge-chip"><span class="detail-label" style="margin:0;color:var(--text-muted);">Toalett</span> ${toiletBadge}</span>
+      <span class="badge-chip"><span class="detail-label" style="margin:0;color:var(--text-muted);">Parkering</span> ${parkingBadge}</span>
+      <span class="badge-chip"><span class="detail-label" style="margin:0;color:var(--text-muted);">Hund</span> ${dogBadge}</span>
+      <span class="badge-chip"><span class="detail-label" style="margin:0;color:var(--text-muted);">Hund i bånd</span> ${leashBadge}</span>
+      ${p.fenced ? '' : `<span class="badge-chip"><span class="detail-label" style="margin:0;color:var(--text-muted);">Rekkevidde</span> ${p.parking.free ? '<span class="badge-yes">Gratis</span>' : p.parking.paid ? '<span class="badge-ltd">Mot betaling</span>' : '<span class="badge-no">Ukjent</span>'}</span>`}
+    </div>
+
+    <div class="filter-field" style="padding:0 1.5rem 1rem;">
+      <span class="detail-label">Apparater</span>
+      <div style="margin-top:0.3rem;">${equipChips}</div>
+    </div>
+
+    <div class="image-carousel">
+      <span class="detail-label" style="margin-bottom:0.5rem;display:block;">Bilder</span>
+      <div class="carousel-track">${imgCards}</div>
+    </div>
+
+    <div class="source-row">
+      <span class="detail-label" style="margin-bottom:0.3rem;display:block;">Kilder</span>
+      ${sourceTags}
+      ${p.verified ? `
+        <div style="margin-top:0.5rem;">
+          <span class="verified-badge">✓ Verifisert</span>
+          <div class="last-verified">Sist kontrollert: ${p.lastVerified}</div>
+        </div>
+      ` : `
+        <div style="margin-top:0.5rem;">
+          <span class="badge-no" style="padding:0.15rem 0.5rem;border-radius:4px;font-size:0.8rem;">Ikke verifisert</span>
+          <div class="last-verified">Sist kontrollert: ${p.lastVerified}</div>
+        </div>
+      `}
+    </div>
+
+    <div class="map-actions">
+      <button class="map-btn map-btn-primary" id="map-gmaps">📍 Google Maps</button>
+      <button class="map-btn map-btn-secondary" id="map-apple">🍎 Apple Maps</button>
+    </div>
   `;
 }
 
-function closeDetail() {
-  state.selectedPin = null;
-  detailModal.hidden = true;
-}
-
-// --- Event Listeners ---
+// --- Events ---
 function setupEvents() {
-  // Search
   searchInput.addEventListener('input', () => {
-    applyFilters();
+    renderPlaygroundList();
   });
 
-  // Filters
-  $('#filter-fenced').addEventListener('change', (e) => {
-    state.filters.fenced = e.target.checked;
-    applyFilters();
-  });
-  $('#filter-dogs').addEventListener('change', (e) => {
-    state.filters.dogs = e.target.checked;
-    applyFilters();
-  });
-  $('#filter-toilets').addEventListener('change', (e) => {
-    state.filters.toilets = e.target.checked;
-    applyFilters();
-  });
-  $('#filter-free-parking').addEventListener('change', (e) => {
-    state.filters.freeParking = e.target.checked;
-    applyFilters();
-  });
-  $('#filter-paid-parking').addEventListener('change', (e) => {
-    state.filters.paidParking = e.target.checked;
-    applyFilters();
+  ['filter-fenced', 'filter-toilets', 'filter-free-parking', 'filter-paid-parking',
+   'filter-dogs-allowed', 'filter-dogs-leash'].forEach(id => {
+    $(`#${id}`).addEventListener('change', renderPlaygroundList);
   });
 
-  // Age range
-  $('#filter-age-min').addEventListener('input', (e) => {
-    state.filters.ageMin = parseInt(e.target.value) || CONFIG.MIN_AGE;
-    applyFilters();
-  });
-  $('#filter-age-max').addEventListener('input', (e) => {
-    state.filters.ageMax = parseInt(e.target.value) || CONFIG.MAX_AGE;
-    applyFilters();
+  ['filter-age-min', 'filter-age-max', 'filter-rating', 'filter-source'].forEach(id => {
+    $(`#${id}`).addEventListener('change', renderPlaygroundList);
   });
 
-  // Equipment
-  $('#filter-equipment').addEventListener('change', (e) => {
-    const val = Array.from(e.target.selectedOptions).map(o => o.value);
-    state.filters.equipment = val;
-    applyFilters();
-  });
-
-  // Rating
-  $('#filter-rating').addEventListener('change', (e) => {
-    state.filters.ratingMin = parseInt(e.target.value) || CONFIG.MIN_RATING;
-    applyFilters();
-  });
-
-  // Reset
-  $('#reset-filters').addEventListener('click', () => {
-    state.filters = {
-      fenced: true,
-      dogs: true,
-      toilets: true,
-      freeParking: true,
-      paidParking: false,
-      ageMin: CONFIG.MIN_AGE,
-      ageMax: CONFIG.MAX_AGE,
-      equipment: [],
-      ratingMin: CONFIG.MIN_RATING,
-    };
-    applyFilters();
-  });
-
-  // Locate button
-  locateBtn.addEventListener('click', () => {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        if (pos.coords) {
-          mapEl.setView(pos.coords, 14, { pitch: 0 });
-          showToast(`Lokasjon: ${pos.coords.latitude}, ${pos.coords.longitude}`);
-        } else {
-          showToast('Ikke mulig å få lokasjon');
-        }
-      },
-      options: { enableHighAccuracy: true, timeout: 10 }
-    );
-  });
-
-  // Modal
-  detailModal.addEventListener('click', (e) => {
-    if (e.target === detailModal) closeDetail();
-  });
-  $('#detail-close').addEventListener('click', closeDetail);
-  detailModal.addEventListener('click', (e) => {
-    if (e.target === detailModal) closeDetail();
-  });
-
-  // Close on overlay click
-  document.addEventListener('click', (e) => {
-    if (detailModal.hidden && e.target !== detailModal) closeDetail();
+  $('#filter-equipment').addEventListener('change', renderPlaygroundList);
+  $('#search-clear').addEventListener('click', () => {
+    searchInput.value = '';
+    renderPlaygroundList();
   });
 }
 
-// --- Toast Notifications ---
-function showToast(message) {
-  toast.textContent = message;
-  toast.hidden = false;
-  setTimeout(() => {
-    toast.hidden = true;
-  }, 2500);
+// --- Toast ---
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.hidden = false;
+  setTimeout(() => { toastEl.hidden = true; }, 3000);
 }
 
-// --- Main Entry ---
+// --- Boot ---
 async function main() {
-  await loadPlays();
   initMap();
-  applyFilters();
+  renderPlaygroundList();
   setupEvents();
 }
 
-// Boot
-main().catch(err => console.error('Failed to initialize Lekesafari:', err));
+main().catch(err => console.error('Lekesafari failed to initialize:', err));

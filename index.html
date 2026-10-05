@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lekesafari – Kart over lekeplasser</title>
-  <meta name="description" content="Lekesafari – oppdag lekeplasser i Norge med kart, rating, bilder og filter.">
+  <title>Lekesafari – Kart over lekeplasser i Norge</title>
+  <meta name="description" content="Lekesafari – oppdag lekeplasser i Norge med kart, rating, bilder, filter og informasjon om fasiliteter.">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
 </head>
 <body>
   <header class="app-header">
@@ -36,64 +37,96 @@
 
         <label class="filter-row">
           <input type="checkbox" id="filter-fenced">
-          <span>Only fenced (Inngjerdet)</span>
-        </label>
-        <label class="filter-row">
-          <input type="checkbox" id="filter-dogs">
-          <span>Dogs allowed (Lov med hund)</span>
+          <span>Inngjerdet</span>
         </label>
         <label class="filter-row">
           <input type="checkbox" id="filter-toilets">
-          <span>Toilets (Toaletter)</span>
+          <span>Toalett</span>
         </label>
         <label class="filter-row">
           <input type="checkbox" id="filter-free-parking">
-          <span>Free parking (Parkering gratis)</span>
+          <span>Gratis parkering</span>
         </label>
         <label class="filter-row">
           <input type="checkbox" id="filter-paid-parking">
-          <span>Paid parking (Mot betaling)</span>
+          <span>Betalt parkering</span>
+        </label>
+        <label class="filter-row">
+          <input type="checkbox" id="filter-dogs-allowed">
+          <span>Hund tillatt</span>
+        </label>
+        <label class="filter-row">
+          <input type="checkbox" id="filter-dogs-leash">
+          <span>Hund i bånd</span>
         </label>
 
         <div class="filter-field">
           <label for="filter-age">Aldersgruppe</label>
           <div class="age-row">
-            <input type="number" id="filter-age-min" placeholder="Min" min="0" max="18" inputmode="numeric">
+            <select id="filter-age-min">
+              <option value="0">0+</option>
+              <option value="2">2+</option>
+              <option value="4">4+</option>
+              <option value="6">6+</option>
+              <option value="10">10+</option>
+              <option value="12">12+</option>
+              <option value="18">18+</option>
+            </select>
             <span class="dash">–</span>
-            <input type="number" id="filter-age-max" placeholder="Max" min="0" max="18" inputmode="numeric">
+            <select id="filter-age-max">
+              <option value="2">2+</option>
+              <option value="4">4+</option>
+              <option value="6">6+</option>
+              <option value="8">8+</option>
+              <option value="10">10+</option>
+              <option value="12">12+</option>
+              <option value="18">18+</option>
+            </select>
           </div>
         </div>
 
         <div class="filter-field">
           <label for="filter-equipment">Apparater (inkluder)</label>
-          <select id="filter-equipment" multiple size="4">
-            <option value="slide">Rutschbane (slide)</option>
-            <option value="swing">Gynge (swing)</option>
-            <option value="climb">Klatrestativ (climb)</option>
-            <option value="see-saw">Gåttrett (see-saw)</option>
-            <option value="spring">Hoppeslott (spring)</option>
-            <option value="sandbox">Sandkasse (sandbox)</option>
-            <option value="roundabout">Karussell (roundabout)</option>
-            <option value="basketball">Basketball (basketball)</option>
+          <select id="filter-equipment" multiple size="5">
+            <option value="rutschebane">Rutschbane</option>
+            <option value="gynge">Gynge</option>
+            <option value="klatrestativ">Klatrestativ</option>
+            <option value="gattrett">Gåtte</option>
+            <option value="hoppeslott">Hoppeslott</option>
+            <option value="sandkasse">Sandkasse</option>
+            <option value="karussell">Karussell</option>
+            <option value=" basketball">Basketball</option>
+            <option value="vippe">Vippe</option>
+            <option value="trapeq">Trapeq</option>
           </select>
-          <small>Hold Ctrl/Cmd for multiple</small>
+          <small>Hold Ctrl/Cmd for flere</small>
         </div>
 
         <div class="filter-field">
           <label for="filter-rating">Minimum rating</label>
           <select id="filter-rating">
-            <option value="0">All</option>
-            <option value="1">★</option>
-            <option value="2">★★</option>
-            <option value="3">★★★</option>
-            <option value="4">★★★★</option>
+            <option value="0">Ingen rating</option>
+            <option value="2">2+ stjerner</option>
+            <option value="3">3+ stjerner</option>
+            <option value="4">4+ stjerner</option>
           </select>
         </div>
 
-        <button id="reset-filters" class="secondary-btn">Reset filters</button>
+        <div class="filter-field">
+          <label for="filter-source">Data-kilde</label>
+          <select id="filter-source">
+            <option value="alle">Alle kilder</option>
+            <option value="osm">OpenStreetMap</option>
+            <option value="geonorge">Kartverket/Geonorge</option>
+            <option value="user">Brukerrapporterte</option>
+            <option value="municipality">Kommunale data</option>
+          </select>
+        </div>
       </div>
 
-      <div class="result-count" id="result-count"></div>
+      <div class="result-bar">
+        <span id="result-count">Laster…</span>
+      </div>
 
       <div class="playground-list" id="playground-list"></div>
     </aside>
@@ -109,9 +142,9 @@
     </main>
   </div>
 
-  <!-- Detail popup -->
-  <div class="modal" id="detail-modal" hidden>
-    <div class="modal-card">
+  <!-- Detail modal -->
+  <div class="modal-overlay" id="detail-modal" hidden>
+    <div class="modal-card detail-card">
       <button class="modal-close" id="detail-close" aria-label="Lukk">×</button>
       <div id="detail-content"></div>
     </div>
