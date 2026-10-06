@@ -305,7 +305,8 @@ function renderPlaygroundList() {
   const count = document.getElementById('result-count');
 
   const filter = getActiveFilters();
-  const filtered = filterPlaygrounds(state.playgrounds, filter);
+  // Use the search‑filtered list if it exists, otherwise fall back to the normal filter logic
+  const filtered = (state.filteredPlaygrounds && state.filteredPlaygrounds.length) ? state.filteredPlaygrounds : filterPlaygrounds(state.playgrounds, filter);
   state.filteredPlaygrounds = filtered;
 
   count.textContent = filtered.length;
