@@ -51,8 +51,6 @@ const map = L.map('map', {
   attributionControl: true,
 });
 
-loadFromViewport();
-
 const playgroundLayer = L.layerGroup().addTo(map);
 window.playgroundLayer = playgroundLayer;
 
@@ -78,7 +76,7 @@ function mergeWithSeed(live, seed, bounds) {
   const filteredSeed = seed.filter(s => {
     if (!bounds) return true;
     const lat = s.location.lat, lng = s.location.lng;
-    return bounds.contains([lng, lat]);
+    return bounds.contains([lat, lng]);
   });
   const seedAdditions = filteredSeed.filter(s => !ids.has(s.id));
   return [...live, ...seedAdditions];
@@ -389,7 +387,7 @@ document.getElementById('locate-btn').addEventListener('click', () => {
       map.setView([pos.coords.latitude, pos.coords.longitude], 12);
     },
     () => {
-      map.setView([10.7522, 59.9139], 5);
+      map.setView([59.9139, 10.7522], 5);
     },
     { timeout: 5000 }
   );
@@ -403,7 +401,7 @@ document.getElementById('locate-btn').addEventListener('click', () => {
       map.setView([pos.coords.latitude, pos.coords.longitude], 12);
     },
     () => {
-      map.setView([10.7522, 59.9139], 5);
+      map.setView([59.9139, 10.7522], 5);
     },
     { timeout: 5000 }
   );
