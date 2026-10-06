@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lekesafari – Kart over lekeplasser i Norge</title>
   <meta name="description" content="Lekesafari – oppdag lekeplasser i Norge med kart, rating, bilder, filter og informasjon om fasiliteter.">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-oNM7cQ5V4v3Y0Zf3VqPpYz5h5W5v5Z5p5Q5V5Z5p5Q5V=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://images.unsplash.com">
@@ -127,9 +127,9 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- Load seed data and then Leaflet app -->
+  <!-- Load Leaflet first, then seed data, then app JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="seed-data.js"></script>
   <script src="app-leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
