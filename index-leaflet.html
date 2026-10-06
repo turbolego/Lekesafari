@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://images.unsplash.com">
   <style>
-    /* Leaflet container must be absolute positioned */
-    .map-wrap { position: relative; height: calc(100vh - 60px); }
+    /* Leaflet overrides */
+    .map-wrap { position: relative; }
     #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
   </style>
 </head>
@@ -127,9 +127,7 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- Load seed data and then Leaflet app -->
-  <script src="seed-data.js"></script>
-  <script src="app-leaflet.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app-leaflet.js"></script>
 </body>
 </html>

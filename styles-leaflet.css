@@ -1,0 +1,35 @@
+/* ============================================
+   Lekesafari – Leaflet Stylesheet
+   Replace maplibre-gl.css with Leaflet defaults
+   ============================================ */
+
+/* Remove MapLibre-specific styles */
+.marker-popup {
+  max-width: 250px;
+  font-size: 0.85rem;
+}
+
+.leaflet-control-zoom a,
+.leaflet-control-attribution a {
+  color: inherit;
+}
+
+/* Leaflet marker styling to match MapLibre colors */
+.leaflet-marker-icon.playground-marker {
+  background-image: none !important;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.leaflet-marker-icon.playground-osm { background-color: #2e7d32 !important; }   /* green */
+.leaflet-marker-icon.playground-geonorge { background-color: #1565c0 !important; } /* blue */
+.leafleaflet-marker-icon.playground-municipality { background-color: #7b1fa2 !important; } /* purple */
+.leaflet-marker-icon.playground-user { background-color: #e65100 !important; } /* orange */
+
+.leaflet-marker-popup .leaflet-popup-content-wrapper {
+  padding: 0.5rem;
+}
+
+.leaflet-popup-tip {
+  border-color: #fff;
+}
