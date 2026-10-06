@@ -475,10 +475,12 @@ function initMap() {
 
   // Auto-trigger geolocation on page load; on denied/unavailable, default
   // to Norway-wide view (center ~10.75,59.91, zoom 5) so all 525 items show.
+  let geolocationTriggered = false;
   (function triggerGeolocationOnLoad() {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation || geolocationTriggered) return;
     navigator.geolocation.getCurrentPosition(
       pos => {
+        geolocationTriggered = true;
         state.map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 12 });
       },
       () => {
