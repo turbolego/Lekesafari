@@ -187,7 +187,9 @@ function syncMapMarkers() {
   // Clear existing markers
   playgroundLayer.clearLayers();
 
-  state.playgrounds.forEach(p => {
+  // Use the filtered list of playgrounds (respecting source filter)
+  const list = state.filteredPlaygrounds && state.filteredPlaygrounds.length ? state.filteredPlaygrounds : state.playgrounds;
+  list.forEach(p => {
     const marker = L.circleMarker([p.location.lat, p.location.lng], {
       radius: 8,
       fillColor: getMarkerColor(p.source),
