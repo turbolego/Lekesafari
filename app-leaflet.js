@@ -72,25 +72,13 @@ let state = {
 
 // -------------------------------------------------------------
 // Data Loading Functions
+// Use shared implementations from sources.js (already loaded)
+// loadStatic(bounds) and loadForViewport(bounds) are defined in sources.js
 // -------------------------------------------------------------
-async function loadStatic(bounds) {
-  // TODO: Load baked static GeoJSON
-  return { playgrounds: [], error: null };
-}
 
-async function loadForViewport(bounds) {
-  // TODO: Load live OSM/Geonorge data within viewport
-  return { playgrounds: [], errors: [] };
-}
-
-function mergeSources(layers) {
-  // Merge all sources into single array
-  return layers.flat();
-}
-
+// mergeWithSeed: merges live playgrounds with seed (viewport-filtered)
 function mergeWithSeed(live, seed, bounds) {
   const ids = new Set(live.map(p => p.id));
-  // Filter seed by viewport bounds
   const filteredSeed = seed.filter(s => {
     if (!bounds) return true;
     const lat = s.location.lat, lng = s.location.lng;
@@ -110,7 +98,6 @@ function loadFromViewport() {
   const bounds = map.getBounds();
   const zoom = map.getZoom();
 
-  // Record last viewport for moveend check
   const c = map.getCenter();
   state.lastView = { lng: c.lng, lat: c.lat, zoom };
 
@@ -120,28 +107,38 @@ function loadFromViewport() {
   state.playgrounds = [...seed];
   renderPlaygroundList();
 
-  if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
-    loadForViewport(bounds).then(({ playgrounds, errors }) => {
+  // Static GeoJSON is always loaded (same-origin, CORS-safe, 1631 features)
+  // Live data is merged on top at zoom >= 9
+  loadStatic(bounds).then(result => {
+    let playgrounds = result.playgrounds || [];
+
+    if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
+      loadForViewport(bounds).then(({ playgrounds: live, errors }) => {
+        playgrounds = playgrounds.concat(live);
+        state.sourceErrors = errors || [];
+        state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
+        state.isLoading = false;
+        renderPlaygroundList();
+        syncMapMarkers();
+      }).catch(err => {
+        state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
+        state.isLoading = false;
+        renderPlaygroundList();
+        syncMapMarkers();
+      });
+    } else {
       state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
-      state.sourceErrors = errors;
       state.isLoading = false;
       renderPlaygroundList();
       syncMapMarkers();
-    }).catch(err => {
-      console.warn('Lekesafari viewport load failed:', err);
-      state.isLoading = false;
-    });
-  } else {
-    // Static layer only
-    loadStatic(bounds).then(result => {
-      state.playgrounds = mergeWithSeed(result.playgrounds || [], seed, bounds);
-      state.isLoading = false;
-      renderPlaygroundList();
-      syncMapMarkers();
-    }).catch(err => {
-      state.isLoading = false;
-    });
-  }
+    }
+  }).catch(err => {
+    console.warn('Static load failed:', err);
+    state.playgrounds = [...seed];
+    state.isLoading = false;
+    renderPlaygroundList();
+    syncMapMarkers();
+  });
 }
 
 // -------------------------------------------------------------
