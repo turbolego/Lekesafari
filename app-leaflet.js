@@ -51,14 +51,10 @@ const map = L.map('map', {
   attributionControl: true,
 });
 
-// OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
+loadFromViewport();
 
-// Layer for playground markers
 const playgroundLayer = L.layerGroup().addTo(map);
+window.playgroundLayer = playgroundLayer;
 
 // State Management
 // -------------------------------------------------------------
@@ -168,7 +164,7 @@ function syncMapMarkers() {
       className: 'playground-marker playground-' + p.source,
     });
 
-    marker.on('click', () => openDetail(p));
+    marker.on('click', () => openPopup(p, marker));
     playgroundLayer.addLayer(marker);
   });
 }
@@ -216,6 +212,54 @@ function openDetail(p) {
   modal.onclick = (e) => {
     if (e.target === modal) modal.style.display = 'none';
   };
+}
+
+// -------------------------------------------------------------
+// Leaflet Popup (replaces custom modal for map markers)
+// Uses Leaflet's built-in L.popup per the docs:
+// https://leafletjs.com/reference.html#popup
+// -------------------------------------------------------------
+function buildPopupContent(p) {
+  const src = p.source || 'osm';
+  const ratingLine = p.rating?.count
+    ? `Rating: ${p.rating.average} (${p.rating.count})`
+    : 'Ingen rating';
+
+  const eqNames = p.equipment?.length
+    ? p.equipment.map(eq => eq.name).join(', ')
+    : '—';
+
+  const verif = p.verified
+    ? '<span class="verified-badge">✓ Verifisert</span>'
+    : '';
+
+  return `
+    <div style="font-weight:600;font-size:1rem;margin-bottom:0.3rem;">${p.name}</div>
+    <div style="font-size:0.85rem;color:#666;margin-bottom:0.3rem;">
+      ${ratingLine}
+    </div>
+    <div style="font-size:0.8rem;color:#555;">
+      <span class="pin-badge badge-${src}">${p.source}</span> ${verif}
+    </div>
+    <div style="font-size:0.75rem;color:#777;margin-top:0.3rem;">
+      ${eqNames}
+    </div>
+    ${p.images?.length
+      ? p.images.map(img => `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;">`).join('')
+      : ''}
+  `;
+}
+
+function openPopup(p, marker) {
+  const popupContent = buildPopupContent(p);
+
+  marker.bindPopup(popupContent, {
+    maxWidth: 300,
+    closeButton: true,
+    closeOnClick: true,
+    autoClose: false,
+    className: 'playground-popup',
+  }).openPopup();
 }
 
 // -------------------------------------------------------------
@@ -326,13 +370,10 @@ map.on('moveend', () => {
   const c = map.getCenter();
   const z = map.getZoom();
   const last = state.lastView;
-  if (last &&
-      Math.abs(last.zoom - z) < 0.05 &&
-      Math.abs(last.lng - c.lng) < 1e-4 &&
-      Math.abs(last.lat - c.lat) < 1e-4) {
-    return;
+  // Load if view changed (any change triggers reload)
+  if (!last || last.zoom !== z || last.lng !== c.lng || last.lat !== c.lat) {
+    loadFromViewport();
   }
-  loadFromViewport();
 });
 
 // Zoom change
@@ -379,7 +420,7 @@ searchInput.addEventListener('input', (e) => {
   }
   const filtered = state.playgrounds.filter(p =>
     p.name.toLowerCase().includes(term) ||
-    (p.location && 
+    (p.location &&
       (String(p.location.lat).includes(term) || String(p.location.lng).includes(term)))
   );
   state.filteredPlaygrounds = filtered;

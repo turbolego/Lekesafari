@@ -383,7 +383,7 @@ function mergeSources(results) {
 // into this file (see .github/workflows/update-data.yml).
 async function loadStatic(bounds) {
   try {
-    const r = await fetch('data/playgrounds.geojson', { cache: 'no-store' });
+    const r = await fetch(`${window.location.origin}/data/playgrounds.geojson`, { cache: 'no-store' });
     if (!r.ok) return { source: 'static', playgrounds: [], error: `static-${r.status}` };
     const fc = await r.json();
 
