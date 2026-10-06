@@ -59,7 +59,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const playgroundLayer = L.layerGroup().addTo(map);
 window.playgroundLayer = playgroundLayer;
 
-// State Management
+// Sidebar toggle for mobile
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebar = document.getElementById('sidebar');
+if (sidebarToggle && sidebar) {
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    // Invalidate map size after layout change
+    setTimeout(() => map.invalidateSize(), 300);
+  });
+}
+
 // -------------------------------------------------------------
 let state = {
   isLoading: false,
