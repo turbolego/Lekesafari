@@ -59,7 +59,27 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const playgroundLayer = L.layerGroup().addTo(map);
 window.playgroundLayer = playgroundLayer;
 
-// Sidebar toggle for mobile
+// Geonorge WMS layer (raster)
+const geonorgeLayer = L.tileLayer.wms('https://wms.geonorge.no/skwms1/wms.tilgjengelighet3', {
+  layers: 'tilgjengelighet',
+  format: 'image/png',
+  transparent: true,
+  attribution: 'Geonorge',
+});
+// Initially hidden – toggle with button
+let geonorgeVisible = false;
+const geonorgeToggle = document.getElementById('geonorge-toggle');
+if (geonorgeToggle) {
+  geonorgeToggle.addEventListener('click', () => {
+    geonorgeVisible = !geonorgeVisible;
+    if (geonorgeVisible) {
+      geonorgeLayer.addTo(map);
+    } else {
+      map.removeLayer(geonorgeLayer);
+    }
+  });
+}
+
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const sidebar = document.getElementById('sidebar');
 if (sidebarToggle && sidebar) {
