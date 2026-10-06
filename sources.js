@@ -273,31 +273,7 @@ async function loadWmsTilgjengelighet(bounds) {
 // than throwing. Swap the URL below once a CORS-friendly mirror or a
 // small proxy (Cloudflare Worker, per the spec notes) is available.
 async function loadGeonorge(bounds) {
-  const endpoints = [
-    'https://data.geonorge.no/geonorge-dagligoppdatert-pub/api/v1/features',
-  ];
   if (!bounds) return { source: 'geonorge', playgrounds: [], error: 'geonorge-no-bounds' };
-  for (const base of endpoints) {
-    try {
-      const r = await fetch(base + '?bbox=' + [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',') + '&limit=100');
-      if (!r.ok) continue;
-      const d = await r.json();
-      const feats = d.features || [];
-      const out = feats.map((f, i) => normalizePlayground({
-        id: `geonorge-${f.id || i}`,
-        name: f.properties?.name || 'Lekeplass',
-        lat: f.geometry?.coordinates?.[1] ?? 0,
-        lng: f.geometry?.coordinates?.[0] ?? 0,
-        source: 'geonorge',
-        sourceId: String(f.id || i),
-        images: [],
-        equipment: [],
-        verified: true,
-        lastVerified: new Date().toISOString().slice(0, 10),
-      })).filter(p => p.location.lat);
-      if (out.length) return { source: 'geonorge', playgrounds: out, error: null };
-    } catch (err) { /* CORS or network — fall through */ }
-  }
   return { source: 'geonorge', playgrounds: [], error: 'geonorge-unavailable' };
 }
 
