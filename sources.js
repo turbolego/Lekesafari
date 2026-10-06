@@ -27,7 +27,7 @@ const OSM_EQUIPMENT = {
 const OSM_MIRRORS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
-  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+  'https://overpass.openstreetmap.fr/api/interpreter',
 ];
 
 async function overpassFetch(query) {
