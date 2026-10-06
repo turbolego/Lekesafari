@@ -97,6 +97,7 @@ let state = {
   sourceErrors: [],
   lastView: null,
   filteredPlaygrounds: [],
+  searchTerm: '',
 };
 
 // -------------------------------------------------------------
@@ -304,14 +305,18 @@ function renderPlaygroundList() {
   const list = document.getElementById('playground-list');
   const count = document.getElementById('result-count');
 
-  // Don't overwrite filteredPlaygrounds if search has set it
-  if (state.searchActive) {
-    // Search results are already in state.filteredPlaygrounds — leave them alone
-  } else {
-    const filter = getActiveFilters();
-    state.filteredPlaygrounds = filterPlaygrounds(state.playgrounds, filter);
+  const filter = getActiveFilters();
+  let filtered = filterPlaygrounds(state.playgrounds, filter);
+
+  // If search term is active, further filter by name
+  if (state.searchTerm) {
+    filtered = filtered.filter(p =>
+      p.name.toLowerCase().includes(state.searchTerm) ||
+      (p.location &&
+        (String(p.location.lat).includes(state.searchTerm) || String(p.location.lng).includes(state.searchTerm)))
+    );
   }
-  const filtered = state.filteredPlaygrounds || [];
+  state.filteredPlaygrounds = filtered;
 
   count.textContent = filtered.length;
 
@@ -452,26 +457,8 @@ document.getElementById('locate-btn').addEventListener('click', () => {
 // Search input
 const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
-  const term = e.target.value.toLowerCase();
-  if (!term) {
-    state.searchActive = false;
-    state.filteredPlaygrounds = [];
-    renderPlaygroundList();
-    syncMapMarkers();
-    return;
-  }
-  state.searchActive = true;
-  const filtered = state.playgrounds.filter(p =>
-    p.name.toLowerCase().includes(term) ||
-    (p.location &&
-      (String(p.location.lat).includes(term) || String(p.location.lng).includes(term)))
-  );
-  state.filteredPlaygrounds = filtered;
-  // Update result count and filtered list
-  document.getElementById('result-count').textContent = filtered.length;
-  // Refresh the sidebar list to reflect the search results
+  state.searchTerm = e.target.value.toLowerCase();
   renderPlaygroundList();
-  // Sync map markers with the search filter
   syncMapMarkers();
 });
 
