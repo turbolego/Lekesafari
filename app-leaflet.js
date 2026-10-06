@@ -147,26 +147,26 @@ function loadFromViewport() {
         state.sourceErrors = errors || [];
         state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
         state.isLoading = false;
-        renderPlaygroundList();
         syncMapMarkers();
+        renderPlaygroundList();
       }).catch(err => {
         state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
         state.isLoading = false;
-        renderPlaygroundList();
         syncMapMarkers();
+        renderPlaygroundList();
       });
     } else {
       state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
       state.isLoading = false;
-      renderPlaygroundList();
       syncMapMarkers();
+      renderPlaygroundList();
     }
   }).catch(err => {
     console.warn('Static load failed:', err);
     state.playgrounds = [...seed];
     state.isLoading = false;
-    renderPlaygroundList();
     syncMapMarkers();
+    renderPlaygroundList();
   });
 }
 
@@ -304,10 +304,14 @@ function renderPlaygroundList() {
   const list = document.getElementById('playground-list');
   const count = document.getElementById('result-count');
 
-  const filter = getActiveFilters();
-  // Use the search‑filtered list if it exists, otherwise fall back to the normal filter logic
-  const filtered = (state.filteredPlaygrounds && state.filteredPlaygrounds.length) ? state.filteredPlaygrounds : filterPlaygrounds(state.playgrounds, filter);
-  state.filteredPlaygrounds = filtered;
+  // Don't overwrite filteredPlaygrounds if search has set it
+  if (state.searchActive) {
+    // Search results are already in state.filteredPlaygrounds — leave them alone
+  } else {
+    const filter = getActiveFilters();
+    state.filteredPlaygrounds = filterPlaygrounds(state.playgrounds, filter);
+  }
+  const filtered = state.filteredPlaygrounds || [];
 
   count.textContent = filtered.length;
 
@@ -450,11 +454,13 @@ const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
   const term = e.target.value.toLowerCase();
   if (!term) {
+    state.searchActive = false;
     state.filteredPlaygrounds = [];
     renderPlaygroundList();
     syncMapMarkers();
     return;
   }
+  state.searchActive = true;
   const filtered = state.playgrounds.filter(p =>
     p.name.toLowerCase().includes(term) ||
     (p.location &&
