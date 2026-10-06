@@ -449,6 +449,7 @@ const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
   const term = e.target.value.toLowerCase();
   if (!term) {
+    state.filteredPlaygrounds = [];
     renderPlaygroundList();
     syncMapMarkers();
     return;
@@ -459,7 +460,12 @@ searchInput.addEventListener('input', (e) => {
       (String(p.location.lat).includes(term) || String(p.location.lng).includes(term)))
   );
   state.filteredPlaygrounds = filtered;
+  // Update result count and filtered list
   document.getElementById('result-count').textContent = filtered.length;
+  // Refresh the sidebar list to reflect the search results
+  renderPlaygroundList();
+  // Sync map markers with the search filter
+  syncMapMarkers();
 });
 
 // Rating range slider
