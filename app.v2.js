@@ -292,7 +292,7 @@ const PLAYGROUNDS = [
     ],
   },
   {
-    id: ' Fredrikstad-gamleby',
+    id: 'Fredrikstad-gamleby',
     name: 'Gamlebyparken Fredrikstad',
     location: { lat: 59.2060, lng: 10.9100 },
     source: 'user',
@@ -496,9 +496,20 @@ async function loadFromViewport() {
   const gen = ++state.loadGen;
 
   const seed = window.SEED_PLAYGROUNDS || [];
-  // Always show seed immediately so the map is never empty, even while
+  // Show seed items that are within the current viewport bounds.
+  // This prevents showing seed records globally when the user is
+  // in an area far from any seed playground.
+  const seedBounds = state.map.getBounds();
+  const filteredSeed = seed.filter(s => {
+    const loc = s.location || { lat: 0, lng: 0 };
+    const sw = seedBounds.getSouthWest();
+    const ne = seedBounds.getNorthEast();
+    return loc.lat >= sw.lat && loc.lat <= ne.lat &&
+           loc.lng >= sw.lng && loc.lng <= ne.lng;
+  });
+  // Always show something so the map is never empty, even while
   // live sources are still loading or rate-limited.
-  state.playgrounds = [...seed];
+  state.playgrounds = [...filteredSeed];
   state.sourceErrors = [];
   renderPlaygroundList();
   syncMapSource();
@@ -532,13 +543,14 @@ async function loadFromViewport() {
     }
     // If the user panned since we started, this result is stale — discard.
     if (gen !== state.loadGen) return;
-    state.playgrounds = mergeWithSeed(layers.playgrounds, seed);
+    state.playgrounds = mergeWithSeed(layers.playgrounds, seed, bounds);
     state.sourceErrors = layers.errors;
   } catch (err) {
     if (gen !== state.loadGen) return;
     console.warn('Lekesafari viewport load failed:', err);
     state.sourceErrors = [String(err)];
     // seed already shown; keep it
+    renderPlaygroundList();
   }
   if (gen === state.loadGen) {
     renderPlaygroundList();
@@ -561,12 +573,20 @@ function syncMapSource() {
   src.setData(fc);
 }
 
-function mergeWithSeed(live, seed) {
+function mergeWithSeed(live, seed, bounds) {
   seed = seed || [];
-  if (!seed.length) return live;
+  if (!seed.length || !bounds) return live;
+  const sw = bounds.getSouthWest();
+  const ne = bounds.getNorthEast();
   const ids = new Set(live.map(p => p.id));
   // Seed records fill gaps: seed items not already covered by live data
-  const seedAdditions = seed.filter(s => !ids.has(s.id));
+  // AND within the current viewport bounds.
+  const seedAdditions = seed.filter(s => {
+    if (ids.has(s.id)) return false;
+    const loc = s.location || { lat: 0, lng: 0 };
+    return loc.lat >= sw.lat && loc.lat <= ne.lat &&
+           loc.lng >= sw.lng && loc.lng <= ne.lng;
+  });
   return [...live, ...seedAdditions];
 }
 

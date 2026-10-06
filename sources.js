@@ -419,17 +419,13 @@ async function loadStatic(bounds) {
     };
 
     const features = fc.features || [];
-    // A baseline layer must never empty the map. Filter to the viewport only
-    // when that genuinely narrows the set; otherwise (or if it would drop to
-    // zero) fall back to the full dataset.
-    const filtered = features
+    // Filter to the current viewport. If the viewport genuinely has no
+    // playgrounds, return empty — live sources will enrich the view.
+    const out = features
       .map(normalize)
       .filter(Boolean)
       .filter(x => inView(x.lat, x.lng))
       .map(x => x.rec);
-    const out = filtered.length > 0
-      ? filtered
-      : features.map(normalize).filter(Boolean).map(x => x.rec);
 
     return { source: 'static', playgrounds: out, error: null };
   } catch (e) {
