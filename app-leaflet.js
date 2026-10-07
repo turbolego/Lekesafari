@@ -482,11 +482,9 @@ document.getElementById('locate-btn').addEventListener('click', () => {
 const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
   state.searchTerm = e.target.value.toLowerCase();
-  // Only render if we have playgrounds loaded
-  if (state.playgrounds.length > 0) {
-    renderPlaygroundList();
-    syncMapMarkers();
-  }
+  // Always render - re-search even if data was already loaded
+  renderPlaygroundList();
+  syncMapMarkers();
 });
 
 // Rating range slider
