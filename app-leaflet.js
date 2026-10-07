@@ -454,12 +454,15 @@ document.getElementById('locate-btn').addEventListener('click', () => {
   );
 })();
 
-// Search input
+// Search input - wait for playgrounds to be loaded
 const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
   state.searchTerm = e.target.value.toLowerCase();
-  renderPlaygroundList();
-  syncMapMarkers();
+  // Only render if we have playgrounds loaded
+  if (state.playgrounds.length > 0) {
+    renderPlaygroundList();
+    syncMapMarkers();
+  }
 });
 
 // Rating range slider
@@ -467,6 +470,26 @@ document.getElementById('filter-rating').addEventListener('input', (e) => {
   document.getElementById('rating-value').textContent = e.target.value;
   loadFromViewport();
 });
+
+// Search clear button
+const searchClear = document.getElementById('search-clear');
+if (searchClear) {
+  searchClear.addEventListener('click', () => {
+    document.getElementById('search-input').value = '';
+    state.searchTerm = '';
+    renderPlaygroundList();
+    syncMapMarkers();
+  });
+}
+
+// Sidebar close button (mobile)
+const detailClose = document.getElementById('detail-close');
+if (detailClose) {
+  detailClose.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    setTimeout(() => map.invalidateSize(), 300);
+  });
+}
 
 // Initial load
 loadFromViewport();

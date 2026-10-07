@@ -10,116 +10,165 @@
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://images.unsplash.com">
   <style>
-    /* Leaflet container must be absolute positioned */
-    .map-wrap { position: relative; height: calc(100vh - 60px); }
-    #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+    /* Fullscreen map */
+    html, body { height: 100%; margin: 0; padding: 0; }
+    .map-container { position: fixed; inset: 0; }
+    #map { width: 100%; height: 100%; }
+    
+    /* Overlay buttons - top right */
+    .overlay-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .overlay-btn:nth-child(1) { right: 10px; }
+    .overlay-btn:nth-child(2) { right: 60px; }
+    .overlay-btn:nth-child(3) { right: 110px; }
+    
+    /* Sidebar */
+    .sidebar {
+      position: absolute;
+      top: 0;
+      left: -260px;
+      width: 260px;
+      height: 100%;
+      background: var(--card-bg);
+      overflow-y: auto;
+      transition: left 0.3s ease;
+      z-index: 999;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+    }
+    .sidebar.open { left: 0; }
+    
+    /* Zoom controls - bottom right */
+    .leaflet-control-zoom {
+      right: 10px !important;
+      bottom: 10px !important;
+    }
+    
+    /* Close button for detail modal */
+    .detail-close {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #666;
+    }
   </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="brand">
-      <span class="brand-icon" aria-hidden="true">🧭</span>
-      <div>
-        <h1>Lekesafari</h1>
-        <p class="tagline">Oppdag lekeplasser i Norge</p>
-      </div>
-    </div>
-    <button id="locate-btn" class="icon-btn overlay-btn" title="Gå til min lokasjon" aria-label="Gå til min lokasjon">
-      📍
-    </button>
-    <button id="geonorge-toggle" class="icon-btn overlay-btn" style="right: 110px;" title="Vis/Gem Geonorge WMS" aria-label="Vis/Gem Geonorge WMS">🗺️</button>
-    <button id="sidebar-toggle" class="icon-btn overlay-btn" style="right: 60px;" title="Vis/skjul filter" aria-label="Vis/skjul filter">⚙️</button>
-  </header>
-
-  <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="search-block">
-        <input id="search-input" type="text" placeholder="Søk navn, by, apparat…" autocomplete="off" aria-label="Søk lekeplasser">
-        <button id="search-clear" class="clear-btn" title="Tøm søk" aria-label="Tøm søk">×</button>
-      </div>
-
-      <div class="filter-group">
-        <h2>Filter</h2>
-
-        <label class="filter-row">
-          <input type="checkbox" id="filter-fenced">
-          <span>Inngjerdet</span>
-        </label>
-        <label class="filter-row">
-          <input type="checkbox" id="filter-toilets">
-          <span>Toalett</span>
-        </label>
-        <label class="filter-row">
-          <input type="checkbox" id="filter-free-parking">
-          <span>Gratis parkering</span>
-        </label>
-        <label class="filter-row">
-          <input type="checkbox" id="filter-paid-parking">
-          <span>Betalt parkering</span>
-        </label>
-        <label class="filter-row">
-          <input type="checkbox" id="filter-dogs-allowed">
-          <span>Hunder tillatt</span>
-        </label>
-        <label class="filter-row">
-          <input type="checkbox" id="filter-dogs-leash">
-          <span>Hunder på skrud</span>
-        </label>
-
-        <div class="age-filter">
-          <label>Alikn. alder: 
-            <input type="number" id="filter-age-min" min="0" max="18" value="0" style="width:50px;">
-            <span>–</span>
-            <input type="number" id="filter-age-max" min="0" max="18" value="18" style="width:50px;">
-          </label>
-        </div>
-
-        <label class="filter-row">
-          <select id="filter-equipment">
-            <option value="">Apparat</option>
-            <option value="Rutschbane">Rutschbane</option>
-            <option value="Vippe">Vippe</option>
-            <option value="Gynge">Gynge</option>
-            <option value="Hoppeslott">Hoppeslott</option>
-            <option value="Sandkasse">Sandkasse</option>
-            <option value="Klatrestativ">Klatrestativ</option>
-            <option value="Labyrint">Labyrint</option>
-            <option value="Trosse">Trosse</option>
-            <option value="Karussell">Karussell</option>
-            <option value="Ballbane">Ballbane</option>
-            <option value="Sikringshus">Sikringshus</option>
-            <option value="Vannleke">Vannleke</option>
-            <option value="Trampolin">Trampolin</option>
-          </select>
-        </label>
-
-        <label class="filter-row">
-          <input type="range" id="filter-rating" min="0" max="5" step="0.5" value="0">
-          <span>Rating: min <span id="rating-value">0</span>★</span>
-        </label>
-
-        <label class="filter-row">
-          <select id="filter-source">
-            <option value="alle">Alle kilder</option>
-            <option value="osm">OSM</option>
-            <option value="geonorge">Geonorge</option>
-            <option value="municipality">Kommune</option>
-            <option value="user">Bruker</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="results-section">
-        <h2>Resultater (<span id="result-count">0</span>)</h2>
-        <div id="playground-list" class="playground-list"></div>
-      </div>
-    </aside>
-
-    <div class="map-wrap">
-      <div id="map"></div>
-    </div>
+  <div class="map-container">
+    <div id="map"></div>
+    
+    <!-- Top right overlay buttons -->
+    <button id="locate-btn" class="overlay-btn" title="Gå til min lokasjon" aria-label="Gå til min lokasjon">📍</button>
+    <button id="geonorge-toggle" class="overlay-btn" title="Vis/Gem Geonorge WMS" aria-label="Vis/Gem Geonorge WMS">🗺️</button>
+    <button id="sidebar-toggle" class="overlay-btn" title="Vis/skjul filter" aria-label="Vis/skjul filter">⚙️</button>
   </div>
 
+  <!-- Sidebar for filters and results -->
+  <aside class="sidebar" id="sidebar">
+    <button id="detail-close" class="detail-close" aria-label="Lukk">&times;</button>
+    
+    <div class="search-block">
+      <input id="search-input" type="text" placeholder="Søk navn, by, apparat…" autocomplete="off" aria-label="Søk lekeplasser">
+      <button id="search-clear" class="clear-btn" title="Tøm søk" aria-label="Tøm søk">×</button>
+    </div>
+
+    <div class="filter-group">
+      <h2>Filter</h2>
+
+      <label class="filter-row">
+        <input type="checkbox" id="filter-fenced">
+        <span>Inngjerdet</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" id="filter-toilets">
+        <span>Toalett</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" id="filter-free-parking">
+        <span>Gratis parkering</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" id="filter-paid-parking">
+        <span>Betalt parkering</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" id="filter-dogs-allowed">
+        <span>Hunder tillatt</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" id="filter-dogs-leash">
+        <span>Hunder på skrud</span>
+      </label>
+
+      <div class="age-filter">
+        <label>Alikn. alder: 
+          <input type="number" id="filter-age-min" min="0" max="18" value="0" style="width:50px;">
+          <span>–</span>
+          <input type="number" id="filter-age-max" min="0" max="18" value="18" style="width:50px;">
+        </label>
+      </div>
+
+      <label class="filter-row">
+        <select id="filter-equipment">
+          <option value="">Apparat</option>
+          <option value="Rutschbane">Rutschbane</option>
+          <option value="Vippe">Vippe</option>
+          <option value="Gynge">Gynge</option>
+          <option value="Hoppeslott">Hoppeslott</option>
+          <option value="Sandkasse">Sandkasse</option>
+          <option value="Klatrestativ">Klatrestativ</option>
+          <option value="Labyrint">Labyrint</option>
+          <option value="Trosse">Trosse</option>
+          <option value="Karussell">Karussell</option>
+          <option value="Ballbane">Ballbane</option>
+          <option value="Sikringshus">Sikringshus</option>
+          <option value="Vannleke">Vannleke</option>
+          <option value="Trampolin">Trampolin</option>
+        </select>
+      </label>
+
+      <label class="filter-row">
+        <input type="range" id="filter-rating" min="0" max="5" step="0.5" value="0">
+        <span>Rating: min <span id="rating-value">0</span>★</span>
+      </label>
+
+      <label class="filter-row">
+        <select id="filter-source">
+          <option value="alle">Alle kilder</option>
+          <option value="osm">OSM</option>
+          <option value="geonorge">Geonorge</option>
+          <option value="municipality">Kommune</option>
+          <option value="user">Bruker</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="results-section">
+      <h2>Resultater (<span id="result-count">0</span>)</h2>
+      <div id="playground-list" class="playground-list"></div>
+    </div>
+  </aside>
+
+  <!-- Detail modal -->
   <div id="detail-modal" class="detail-modal" style="display: none;">
     <div class="detail-card">
       <button id="detail-close" class="detail-close" aria-label="Lukk">×</button>
