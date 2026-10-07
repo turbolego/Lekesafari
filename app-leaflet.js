@@ -185,8 +185,8 @@ function loadFromViewport() {
     console.warn('Static load failed:', err);
     state.playgrounds = [...seed];
     state.isLoading = false;
-    syncMapMarkers();
     renderPlaygroundList();
+    syncMapMarkers();
     // Re-run search if user typed before data loaded
     if (state.searchTerm) {
       renderPlaygroundList();
