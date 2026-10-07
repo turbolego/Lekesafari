@@ -187,6 +187,11 @@ function loadFromViewport() {
     state.isLoading = false;
     syncMapMarkers();
     renderPlaygroundList();
+    // Re-run search if user typed before data loaded
+    if (state.searchTerm) {
+      renderPlaygroundList();
+      syncMapMarkers();
+    }
   });
 }
 
