@@ -154,17 +154,32 @@ function loadFromViewport() {
         state.isLoading = false;
         syncMapMarkers();
         renderPlaygroundList();
+        // Re-run search if user typed before data loaded
+        if (state.searchTerm) {
+          renderPlaygroundList();
+          syncMapMarkers();
+        }
       }).catch(err => {
         state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
         state.isLoading = false;
         syncMapMarkers();
         renderPlaygroundList();
+        // Re-run search if user typed before data loaded
+        if (state.searchTerm) {
+          renderPlaygroundList();
+          syncMapMarkers();
+        }
       });
     } else {
       state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
       state.isLoading = false;
       syncMapMarkers();
       renderPlaygroundList();
+      // Re-run search if user typed before data loaded
+      if (state.searchTerm) {
+        renderPlaygroundList();
+        syncMapMarkers();
+      }
     }
   }).catch(err => {
     console.warn('Static load failed:', err);
