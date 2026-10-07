@@ -637,4 +637,11 @@ html, body, .app-shell, .map-wrap { height: 100%; margin: 0; }
   max-height: 90%;
   overflow: auto;
 }
+
+/* Zoom controls - bottom right */
+.leaflet-control-zoom {
+  right: 10px !important;
+  bottom: 10px !important;
+  left: auto !important;
+  top: auto !important;
 }
