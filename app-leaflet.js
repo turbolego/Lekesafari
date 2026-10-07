@@ -152,8 +152,8 @@ function loadFromViewport() {
         state.sourceErrors = errors || [];
         state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
         state.isLoading = false;
-        syncMapMarkers();
         renderPlaygroundList();
+        syncMapMarkers();
         // Re-run search if user typed before data loaded
         if (state.searchTerm) {
           renderPlaygroundList();
@@ -162,8 +162,8 @@ function loadFromViewport() {
       }).catch(err => {
         state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
         state.isLoading = false;
-        syncMapMarkers();
         renderPlaygroundList();
+        syncMapMarkers();
         // Re-run search if user typed before data loaded
         if (state.searchTerm) {
           renderPlaygroundList();
@@ -173,8 +173,8 @@ function loadFromViewport() {
     } else {
       state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
       state.isLoading = false;
-      syncMapMarkers();
       renderPlaygroundList();
+      syncMapMarkers();
       // Re-run search if user typed before data loaded
       if (state.searchTerm) {
         renderPlaygroundList();
