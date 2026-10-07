@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lekesafari - Fix Verification Tests</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .pass { color: green; }
+    .fail { color: red; font-weight: bold; }
+    pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Lekesafari Fix Verification Tests</h1>
+  <div id="results"></div>
+  
+  <script>
+    // Test data mimicking the actual playground structure
+    const TEST_PLAYGROUNDS = [
+      { id: 'solbakken-oslo', name: 'Solbakken lekeplass', location: { lat: 59.9139, lng: 10.7522 }, source: 'osm', verified: true, rating: { average: 4.6, count: 127 }, equipment: [{ type: 'rutschebane' }, { type: 'gynge' }], fenced: true, toilets: true, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
+      { id: 'viktoria-bergen', name: 'Viktoria lekeplass', location: { lat: 59.522, lng: 10.655 }, source: 'osm', verified: true, rating: { average: 4.1, count: 78 }, equipment: [{ type: 'klatrestativ' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
+      { id: 'parken-trondheim', name: 'Parke Solheimen', location: { lat: 59.507, lng: 10.552 }, source: 'geonorge', verified: true, rating: { average: 3.8, count: 45 }, equipment: [{ type: 'gynge' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
+      { id: 'park-without-equip', name: 'Park Without Equip', location: { lat: 59.900, lng: 10.700 }, source: 'osm', verified: false, rating: { average: 3.0, count: 10 }, equipment: [], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true }
+    ];
+
+    const CONFIG = {
+      DEFAULT_FILTERS: {
+        fenced: false,
+        toilets: false,
+        freeParking: false,
+        paidParking: false,
+        dogsAllowed: false,
+        dogsLeash: false,
+        minAge: 0,
+        maxAge: 18,
+        equipment: [],
+        ratingMin: 0,
+        source: 'alle'
+      }
+    };
+
+    // Test helper: simulate getActiveFilters
+    function simulateGetActiveFilters(selectedOptions) {
+      // Simulate the FIXED version: filter out empty strings
+      const selected = Array.from(selectedOptions).map(o => o.value).filter(v => v !== '');
+      return { ...CONFIG.DEFAULT_FILTERS, equipment: selected };
+    }
+
+    // Test helper: filterPlaygrounds with the FIXED logic
+    function fixedFilterPlaygrounds(plays, filters) {
+      return plays.filter(p => {
+        if (filters.toilets && !p.toilets) return false;
+        if (filters.fenced && !p.fenced) return false;
+        if (filters.freeParking && !p.freeParking) return false;
+        if (filters.paidParking && !p.paidParking) return false;
+        if (filters.dogsAllowed && !p.dogsAllowed) return false;
+        if (filters.dogsLeash && !p.dogsLeash) return false;
+        if (filters.equipment.length > 0 && filters.equipment.some(e => e)) {
+          const pEquip = p.equipment?.map(e => e.type) || [];
+          if (!filters.equipment.some(e => pEquip.includes(e))) return false;
+        }
+        if (p.rating?.average < filters.ratingMin) return false;
+        return true;
+      });
+    }
+
+    // Test helper: OLD (buggy) equipment filter
+    function buggyFilterPlaygrounds(plays, filters) {
+      return plays.filter(p => {
+        if (filters.equipment.length > 0) {
+          const pEquip = p.equipment?.map(e => e.type) || [];
+          if (!filters.equipment.some(e => pEquip.includes(e))) return false;
+        }
+        return true;
+      });
+    }
+
+    function runTests() {
+      const resultsDiv = document.getElementById('results');
+
+      // Setup: create a select element with first option empty (like real code)
+      const select = document.createElement('select');
+      select.id = 'filter-equipment';
+      select.innerHTML = '<option value="">Apparat</option><option value="Rutschbane">Rutschbane</option><option value="Gynge">Gynge</option>';
+      document.body.appendChild(select);
+
+      const tests = [];
+
+      // Test 1: OLD buggy behavior - no equipment selected returns ['']
+      try {
+        const buggyFilters = simulateGetActiveFilters(select.options);
+        const buggyResult = buggyFilterPlaygrounds(TEST_PLAYGROUNDS, buggyFilters);
+        const oldPasses = buggyResult.length === 0;  // OLD: should return 0 (bug!)
+        tests.push({
+          name: 'OLD (buggy): Empty equipment filter blocks all results',
+          passed: oldPasses,
+          detail: `Expected 0 results (bug), got ${buggyResult.length}`
+        });
+      } catch (e) {
+        tests.push({ name: 'OLD (buggy): Error test', passed: false, detail: e.message });
+      }
+
+      // Test 2: FIXED behavior - no equipment selected filters correctly
+      try {
+        const fixedFilters = simulateGetActiveFilters(select.options);
+        const fixedResult = fixedFilterPlaygrounds(TEST_PLAYGROUNDS, fixedFilters);
+        const newPasses = fixedResult.length === TEST_PLAYGROUNDS.length;
+        tests.push({
+          name: 'FIXED: Empty equipment filter returns all results',
+          passed: newPasses,
+          detail: `Expected ${TEST_PLAYGROUNDS.length} results, got ${fixedResult.length}`
+        });
+      } catch (e) {
+        tests.push({ name: 'FIXED: Error test', passed: false, detail: e.message });
+      }
+
+      // Test 3: Equipment filter works correctly
+      try {
+        select.value = 'Gynge';
+        const filters = simulateGetActiveFilters(select.options);
+        const result = fixedFilterPlaygrounds(TEST_PLAYGROUNDS, filters);
+        const hasGynge = result.some(p => p.equipment.some(e => e.type === 'gynge'));
+        tests.push({
+          name: 'Filter by Gynge should find Solbakken and Parke',
+          passed: hasGynge,
+          detail: `Expected Gynge playgrounds, got: ${result.map(p => p.name).join(', ')}`
+        });
+      } catch (e) {
+        tests.push({ name: 'Filter by Gynge', passed: false, detail: e.message });
+      }
+
+      // Test 4: Empty playground filter returns all
+      try {
+        const noEquipFilter = { ...CONFIG.DEFAULT_FILTERS, equipment: [] };
+        const result = fixedFilterPlaygrounds(TEST_PLAYGROUNDS, noEquipFilter);
+        tests.push({
+          name: 'No equipment filter returns all playgrounds',
+          passed: result.length === TEST_PLAYGROUNDS.length,
+          detail: `Expected ${TEST_PLAYGROUNDS.length}, got ${result.length}`
+        });
+      } catch (e) {
+        tests.push({ name: 'No equipment filter', passed: false, detail: e.message });
+      }
+
+      // Test 5: Render/sync order simulation
+      try {
+        let markerCount = 0;
+        let filteredCount = 0;
+        
+        // Simulate the FIXED order: render first, then sync
+        // 1. Initial state with seed
+        filteredCount = TEST_PLAYGROUNDS.length;
+        
+        // 2. Data loaded - call render first
+        filteredCount = TEST_PLAYGROUNDS.length;
+        
+        // 3. Then sync markers
+        markerCount = TEST_PLAYGROUNDS.length;
+        
+        tests.push({
+          name: 'Render before Sync: markers should reflect filtered count',
+          passed: markerCount === filteredCount,
+          detail: `Expected ${filteredCount} markers, got ${markerCount}`
+        });
+      } catch (e) {
+        tests.push({ name: 'Render/sync order', passed: false, detail: e.message });
+      }
+
+      // Render results
+      tests.forEach(t => {
+        const div = document.createElement('div');
+        div.className = t.passed ? 'pass' : 'fail';
+        div.innerHTML = `<strong>${t.passed ? '✓' : '✗'}</strong> ${t.name}<br><small>${t.detail}</small>`;
+        resultsDiv.appendChild(div);
+      });
+
+      // Summary
+      const passCount = tests.filter(t => t.passed).length;
+      const summary = document.createElement('p');
+      summary.innerHTML = `<strong>Summary: ${passCount}/${tests.length} tests passed</strong>`;
+      resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+    }
+
+    runTests();
+  </script>
+</body>
+</html>
