@@ -282,6 +282,19 @@ function openDetail(p) {
 // Uses Leaflet's built-in L.popup per the docs:
 // https://leafletjs.com/reference.html#popup
 // -------------------------------------------------------------
+function getOsmUrl(p) {
+  // Find the OSM node/way URL from the sources array
+  if (!p.sources || !Array.isArray(p.sources)) return null;
+  const osmSource = p.sources.find(s => s.type === 'osm');
+  if (!osmSource || !osmSource.id) return null;
+  // osmSource.id format is like "node/123456" or "way/123456"
+  const [type, id] = osmSource.id.split('/');
+  if (id) {
+    return `https://www.openstreetmap.org/${type}/${id}`;
+  }
+  return null;
+}
+
 function buildPopupContent(p) {
   const src = p.source || 'osm';
   const ratingLine = p.rating?.count
@@ -296,6 +309,16 @@ function buildPopupContent(p) {
     ? '<span class="verified-badge">✓ Verifisert</span>'
     : '';
 
+  // Only show images for OSM sources (remove hallucinated images from other sources)
+  const imagesHtml = (p.source === 'osm' && p.images?.length)
+    ? p.images.map(img => `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">`).join('')
+    : '';
+
+  const osmUrl = getOsmUrl(p);
+  const osmLink = osmUrl
+    ? `<a href="${osmUrl}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:0.5rem;font-size:0.75rem;color:#1a73e8;">Vis på OpenStreetMap →</a>`
+    : '';
+
   return `
     <div style="font-weight:600;font-size:1rem;margin-bottom:0.3rem;">${p.name}</div>
     <div style="font-size:0.85rem;color:#666;margin-bottom:0.3rem;">
@@ -307,9 +330,8 @@ function buildPopupContent(p) {
     <div style="font-size:0.75rem;color:#777;margin-top:0.3rem;">
       ${eqNames}
     </div>
-    ${p.images?.length
-      ? p.images.map(img => `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">`).join('')
-      : ''}
+    ${imagesHtml}
+    ${osmLink}
   `;
 }
 
