@@ -102,6 +102,7 @@ let state = {
   lastView: null,
   filteredPlaygrounds: [],
   searchTerm: '',
+  markerLookup: new Map(),  // id -> marker
 };
 
 // -------------------------------------------------------------
@@ -209,8 +210,9 @@ function getMarkerColor(source) {
 }
 
 function syncMapMarkers() {
-  // Clear existing markers
+  // Clear existing markers and lookup
   playgroundLayer.clearLayers();
+  state.markerLookup.clear();
 
   // Use the filtered list of playgrounds (respecting source filter)
   const list = state.filteredPlaygrounds && state.filteredPlaygrounds.length ? state.filteredPlaygrounds : state.playgrounds;
@@ -226,6 +228,7 @@ function syncMapMarkers() {
 
     marker.on('click', () => openPopup(p, marker));
     playgroundLayer.addLayer(marker);
+    state.markerLookup.set(p.id, marker);
   });
 }
 
@@ -305,7 +308,7 @@ function buildPopupContent(p) {
       ${eqNames}
     </div>
     ${p.images?.length
-      ? p.images.map(img => `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;">`).join('')
+      ? p.images.map(img => `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">`).join('')
       : ''}
   `;
 }
@@ -354,7 +357,16 @@ function renderPlaygroundList() {
     item.className = 'playground-item';
     item.style.cssText = 'cursor:pointer;border-bottom:1px solid #eee;padding:0.75rem;';
     item.dataset.id = p.id;
-    item.addEventListener('click', () => openDetail(p));
+    item.addEventListener('click', () => {
+      // Find the marker for this playground and open its popup on the map
+      const marker = state.markerLookup.get(p.id);
+      if (marker) {
+        const popupContent = buildPopupContent(p);
+        marker.bindPopup(popupContent).openPopup();
+        // Pan map to show the popup
+        map.setView(marker.getLatLng(), map.getZoom(), { animate: true });
+      }
+    });
 
     const nameDiv = document.createElement('div');
     nameDiv.style.cssText = 'font-weight:500;margin-bottom:0.25rem;';
@@ -423,7 +435,7 @@ function filterPlaygrounds(plays, filters) {
     if (p.minAge !== undefined && p.minAge > filters.minAge) return false;
     if (p.maxAge !== undefined && p.maxAge < filters.maxAge) return false;
     if (filters.equipment.length > 0 && filters.equipment.some(e => e)) {
-      const pEquip = p.equipment?.map(e => e.type) || [];
+      const pEquip = p.equipment?.map(e => e.name) || [];
       if (!filters.equipment.some(e => pEquip.includes(e))) return false;
     }
     if (p.rating?.average < filters.ratingMin) return false;

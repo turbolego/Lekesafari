@@ -17,9 +17,9 @@
   <script>
     // Test data mimicking the actual playground structure
     const TEST_PLAYGROUNDS = [
-      { id: 'solbakken-oslo', name: 'Solbakken lekeplass', location: { lat: 59.9139, lng: 10.7522 }, source: 'osm', verified: true, rating: { average: 4.6, count: 127 }, equipment: [{ type: 'rutschebane' }, { type: 'gynge' }], fenced: true, toilets: true, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
-      { id: 'viktoria-bergen', name: 'Viktoria lekeplass', location: { lat: 59.522, lng: 10.655 }, source: 'osm', verified: true, rating: { average: 4.1, count: 78 }, equipment: [{ type: 'klatrestativ' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
-      { id: 'parken-trondheim', name: 'Parke Solheimen', location: { lat: 59.507, lng: 10.552 }, source: 'geonorge', verified: true, rating: { average: 3.8, count: 45 }, equipment: [{ type: 'gynge' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
+      { id: 'solbakken-oslo', name: 'Solbakken lekeplass', location: { lat: 59.9139, lng: 10.7522 }, source: 'osm', verified: true, rating: { average: 4.6, count: 127 }, equipment: [{ type: 'rutschebane', name: 'Rutschbane' }, { type: 'gynge', name: 'Gynge' }], fenced: true, toilets: true, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true, images: [{ url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', alt: 'Rutschbane' }, { url: 'https://images.unsplash.com/photo-1559216906-91e0cb497085?w=400', alt: 'Gynge' }] },
+      { id: 'viktoria-bergen', name: 'Viktoria lekeplass', location: { lat: 59.522, lng: 10.655 }, source: 'osm', verified: true, rating: { average: 4.1, count: 78 }, equipment: [{ type: 'klatrestativ', name: 'Klatrestativ' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
+      { id: 'parken-trondheim', name: 'Parke Solheimen', location: { lat: 59.507, lng: 10.552 }, source: 'geonorge', verified: true, rating: { average: 3.8, count: 45 }, equipment: [{ type: 'gynge', name: 'Gynge' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
       { id: 'park-without-equip', name: 'Park Without Equip', location: { lat: 59.900, lng: 10.700 }, source: 'osm', verified: false, rating: { average: 3.0, count: 10 }, equipment: [], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true }
     ];
 
@@ -56,7 +56,7 @@
         if (filters.dogsAllowed && !p.dogsAllowed) return false;
         if (filters.dogsLeash && !p.dogsLeash) return false;
         if (filters.equipment.length > 0 && filters.equipment.some(e => e)) {
-          const pEquip = p.equipment?.map(e => e.type) || [];
+          const pEquip = p.equipment?.map(e => e.name) || [];  // FIXED: use e.name not e.type
           if (!filters.equipment.some(e => pEquip.includes(e))) return false;
         }
         if (p.rating?.average < filters.ratingMin) return false;
@@ -114,14 +114,15 @@
         tests.push({ name: 'FIXED: Error test', passed: false, detail: e.message });
       }
 
-      // Test 3: Equipment filter works correctly
+      // Test 3: Equipment filter works correctly (casing fix)
       try {
         select.value = 'Gynge';
         const filters = simulateGetActiveFilters(select.options);
         const result = fixedFilterPlaygrounds(TEST_PLAYGROUNDS, filters);
-        const hasGynge = result.some(p => p.equipment.some(e => e.type === 'gynge'));
+        // FIXED: Now matches by e.name (capitalized) not e.type (lowercase)
+        const hasGynge = result.some(p => p.equipment.some(e => e.name === 'Gynge'));
         tests.push({
-          name: 'Filter by Gynge should find Solbakken and Parke',
+          name: 'Filter by Gynge should find playgrounds (case matches)',
           passed: hasGynge,
           detail: `Expected Gynge playgrounds, got: ${result.map(p => p.name).join(', ')}`
         });
