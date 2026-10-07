@@ -399,7 +399,7 @@ function getActiveFilters() {
   if (!isNaN(maxAge)) filters.maxAge = maxAge;
 
   const eqSelect = document.getElementById('filter-equipment');
-  const selected = Array.from(eqSelect.selectedOptions).map(o => o.value);
+  const selected = Array.from(eqSelect.selectedOptions).map(o => o.value).filter(v => v !== '');
   filters.equipment = selected;
 
   const ratingMin = parseInt(document.getElementById('filter-rating').value);
@@ -422,7 +422,7 @@ function filterPlaygrounds(plays, filters) {
     if (filters.dogsLeash && !p.dogsLeash) return false;
     if (p.minAge !== undefined && p.minAge > filters.minAge) return false;
     if (p.maxAge !== undefined && p.maxAge < filters.maxAge) return false;
-    if (filters.equipment.length > 0) {
+    if (filters.equipment.length > 0 && filters.equipment.some(e => e)) {
       const pEquip = p.equipment?.map(e => e.type) || [];
       if (!filters.equipment.some(e => pEquip.includes(e))) return false;
     }

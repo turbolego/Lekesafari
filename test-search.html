@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lekesafari Search Tests</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .pass { color: green; }
+    .fail { color: red; font-weight: bold; }
+    pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Lekesafari Search Functionality Tests</h1>
+  <div id="results"></div>
+  
+  <script>
+    // Test data
+    const PLAYGROUNDS = [
+      { id: 'solbakken-oslo', name: 'Solbakken lekeplass', location: { lat: 59.9139, lng: 10.7522 }, source: 'osm', verified: true, rating: { average: 4.6, count: 127 }, equipment: [{ type: 'Rutschbane' }, { type: 'Gynge' }], fenced: true, toilets: true, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
+      { id: 'viktoria-bergen', name: 'Viktoria lekeplass', location: { lat: 59.522, lng: 10.655 }, source: 'osm', verified: true, rating: { average: 4.1, count: 78 }, equipment: [{ type: 'Klatrestativ' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true },
+      { id: 'parken-trondheim', name: 'Parke Solheimen', location: { lat: 59.507, lng: 10.552 }, source: 'geonorge', verified: true, rating: { average: 3.8, count: 45 }, equipment: [{ type: 'Gynge' }], fenced: true, toilets: false, freeParking: true, paidParking: false, dogsAllowed: true, dogsLeash: true }
+    ];
+
+    const CONFIG = {
+      DEFAULT_FILTERS: {
+        source: 'alle',
+        fenced: false,
+        toilets: false,
+        freeParking: false,
+        paidParking: false,
+        dogsAllowed: false,
+        dogsLeash: false,
+        minAge: 0,
+        maxAge: 18,
+        equipment: [],
+        ratingMin: 0
+      }
+    };
+
+    // Current (buggy) implementation
+    function getActiveFiltersBuggy() {
+      const filters = { ...CONFIG.DEFAULT_FILTERS };
+      const selected = Array.from(document.getElementById('filter-equipment').selectedOptions).map(o => o.value);
+      filters.equipment = selected;
+      return filters;
+    }
+
+    // Fixed implementation
+    function getActiveFiltersFixed() {
+      const filters = { ...CONFIG.DEFAULT_FILTERS };
+      const selected = Array.from(document.getElementById('filter-equipment').selectedOptions).map(o => o.value).filter(v => v !== '');
+      filters.equipment = selected;
+      return filters;
+    }
+
+    function filterPlaygrounds(plays, filters) {
+      return plays.filter(p => {
+        if (filters.source !== 'alle' && p.source !== filters.source) return false;
+        if (filters.toilets && !p.toilets) return false;
+        if (filters.fenced && !p.fenced) return false;
+        if (filters.freeParking && !p.freeParking) return false;
+        if (filters.paidParking && !p.paidParking) return false;
+        if (filters.dogsAllowed && !p.dogsAllowed) return false;
+        if (filters.dogsLeash && !p.dogsLeash) return false;
+        if (p.minAge !== undefined && p.minAge > filters.minAge) return false;
+        if (p.maxAge !== undefined && p.maxAge < filters.maxAge) return false;
+        if (filters.equipment.length > 0) {
+          const pEquip = p.equipment?.map(e => e.type) || [];
+          if (!filters.equipment.some(e => pEquip.includes(e))) return false;
+        }
+        if (p.rating?.average < filters.ratingMin) return false;
+        return true;
+      });
+    }
+
+    // Test functions
+    function runTests() {
+      const resultsDiv = document.getElementById('results');
+      
+      // Setup: create a select element with first option empty
+      const select = document.createElement('select');
+      select.id = 'filter-equipment';
+      select.innerHTML = '<option value="">Apparat</option><option value="Rutschbane">Rutschbane</option><option value="Gynge">Gynge</option>';
+      document.body.appendChild(select);
+
+      const tests = [];
+
+      // Test 1: Search "solbakken" with no equipment filter selected (buggy)
+      try {
+        const filters = getActiveFiltersBuggy();
+        const filtered = filterPlaygrounds(PLAYGROUNDS, filters);
+        const hasSolbakken = filtered.some(p => p.name.includes('Solbakken'));
+        tests.push({
+          name: 'Search "solbakken" - BUGGY filter with empty selection',
+          passed: hasSolbakken,
+          detail: `Expected Solbakken in results, got ${filtered.length} playgrounds`
+        });
+      } catch (e) {
+        tests.push({ name: 'Search "solbakken" - BUGGY', passed: false, detail: e.message });
+      }
+
+      // Test 2: Search "solbakken" with no equipment filter selected (fixed)
+      try {
+        const filters = getActiveFiltersFixed();
+        const filtered = filterPlaygrounds(PLAYGROUNDS, filters);
+        const hasSolbakken = filtered.some(p => p.name.includes('Solbakken'));
+        tests.push({
+          name: 'Search "solbakken" - FIXED filter with empty selection',
+          passed: hasSolbakken,
+          detail: `Expected Solbakken in results, got ${filtered.length} playgrounds`
+        });
+      } catch (e) {
+        tests.push({ name: 'Search "solbakken" - FIXED', passed: false, detail: e.message });
+      }
+
+      // Test 3: Search with equipment filter selected
+      try {
+        select.value = 'Rutschbane';
+        const filters = getActiveFiltersFixed();
+        const filtered = filterPlaygrounds(PLAYGROUNDS, filters);
+        const hasRutschbane = filtered.some(p => p.equipment.some(e => e.type === 'Rutschbane'));
+        const hasSolbakken = filtered.some(p => p.name.includes('Solbakken'));
+        tests.push({
+          name: 'Filter by "Rutschbane" - should find Solbakken (has slide)',
+          passed: hasRutschbane && hasSolbakken,
+          detail: `Got ${filtered.length} results: ${filtered.map(p => p.name).join(', ')}`
+        });
+      } catch (e) {
+        tests.push({ name: 'Filter by "Rutschbane"', passed: false, detail: e.message });
+      }
+
+      // Test 4: Name-based search filtering
+      try {
+        const searchTerm = 'solbakken';
+        const filters = getActiveFiltersFixed();
+        let filtered = filterPlaygrounds(PLAYGROUNDS, filters);
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(searchTerm) ||
+          (p.location && (String(p.location.lat).includes(searchTerm) || String(p.location.lng).includes(searchTerm)))
+        );
+        const hasSolbakken = filtered.some(p => p.name.includes('Solbakken'));
+        tests.push({
+          name: 'Name-based search for "solbakken"',
+          passed: hasSolbakken,
+          detail: `Expected Solbakken, got ${filtered.length} results`
+        });
+      } catch (e) {
+        tests.push({ name: 'Name-based search', passed: false, detail: e.message });
+      }
+
+      // Render results
+      tests.forEach(t => {
+        const div = document.createElement('div');
+        div.className = t.passed ? 'pass' : 'fail';
+        div.innerHTML = `<strong>${t.passed ? '✓' : '✗'}</strong> ${t.name}<br><small>${t.detail}</small>`;
+        resultsDiv.appendChild(div);
+      });
+
+      // Summary
+      const passCount = tests.filter(t => t.passed).length;
+      const summary = document.createElement('p');
+      summary.innerHTML = `<strong>Summary: ${passCount}/${tests.length} tests passed</strong>`;
+      resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+    }
+
+    runTests();
+  </script>
+</body>
+</html>
