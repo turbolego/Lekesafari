@@ -75,12 +75,7 @@
         "source": "osm",
         "verified": true,
         "lastVerified": "2026-10-01",
-        "images": [
-          {
-            "url": "https://images.unsplash.com/photo-1563720204-4e698b3ee0e7?w=400",
-            "alt": "Lekeplass"
-          }
-        ],
+        "images": [],
         "age": {
           "min": 1,
           "max": 18
@@ -151,16 +146,7 @@
         "source": "user",
         "verified": true,
         "lastVerified": "2026-10-02",
-        "images": [
-          {
-            "url": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=400",
-            "alt": "Karussell"
-          },
-          {
-            "url": "https://images.unsplash.com/photo-1514745387537-5ea5b711ab42?w=400",
-            "alt": "Lekeplass"
-          }
-        ],
+        "images": [],
         "age": {
           "min": 5,
           "max": 14
@@ -349,12 +335,7 @@
         "source": "geonorge",
         "verified": true,
         "lastVerified": "2026-09-28",
-        "images": [
-          {
-            "url": "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
-            "alt": "Lekeplass"
-          }
-        ],
+        "images": [],
         "age": {
           "min": 3,
           "max": 14
@@ -27555,12 +27536,7 @@
         "name": "Utkjent lekeplass",
         "source": "osm",
         "sourceId": "node/4276518763",
-        "images": [
-          {
-            "url": "https://photos.app.goo.gl/N9NRzwFBzHH1hZidA",
-            "alt": "Lekeplass"
-          }
-        ],
+        "images": [],
         "age": {
           "min": 0,
           "max": 16
@@ -83117,12 +83093,7 @@
         "source": "geonorge",
         "verified": true,
         "lastVerified": "2026-09-15",
-        "images": [
-          {
-            "url": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
-            "alt": "Lekeplass"
-          }
-        ],
+        "images": [],
         "age": {
           "min": 3,
           "max": 15
@@ -83182,16 +83153,7 @@
         "source": "osm",
         "verified": true,
         "lastVerified": "2026-10-04",
-        "images": [
-          {
-            "url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-            "alt": "Rutschbane"
-          },
-          {
-            "url": "https://images.unsplash.com/photo-1559216906-91e0cb497085?w=400",
-            "alt": "Gynge"
-          }
-        ],
+        "images": [],
         "age": {
           "min": 2,
           "max": 12
@@ -83236,7 +83198,7 @@
         "sources": [
           {
             "type": "osm",
-            "id": "way/12345678",
+            "id": "node/6242019156",
             "retrievedAt": "2026-10-04"
           },
           {
