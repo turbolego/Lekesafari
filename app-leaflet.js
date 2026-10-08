@@ -142,58 +142,55 @@ function loadFromViewport() {
   state.playgrounds = [...seed];
   renderPlaygroundList();
 
-  // Static GeoJSON is always loaded (same-origin, CORS-safe, 1631 features)
-  // Live data is merged on top at zoom >= 9
-  loadStatic(bounds).then(result => {
-    let playgrounds = result.playgrounds || [];
+  // Static GeoJSON is the PRIMARY source: loaded at ALL zooms, same-origin,
+  // never viewport-filtered so the list/markers never vanish on pan.
+  // Live Overpass only enriches the viewport at zoom >= 9.
+  state.isLoading = true;
+  loadStatic().then(result => {
+    const staticPlaygrounds = result.playgrounds || [];
+    state.staticPlaygrounds = staticPlaygrounds;
+    // Always start from the full static set (never empties).
+    state.playgrounds = staticPlaygrounds;
+    state.sourceErrors = result.error ? [result.error] : [];
+    renderPlaygroundList();
+    syncMapMarkers();
+    reapplySearch();
 
     if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
       loadForViewport(bounds).then(({ playgrounds: live, errors }) => {
-        playgrounds = playgrounds.concat(live);
-        state.sourceErrors = errors || [];
-        state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
+        // Enrich: merge live viewport data over the static baseline.
+        state.playgrounds = mergeWithSeed(staticPlaygrounds.concat(live), seed, bounds);
+        state.sourceErrors = errors || state.sourceErrors;
         state.isLoading = false;
         renderPlaygroundList();
         syncMapMarkers();
-        // Re-run search if user typed before data loaded
-        if (state.searchTerm) {
-          renderPlaygroundList();
-          syncMapMarkers();
-        }
+        reapplySearch();
       }).catch(err => {
-        state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
         state.isLoading = false;
         renderPlaygroundList();
         syncMapMarkers();
-        // Re-run search if user typed before data loaded
-        if (state.searchTerm) {
-          renderPlaygroundList();
-          syncMapMarkers();
-        }
+        console.warn('Live viewport load failed:', err);
       });
     } else {
-      state.playgrounds = mergeWithSeed(playgrounds, seed, bounds);
       state.isLoading = false;
-      renderPlaygroundList();
-      syncMapMarkers();
-      // Re-run search if user typed before data loaded
-      if (state.searchTerm) {
-        renderPlaygroundList();
-        syncMapMarkers();
-      }
     }
   }).catch(err => {
-    console.warn('Static load failed:', err);
-    state.playgrounds = [...seed];
     state.isLoading = false;
+    console.warn('Static load failed:', err);
+    // Fallback: keep whatever the static layer produced (may be []),
+    // so we never show a fully-empty map without surfacing the error.
     renderPlaygroundList();
     syncMapMarkers();
-    // Re-run search if user typed before data loaded
-    if (state.searchTerm) {
-      renderPlaygroundList();
-      syncMapMarkers();
-    }
+    reapplySearch();
   });
+}
+
+// Re-apply current search term + filters after a data refresh
+function reapplySearch() {
+  if (state.searchTerm) {
+    renderPlaygroundList();
+    syncMapMarkers();
+  }
 }
 
 // -------------------------------------------------------------
@@ -235,7 +232,7 @@ function syncMapMarkers() {
 // -------------------------------------------------------------
 // Detail Modal
 // -------------------------------------------------------------
-function openDetail(p) {
+async function openDetail(p) {
   const modal = document.getElementById('detail-modal');
   const content = document.getElementById('detail-content');
 
@@ -251,6 +248,7 @@ function openDetail(p) {
   const verif = p.verified ? '<span class="verified-badge">✓ Verifisert</span>'
     : '<span class="badge-no" style="padding:0.1rem 0.5rem;border-radius:4px;font-size:0.75rem;">Ikke verifisert</span>';
 
+  // Placeholder while images load lazily
   content.innerHTML = `
     <span class="detail-close" aria-label="Lukk">&times;</span>
     <h2 style="font-weight:600;font-size:1.1rem;">${p.name}</h2>
@@ -263,10 +261,21 @@ function openDetail(p) {
     <div style="font-size:0.8rem;color:#777;margin-top:0.3rem;">
       ${eqNames}
     </div>
-    ${p.images?.map(img => `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.5rem;border-radius:4px;">`).join('') || ''}
+    <div id="lazy-images-container"></div>
   `;
 
   modal.style.display = 'block';
+
+  // Lazy-fetch images from imageRefs (only if present in OSM data)
+  const images = await getImagesForPlayground(p);
+  const imagesContainer = document.getElementById('lazy-images-container');
+  if (images.length > 0) {
+    imagesContainer.innerHTML = images.map(img =>
+      `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.5rem;border-radius:4px;" onerror="this.style.display='none'">`
+    ).join('');
+  } else {
+    imagesContainer.innerHTML = '<div style="font-size:0.75rem;color:#999;margin-top:0.5rem;">Ingen bilder tilgjengelig</div>';
+  }
 
   // Close handlers
   modal.querySelector('.detail-close').onclick = () => {
