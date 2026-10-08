@@ -10,8 +10,8 @@ try:
     with open('data/playgrounds_all.geojson', 'r') as f:
         data = json.load(f)
 except FileNotFoundError:
-    print("Error: data/playgrounds_all.geojson not found. Run fetch_playgrounds.py first.")
-    exit(1)
+    print("Warning: data/playgrounds_all.geojson not found. Skipping statistics generation.")
+    exit(0)
 
 # Initialize statistics
 stats = {
