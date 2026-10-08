@@ -45,6 +45,16 @@ const CONFIG = {
 // --- Data Model ---
 // Offline seed data (kvalitetssikre eksempler). Live data comes from
 // sources.js (OSM Overpass, Geonorge) and is merged on top of this.
+// New complete dataset for Norway
+const ALL_PLAYGROUNDS = [];
+
+// Load the complete dataset
+fetch('data/playgrounds_all.geojson')
+  .then(response => response.json())
+  .then(data => {
+    ALL_PLAYGROUNDS = data.features.map(feature => feature.properties);
+  });
+
 const PLAYGROUNDS = [
   {
     id: 'solbakken-oslo',
@@ -926,6 +936,175 @@ function showToast(msg) {
   toastEl.hidden = false;
   setTimeout(() => { toastEl.hidden = true; }, 3000);
 }
+
+// --- Statistics Popup ---
+// Statistics popup component
+function StatisticsPopup({ stats, onClose }) {
+  return (
+    <div className="statistics-popup">
+      <button className="close-button" onClick={onClose}>×</button>
+      <h2>Lekesafari Statistikk</h2>
+
+      <div className="stats-section">
+        <h3>Toppranger</h3>
+        <div className="stat-item">
+          <span>Høyest rating:</span>
+          <span>{stats.highest_rating.name} ({stats.highest_rating.rating})</span>
+        </div>
+        <div className="stat-item">
+          <span>Høyest datakvalitet:</span>
+          <span>{stats.highest_data_quality.name} ({stats.highest_data_quality.score} felt)</span>
+        </div>
+        <div className="stat-item">
+          <span>Sist verifisert:</span>
+          <span>{stats.last_verified.name} ({stats.last_verified.date})</span>
+        </div>
+        <div className="stat-item">
+          <span>Mest verifisert:</span>
+          <span>{stats.most_verified.name} ({stats.most_verified.count} ganger)</span>
+        </div>
+      </div>
+
+      <div className="stats-section">
+        <h3>Kommuner</h3>
+        <ul>
+          {Object.entries(stats.municipality_stats).map(([municipality, count]) => (
+            <li key={municipality}>{municipality}: {count} lekeplasser</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="stats-section">
+        <h3>Utstyr</h3>
+        <ul>
+          {Object.entries(stats.equipment_stats).map(([equipment, count]) => (
+            <li key={equipment}>{equipment}: {count} stk</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="stats-section">
+        <h3>Tilgjengelighet</h3>
+        <div className="stat-item">
+          <span>Rullestoltilgjengelig:</span>
+          <span>{stats.accessibility_stats.wheelchair}</span>
+        </div>
+        <div className="stat-item">
+          <span>Barnestoltilgjengelig:</span>
+          <span>{stats.accessibility_stats.stroller}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- App State ---
+const [showStatistics, setShowStatistics] = useState(false);
+const [playgroundStats, setPlaygroundStats] = useState(null);
+
+// Load statistics
+useEffect(() => {
+  fetch('data/playground_stats.json')
+    .then(response => response.json())
+    .then(data => setPlaygroundStats(data));
+}, []);
+
+// --- Render ---
+{showStatistics && playgroundStats && (
+  <StatisticsPopup stats={playgroundStats} onClose={() => setShowStatistics(false)} />
+)}
+
+// Add statistics button to the UI
+<button
+  className="stats-button"
+  onClick={() => setShowStatistics(true)}
+>
+  Statistikk
+</button>
+
+// --- Boot ---
+async function main() {
+  initMap();
+  renderPlaygroundList();
+  setupEvents();
+}
+
+main().catch(err => console.error('Lekesafari failed to initialize:', err));
+// Deployed at 2026-10-05T20:11:11+00:00
+        <div className="stat-item">
+          <span>Høyest rating:</span>
+          <span>{stats.highest_rating.name} ({stats.highest_rating.rating})</span>
+        </div>
+        <div className="stat-item">
+          <span>Høyest datakvalitet:</span>
+          <span>{stats.highest_data_quality.name} ({stats.highest_data_quality.score} felt)</span>
+        </div>
+        <div className="stat-item">
+          <span>Sist verifisert:</span>
+          <span>{stats.last_verified.name} ({stats.last_verified.date})</span>
+        </div>
+        <div className="stat-item">
+          <span>Mest verifisert:</span>
+          <span>{stats.most_verified.name} ({stats.most_verified.count} ganger)</span>
+        </div>
+      </div>
+
+      <div className="stats-section">
+        <h3>Kommuner</h3>
+        <ul>
+          {Object.entries(stats.municipality_stats).map(([municipality, count]) => (
+            <li key={municipality}>{municipality}: {count} lekeplasser</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="stats-section">
+        <h3>Utstyr</h3>
+        <ul>
+          {Object.entries(stats.equipment_stats).map(([equipment, count]) => (
+            <li key={equipment}>{equipment}: {count} stk</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="stats-section">
+        <h3>Tilgjengelighet</h3>
+        <div className="stat-item">
+          <span>Rullestoltilgjengelig:</span>
+          <span>{stats.accessibility_stats.wheelchair}</span>
+        </div>
+        <div className="stat-item">
+          <span>Barnestoltilgjengelig:</span>
+          <span>{stats.accessibility_stats.stroller}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- App State ---
+const [showStatistics, setShowStatistics] = useState(false);
+const [playgroundStats, setPlaygroundStats] = useState(null);
+
+// Load statistics
+useEffect(() => {
+  fetch('data/playground_stats.json')
+    .then(response => response.json())
+    .then(data => setPlaygroundStats(data));
+}, []);
+
+// --- Render ---
+{showStatistics && playgroundStats && (
+  <StatisticsPopup stats={playgroundStats} onClose={() => setShowStatistics(false)} />
+)}
+
+// Add statistics button to the UI
+<button
+  className="stats-button"
+  onClick={() => setShowStatistics(true)}
+>
+  Statistikk
+</button>
 
 // --- Boot ---
 async function main() {
