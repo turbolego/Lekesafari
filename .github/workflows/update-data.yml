@@ -70,4 +70,4 @@ jobs:
           fi
           git commit -m "data: regenerate playground GeoJSON ($(date +%Y-%m-%d))"
           # GITHUB_TOKEN is the built-in job token; used only for the commit-back.
-          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" "HEAD:${GITHUB_REF_NAME}"
+          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "HEAD:${{ github.ref_name }}"
