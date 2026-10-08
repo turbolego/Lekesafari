@@ -296,6 +296,7 @@ function normalizePlayground(o) {
     source: o.source,
     sourceId: o.sourceId,
     images: o.images || [],
+    imageRefs: o.imageRefs || [],  // raw OSM image URLs; fetched on-demand for detail modal
     age: o.age || { min: 0, max: 16 },
     opening: o.opening || '',
     equipment: o.equipment || [],
@@ -353,59 +354,45 @@ function mergeSources(results) {
 }
 
 // --- Static baked layer (same-origin, always available) ---
-// data/playgrounds.geojson is served by GitHub Pages same-origin (no CORS),
-// so it never hangs on public-mirror outages. It's the reliable baseline;
-// live OSM + Geonorge layers enrich it on top. Nightly CI bakes fresh OSM
-// into this file (see .github/workflows/update-data.yml).
-async function loadStatic(bounds) {
+// data/playgrounds_all.geojson is served by GitHub Pages same-origin (no CORS),
+// so it never hangs on public-mirror outages. It's the primary baseline —
+// loaded at ALL zooms. Live OSM enriches it only at zoom >= 9.
+// The nightly GitHub Actions workflow (fetch-playgrounds.yml) bakes fresh
+// Norwegian OSM playgrounds into this file.
+async function loadStatic() {
   try {
-    const r = await fetch('data/playgrounds.geojson', { cache: 'no-store' });
+    const r = await fetch('data/playgrounds_all.geojson', { cache: 'no-store' });
     if (!r.ok) return { source: 'static', playgrounds: [], error: `static-${r.status}` };
     const fc = await r.json();
 
-    const [s, n, w, e] = bounds
-      ? [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()]
-      : [undefined, undefined, undefined, undefined];
-    const inView = (lat, lng) =>
-      s === undefined || (lat >= s && lat <= n && lng >= w && lng <= e);
-
-    const normalize = f => {
+    const out = (fc.features || []).map(f => {
       const p = f.properties || {};
       if (!f.geometry || f.geometry.type !== 'Point') return null;
       const [lng, lat] = f.geometry.coordinates;
-      return { lat, lng, rec: normalizePlayground({
+      return normalizePlayground({
         id: p.id,
         name: p.name,
-        lat, lng, // location — normalizePlayground reads these
+        lat, lng,
         source: p.source || 'static',
-        sourceId: p.id,
-        images: p.images,
+        sourceId: p.id || `osm-node-${p.osm_id || ''}`,
+        verified: p.verified,
+        lastVerified: p.lastVerified,
+        images: [],  // images are NOT fetched here; resolved on-demand via getImagesForPlayground()
+        imageRefs: p.images || [],  // keep raw OSM image refs for lazy load
         age: p.age,
-        opening: p.opening,
-        equipment: p.equipment,
-        rating: p.rating,
+        opening: p.opening || '',
+        equipment: p.equipment || [],
+        rating: p.rating || { average: 0, count: 0 },
         accessibility: p.accessibility,
         fenced: p.fenced,
         toilets: p.toilets,
         parking: p.parking,
         dogs: p.dogs,
-        wheelchair: p.accessibility && p.accessibility.wheelchair,
         municipality: p.municipality,
-        verified: p.verified,
-        lastVerified: p.lastVerified || (p.sources && p.sources[0] && p.sources[0].retrievedAt),
-      }) };
-    };
-
-    const features = fc.features || [];
-    // Filter to the current viewport. If the viewport genuinely has no
-    // playgrounds, return empty — live sources will enrich the view.
-    const out = features
-      .map(normalize)
-      .filter(Boolean)
-      .filter(x => inView(x.lat, x.lng))
-      .map(x => x.rec);
-
-    return { source: 'static', playgrounds: out, error: null };
+        sources: p.sources,
+      });
+    });
+    return { source: 'static', playgrounds: out.filter(Boolean), error: null };
   } catch (e) {
     return { source: 'static', playgrounds: [], error: 'static-' + String(e).slice(0, 40) };
   }
@@ -426,4 +413,16 @@ async function loadForViewport(bounds) {
     playgrounds: merged,
     errors: [stat.error, osm.error, geo.error].filter(Boolean),
   };
+}
+
+/**
+ * Fetch images for a playground on-demand.
+ * Records that have image URLs in their raw OSM data get them lazily.
+ * @param {Object} p - Playground record with imageRefs array of {url, alt} objects.
+ * @returns {Promise<Array<{url:string, alt:string}>>}
+ */
+async function getImagesForPlayground(p) {
+  if (!p || !p.imageRefs || !p.imageRefs.length) return p?.images || [];
+  // imageRefs is already {url, alt} from OSM; just filter valid URLs.
+  return p.imageRefs.filter(img => img && img.url);
 }
