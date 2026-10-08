@@ -34,6 +34,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          set -euo pipefail
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add data/playgrounds_all.geojson || true
@@ -42,7 +43,9 @@ jobs:
             exit 0
           fi
           git commit -m "Update all playgrounds data"
-          git push "https://x-access-token:*** secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "HEAD:${{ github.ref_name }}"
+          # Push to the origin remote that actions/checkout already wired with
+          # GITHUB_TOKEN (contents: write). Avoids hand-building a token URL.
+          git push origin "HEAD:${{ github.ref_name }}"
 
       - name: Generate statistics
         run: |
@@ -50,6 +53,7 @@ jobs:
 
       - name: Commit statistics
         run: |
+          set -euo pipefail
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           if [ ! -f data/playground_stats.json ]; then
@@ -62,4 +66,4 @@ jobs:
             exit 0
           fi
           git commit -m "Update playground statistics"
-          git push "https://x-access-token:*** secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "HEAD:${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
