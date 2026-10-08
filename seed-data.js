@@ -1,5 +1,10 @@
 // Lekesafari - Seed playground data
-// This file contains the vetted example playgrounds
+// This file contains the vetted example playgrounds.
+//
+// NOTE: images are intentionally empty in the seed. Real photos come from the
+// OSM-baked layer (data/playgrounds_all.geojson) via each record's `image`
+// tag, which the popup fetches lazily only when a playground is opened. We
+// never hardcode placeholder/hallucinated stock photos here.
 
 const PLAYGROUNDS = [
   {
@@ -9,10 +14,7 @@ const PLAYGROUNDS = [
     source: 'osm',
     verified: true,
     lastVerified: '2026-10-04',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', alt: 'Rutschbane' },
-      { url: 'https://images.unsplash.com/photo-1559216906-91e0cb497085?w=400', alt: 'Gynge' },
-    ],
+    images: [],
     equipment: [
       { type: 'rutschebane', name: 'Rutschbane', count: 3 },
       { type: 'gynge', name: 'Gynge', count: 2 },
@@ -33,9 +35,7 @@ const PLAYGROUNDS = [
     source: 'geonorge',
     verified: true,
     lastVerified: '2026-09-15',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1578662996442-48f581527e9e?w=400', alt: 'Lekeplass' },
-    ],
+    images: [],
     equipment: [
       { type: 'gynge', name: 'Gynge', count: 2 },
       { type: 'sandkasse', name: 'Sandkasse', count: 1 },
