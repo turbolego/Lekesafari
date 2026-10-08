@@ -937,6 +937,8 @@ function showToast(msg) {
   setTimeout(() => { toastEl.hidden = true; }, 3000);
 }
 
+import React, { useState, useEffect } from 'react';
+
 // --- Statistics Popup ---
 // Statistics popup component
 function StatisticsPopup({ stats, onClose }) {
