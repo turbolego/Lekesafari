@@ -37,6 +37,7 @@ const CONFIG = {
     equipment: [],
     ratingMin: 0,
     source: 'alle',
+    hasImage: false,
   },
 };
 
@@ -463,6 +464,7 @@ function filterPlaygrounds(plays, filters) {
     if (filters.paidParking && !p.paidParking) return false;
     if (filters.dogsAllowed && !p.dogsAllowed) return false;
     if (filters.dogsLeash && !p.dogsLeash) return false;
+    if (filters.hasImage && (!p.images || p.images.length === 0)) return false;
     if (p.minAge !== undefined && p.minAge > filters.minAge) return false;
     if (p.maxAge !== undefined && p.maxAge < filters.maxAge) return false;
     if (filters.equipment.length > 0 && filters.equipment.some(e => e)) {
@@ -535,6 +537,15 @@ document.getElementById('filter-rating').addEventListener('input', (e) => {
   document.getElementById('rating-value').textContent = e.target.value;
   loadFromViewport();
 });
+
+// Has-image filter
+const filterHasImage = document.getElementById('filter-has-image');
+if (filterHasImage) {
+  filterHasImage.addEventListener('change', () => {
+    CONFIG.DEFAULT_FILTERS.hasImage = filterHasImage.checked;
+    loadFromViewport();
+  });
+}
 
 // Search clear button
 const searchClear = document.getElementById('search-clear');
