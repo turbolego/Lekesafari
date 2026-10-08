@@ -1,9 +1,17 @@
 import json
 from datetime import datetime
+import os
+
+# Ensure we're in the right directory
+os.chdir(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
 # Load the playgrounds data
-with open('data/playgrounds_all.geojson', 'r') as f:
-    data = json.load(f)
+try:
+    with open('data/playgrounds_all.geojson', 'r') as f:
+        data = json.load(f)
+except FileNotFoundError:
+    print("Error: data/playgrounds_all.geojson not found. Run fetch_playgrounds.py first.")
+    exit(1)
 
 # Initialize statistics
 stats = {
