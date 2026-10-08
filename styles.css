@@ -602,8 +602,8 @@ html, body, .app-shell, .map-wrap { height: 100%; margin: 0; }
 .sidebar {
   position: absolute;
   top: 0;
-  left: -260px; /* hidden off‑screen */
-  width: 260px;
+  left: -280px; /* hidden off‑screen */
+  width: 280px;
   height: 100%;
   background: var(--card-bg);
   overflow-y: auto;
@@ -615,8 +615,8 @@ html, body, .app-shell, .map-wrap { height: 100%; margin: 0; }
 .map-wrap { position: relative; }
 /* Media query for larger screens – sidebar always visible */
 @media (min-width: 800px) {
-  .sidebar { position: static; width: 260px; left: 0; }
-  .map-wrap { margin-left: 260px; }
+  .sidebar { position: static; width: 280px; left: 0; }
+  .map-wrap { margin-left: 280px; }
   .overlay-btn { top: auto; bottom: 10px; }
 }
 
@@ -625,7 +625,7 @@ html, body, .app-shell, .map-wrap { height: 100%; margin: 0; }
 
 /* Responsive */
 @media (max-width: 800px) {
-  .sidebar { width: 260px; }
+  .sidebar { width: 280px; }
   #map { min-height: 250px; }
 /* Modal styling */
 .detail-modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 9999; }

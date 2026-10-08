@@ -41,16 +41,20 @@
     .sidebar {
       position: absolute;
       top: 0;
-      left: -260px;
-      width: 260px;
+      left: -280px;
+      width: 280px;
       height: 100%;
       background: var(--card-bg);
       overflow-y: auto;
       transition: left 0.3s ease;
       z-index: 999;
       box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
     }
     .sidebar.open { left: 0; }
+    .filter-group { overflow-y: auto; flex: 1; }
+    .results-section { overflow-y: auto; flex-shrink: 0; }
     
     /* Zoom controls - bottom right */
     .leaflet-control-zoom {
