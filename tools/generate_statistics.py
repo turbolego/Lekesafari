@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 import os
 
 # Ensure we're in the right directory
@@ -28,6 +27,11 @@ stats = {
     }
 }
 
+# Separate accumulator: {playground_name: number_of_verified_marks}
+verified_counts = {}
+# Also count the number of verified marks per id so duplicate names don't inflate
+verified_by_id = {}
+
 # Process each playground
 for feature in data['features']:
     props = feature['properties']
@@ -54,12 +58,11 @@ for feature in data['features']:
             'date': props['lastVerified']
         }
 
-    # Most verified (assuming verified is a boolean)
+    # Most verified: count records that carry verified=True
     if props.get('verified', False):
-        if props['name'] in stats['most_verified']:
-            stats['most_verified'][props['name']] += 1
-        else:
-            stats['most_verified'][props['name']] = 1
+        pid = props.get('id', props['name'])
+        verified_by_id[pid] = verified_by_id.get(pid, 0) + 1
+        verified_counts[props['name']] = verified_counts.get(props['name'], 0) + 1
 
     # Municipality statistics
     municipality = props['municipality']
@@ -81,12 +84,21 @@ for feature in data['features']:
     if props['accessibility']['stroller'] == 'yes':
         stats['accessibility_stats']['stroller'] += 1
 
-# Find most verified playground
-if stats['most_verified']:
-    most_verified_name = max(stats['most_verified'], key=stats['most_verified'].get)
+# Resolve the single most-verified entry (only when any record is verified)
+if verified_by_id:
+    top_pid, top_count = max(
+        ((pid, n) for pid, n in verified_by_id.items()),
+        key=lambda kv: kv[1],
+    )
+    # Map the winning OSM id back to a human-readable name when possible.
+    name_for_top = next(
+        (f['properties']['name'] for f in data['features']
+         if f['properties'].get('id') == top_pid),
+        top_pid,
+    )
     stats['most_verified'] = {
-        'name': most_verified_name,
-        'count': stats['most_verified'][most_verified_name]
+        'name': name_for_top,
+        'count': top_count,
     }
 
 # Save statistics

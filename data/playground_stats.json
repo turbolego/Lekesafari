@@ -1,0 +1,36 @@
+{
+  "total_playgrounds": 2332,
+  "highest_rating": {
+    "name": "",
+    "rating": 0
+  },
+  "highest_data_quality": {
+    "name": "Leo's lekeland",
+    "score": 15
+  },
+  "last_verified": {
+    "name": "Ukjent lekeplass",
+    "date": "2026-10-08"
+  },
+  "most_verified": {
+    "name": "Myntgata lekeplass",
+    "count": 1
+  },
+  "municipality_stats": {
+    "oslo": 1000,
+    "stavanger": 348,
+    "tromso": 114,
+    "bergen": 868,
+    "drammen": 2
+  },
+  "equipment_stats": {
+    "swing": 2,
+    "seesaw": 1,
+    "slide": 1,
+    "sandpit": 1
+  },
+  "accessibility_stats": {
+    "wheelchair": 11,
+    "stroller": 0
+  }
+}
