@@ -37,8 +37,12 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add data/playgrounds_all.geojson || true
-          git commit -m "Update all playgrounds data" || true
-          git push
+          if git diff --cached --quiet; then
+            echo "No playground data changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Update all playgrounds data"
+          git push "https://x-access-token:*** secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "HEAD:${{ github.ref_name }}"
 
       - name: Generate statistics
         run: |
@@ -46,6 +50,16 @@ jobs:
 
       - name: Commit statistics
         run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          if [ ! -f data/playground_stats.json ]; then
+            echo "playground_stats.json not generated — skipping stats commit."
+            exit 0
+          fi
           git add data/playground_stats.json
+          if git diff --cached --quiet; then
+            echo "No statistics changes — nothing to commit."
+            exit 0
+          fi
           git commit -m "Update playground statistics"
-          git push
+          git push "https://x-access-token:*** secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "HEAD:${{ github.ref_name }}"

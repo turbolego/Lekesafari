@@ -1,3 +1,6 @@
+import os
+import sys
+
 import requests
 import geojson
 from datetime import datetime
@@ -87,6 +90,7 @@ def fetch_playgrounds():
         feature_collection = geojson.FeatureCollection(features)
 
         # Save to file
+        os.makedirs('data', exist_ok=True)
         with open('data/playgrounds_all.geojson', 'w') as f:
             geojson.dump(feature_collection, f, indent=2)
 
@@ -94,6 +98,9 @@ def fetch_playgrounds():
 
     except Exception as e:
         print(f"Error fetching playgrounds: {str(e)}")
+        # Fail loudly so the workflow surfaces the real error instead of
+        # silently running the statistics generator on a missing file.
+        sys.exit(1)
 
 if __name__ == "__main__":
     fetch_playgrounds()
