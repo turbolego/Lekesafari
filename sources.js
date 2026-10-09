@@ -255,6 +255,7 @@ function normalizePlayground(o) {
     sourceId: o.sourceId,
     images: o.images || [],
     imageRefs: o.imageRefs || [],  // raw OSM image URLs; fetched on-demand for detail modal
+    imagePages: o.imagePages || [],  // original Google Photos page URL for each image (for the link under it)
     age: o.age || { min: 0, max: 16 },
     opening: o.opening || '',
     equipment: o.equipment || [],
@@ -381,6 +382,7 @@ async function loadForViewport(bounds) {
  */
 async function getImagesForPlayground(p) {
   if (!p || !p.imageRefs || !p.imageRefs.length) return p?.images || [];
-  // imageRefs is already {url, alt} from OSM; just filter valid URLs.
-  return p.imageRefs.filter(img => img && img.url);
+  // imageRefs is already {url, alt} from OSM; inject page link if available.
+  const pages = p.imagePages || [];
+  return p.imageRefs.map((img, i) => ({ ...img, page: pages[i] || img.url }));
 }

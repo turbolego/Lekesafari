@@ -20,6 +20,7 @@ Run in CI:
 """
 
 import json
+import re
 import sys
 import time
 import urllib.parse
@@ -104,6 +105,46 @@ def dogs_from_osm(t):
     return {"allowed": True, "leash": False}
 
 
+# Google Photos share links (photos.app.goo.gl / photos.google.com/share/...)
+# cannot be embedded in <img> — the browser gets an interstitial page, not bytes.
+# We resolve them to a direct, public image URL during the bake by scraping the
+# og:image meta tag, so the frontend can render the photo directly in the popup.
+_OG_RE = re.compile(r'<meta\s+property="og:image"\s+content="([^"]+)"', re.I)
+_DIRECT_IMG_RE = re.compile(
+    r".*\.(png|jpe?g|jpg|gif|webp|svg)(\?|#|$)", re.I,
+)
+
+
+def resolve_google_image(raw_url, timeout=10):
+    """Return (direct_url, page_url) for a Google Photos share link, or (raw_url, raw_url)
+    if we can't resolve it (e.g. it's already a direct image URL). Never raises — the
+    caller treats a failure as 'no image'.
+    """
+    if not raw_url:
+        return None
+    if _DIRECT_IMG_RE.match(raw_url) and "photos.app.goo.gl" not in raw_url:
+        return {"url": raw_url, "page": raw_url, "alt": "Lekeplass"}
+    try:
+        req = urllib.request.Request(
+            raw_url, headers={"User-Agent": "Lekesafari-data-bake/1.0 (+https://turbolego.github.io/Lekesafari)"}
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            final_url = resp.geturl()  # follows redirects
+            html = resp.read(200_000).decode("utf-8", errors="ignore")
+        # Extract direct image URL from og:image
+        m = _OG_RE.search(html)
+        if m:
+            direct = m.group(1)
+            # og:image may have =w... or =s... params — strip them to get the raw image
+            direct = re.sub(r"=w\d+-h\d+.*$", "", direct)
+            return {"url": direct, "page": final_url, "alt": "Lekeplass"}
+        return {"url": final_url, "page": final_url, "alt": "Lekeplass"}
+    except Exception:
+        # Fall back to leaving the original URL — the frontend will render a link
+        # to the Google Photos page instead of an embedded image.
+        return {"url": raw_url, "page": raw_url, "alt": "Lekeplass"}
+
+
 def normalize_element(el, now):
     """One Overpass element -> shared Playground record (dict)."""
     t = el.get("tags", {}) or {}
@@ -130,7 +171,7 @@ def normalize_element(el, now):
         "location": {"lat": lat, "lng": lng},
         "source": "osm",
         "sourceId": f"{osm_type}/{osm_id}",
-        "images": [{"url": t["image"], "alt": t.get("name", "Lekeplass")}] if t.get("image") else [],
+        "images": [resolve_google_image(t["image"])] if t.get("image") else [],
         "age": {"min": parse_int(t.get("min_age"), 0), "max": parse_int(t.get("max_age"), 16)},
         "opening": t.get("opening_hours", ""),
         "equipment": equipment,
@@ -233,7 +274,16 @@ def load_existing():
 
 
 def to_feature(rec):
+    """Convert a normalized record dict to a GeoJSON Feature."""
     props = {k: v for k, v in rec.items() if k not in ("id", "location")}
+    # Split images into parallel arrays so the frontend can render
+    # the embedded <img> (url) plus a link below (page).
+    if rec.get("images"):
+        props["imageRefs"] = [{"url": img["url"]} for img in rec["images"]]
+        props["imagePages"] = [img["page"] for img in rec["images"]]
+    else:
+        props["imageRefs"] = []
+        props["imagePages"] = []
     props["id"] = rec["id"]
     return {
         "type": "Feature",

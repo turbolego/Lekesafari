@@ -298,8 +298,13 @@ async function openDetail(p) {
 
   modal.style.display = 'block';
 
-  // Lazy-fetch images from imageRefs (only if present in OSM data)
-  const images = await getImagesForPlayground(p);
+  // Lazy-fetch images from imageRefs (only if present in OSM data).
+  // Merge imageRefs with imagePages so renderImageHTML can render the link too.
+  const imageRefs = p.imageRefs || [];
+  const imagePages = p.imagePages || [];
+  const images = imageRefs.length
+    ? imageRefs.map((img, i) => ({ url: img.url, alt: img.alt, page: imagePages[i] || img.url }))
+    : (await getImagesForPlayground(p));
   const imagesContainer = document.getElementById('lazy-images-container');
   if (images.length > 0) {
     imagesContainer.innerHTML = images.map(renderImageHTML).join('');
@@ -334,22 +339,24 @@ function getOsmUrl(p) {
   return null;
 }
 
-// OSM `image` tags are usually Google Photos *share links* (photos.app.goo.gl/...),
-// which cannot be embedded in an <img> — only direct image URLs can. This helper
-// renders a clickable "Vis bilde" card for share links and an <img> for real image
-// URLs, so neither path shows a broken-image icon.
+// Renders an image entry inside the popup/modal.
+// - For a direct image URL: an <img> followed by a link to the source page (if any).
+// - For a Google Photos share link (not embeddable): a clickable link card that
+//   opens the album/photo page so the user can view it in the browser.
 function renderImageHTML(img) {
   if (!img || !img.url) return '';
   const url = img.url;
-  const alt = String(img.alt || img.url).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const page = img.page || url;
+  const alt = String(img.alt || 'Lekeplass').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const isDirect = /^(https?:)?\/\//i.test(url)
     && /\.(png|jpe?g|gif|webp|svg)(\?|#|$)/i.test(url)
     && !/^https?:\/\/photos\.app\.goo\.gl\//i.test(url);
   if (isDirect) {
-    return `<img src="${url}" alt="${alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">`;
+    return `<img src="${url}" alt="${alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">` +
+      `<a href="${page}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:0.25rem;font-size:0.75rem;color:#1a73e8;">🔗 Åpne bilde</a>`;
   }
   // Share link / unknown host -> render a link card the user can open.
-  return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;box-sizing:border-box;margin-top:0.4rem;padding:0.5rem 0.6rem;border:1px solid #cfd8dc;border-radius:4px;font-size:0.75rem;color:#1a73e8;text-align:center;background:#f5f9ff;">📷 Vis bilde (OSM)</a>`;
+  return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;box-sizing:border-box;margin-top:0.4rem;padding:0.5rem 0.6rem;border:1px solid #cfd8dc;border-radius:4px;font-size:0.75rem;color:#1a73e8;text-align:center;background:#f5f9ff;">📷 Vis bilde (åpne i nettleser)</a>`;
 }
 
 function buildPopupContent(p) {
@@ -367,11 +374,13 @@ function buildPopupContent(p) {
     : '';
 
   // Only show images for OSM sources (remove hallucinated images from other sources).
-  // Static OSM records carry the raw URLs in imageRefs (loadStatic leaves images [] to
-  // keep the GeoJSON lean); fall back to images for non-static shapes.
+  // Static OSM records carry resolved direct URLs in imageRefs (loadStatic leaves images
+  // [] to keep the GeoJSON lean); imagePages holds the corresponding Google Photos page
+  // link for each image so we can render a link below the embedded <img>.
   const imgSrc = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : (p.images || []);
+  const pages = p.imagePages && p.imagePages.length ? p.imagePages : (imgSrc.map(() => null));
   const imagesHtml = (p.source === 'osm' && imgSrc.length)
-    ? imgSrc.map(renderImageHTML).join('')
+    ? imgSrc.map((img, i) => renderImageHTML({ ...img, page: pages[i] })).join('')
     : '';
 
   const osmUrl = getOsmUrl(p);
