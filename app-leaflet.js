@@ -153,7 +153,7 @@ function loadFromViewport() {
     const staticPlaygrounds = result.playgrounds || [];
     state.staticPlaygrounds = staticPlaygrounds;
     // Always start from the full static set (never empties).
-    state.playgrounds = staticPlaygrounds;
+    state.playgrounds = dedupePlaygrounds(staticPlaygrounds);
     state.sourceErrors = result.error ? [result.error] : [];
     renderPlaygroundList();
     syncMapMarkers();
@@ -162,7 +162,9 @@ function loadFromViewport() {
     if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
       loadForViewport(bounds).then(({ playgrounds: live, errors }) => {
         // Enrich: merge live viewport data over the static baseline.
-        state.playgrounds = mergeWithSeed(staticPlaygrounds.concat(live), seed, bounds);
+        // Dedupe is critical — the live viewport can return records that
+        // are already in the static set, and concat alone would double them.
+        state.playgrounds = dedupePlaygrounds(staticPlaygrounds.concat(live));
         state.sourceErrors = errors || state.sourceErrors;
         state.isLoading = false;
         renderPlaygroundList();
@@ -447,6 +449,23 @@ function renderPlaygroundList() {
 }
 
 // -------------------------------------------------------------
+// Dedupe helper — keeps the first occurrence of each playground by id.
+// Critical: repeated viewport fetches can return the same OSM record
+// that is already in the static set, and concat alone would double it.
+// -------------------------------------------------------------
+function dedupePlaygrounds(list) {
+  const seen = new Set();
+  const out = [];
+  (list || []).forEach(p => {
+    const key = p.id || p.sourceId || p.osm_id || p.name + '|' + (p.location?.lat) + '|' + (p.location?.lng);
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(p);
+  });
+  return out;
+}
+
+// -------------------------------------------------------------
 // Filtering
 // -------------------------------------------------------------
 function getActiveFilters() {
@@ -574,8 +593,8 @@ searchInput.addEventListener('input', (e) => {
 // Checkboxes/selects fire 'change'; the rating slider fires 'input'.
 // -------------------------------------------------------------
 function onFilterChange() {
-  // Re-filter the list, then only toggle marker visibility (markers are
-  // already on the map — we never rebuild them on a filter change).
+  // Re-filter the list AND rebuild the sidebar list (markers are already
+  // on the map — we only toggle their visibility, never rebuild them).
   renderPlaygroundList();
   updateMarkerVisibility();
 }
