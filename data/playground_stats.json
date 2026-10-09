@@ -1,5 +1,5 @@
 {
-  "total_playgrounds": 2858,
+  "total_playgrounds": 2496,
   "highest_rating": {
     "name": "",
     "rating": 0
@@ -17,16 +17,11 @@
     "count": 1
   },
   "municipality_stats": {
-    "os": 2858
+    "os": 2496
   },
-  "equipment_stats": {
-    "swing": 2,
-    "seesaw": 1,
-    "slide": 1,
-    "sandpit": 1
-  },
+  "equipment_stats": {},
   "accessibility_stats": {
-    "wheelchair": 14,
+    "wheelchair": 13,
     "stroller": 0
   }
 }
