@@ -302,9 +302,7 @@ async function openDetail(p) {
   const images = await getImagesForPlayground(p);
   const imagesContainer = document.getElementById('lazy-images-container');
   if (images.length > 0) {
-    imagesContainer.innerHTML = images.map(img =>
-      `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.5rem;border-radius:4px;" onerror="this.style.display='none'">`
-    ).join('');
+    imagesContainer.innerHTML = images.map(renderImageHTML).join('');
   } else {
     imagesContainer.innerHTML = '<div style="font-size:0.75rem;color:#999;margin-top:0.5rem;">Ingen bilder tilgjengelig</div>';
   }
@@ -336,6 +334,24 @@ function getOsmUrl(p) {
   return null;
 }
 
+// OSM `image` tags are usually Google Photos *share links* (photos.app.goo.gl/...),
+// which cannot be embedded in an <img> — only direct image URLs can. This helper
+// renders a clickable "Vis bilde" card for share links and an <img> for real image
+// URLs, so neither path shows a broken-image icon.
+function renderImageHTML(img) {
+  if (!img || !img.url) return '';
+  const url = img.url;
+  const alt = String(img.alt || img.url).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const isDirect = /^(https?:)?\/\//i.test(url)
+    && /\.(png|jpe?g|gif|webp|svg)(\?|#|$)/i.test(url)
+    && !/^https?:\/\/photos\.app\.goo\.gl\//i.test(url);
+  if (isDirect) {
+    return `<img src="${url}" alt="${alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">`;
+  }
+  // Share link / unknown host -> render a link card the user can open.
+  return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;box-sizing:border-box;margin-top:0.4rem;padding:0.5rem 0.6rem;border:1px solid #cfd8dc;border-radius:4px;font-size:0.75rem;color:#1a73e8;text-align:center;background:#f5f9ff;">📷 Vis bilde (OSM)</a>`;
+}
+
 function buildPopupContent(p) {
   const src = p.source || 'osm';
   const ratingLine = p.rating?.count
@@ -350,9 +366,12 @@ function buildPopupContent(p) {
     ? '<span class="verified-badge">✓ Verifisert</span>'
     : '';
 
-  // Only show images for OSM sources (remove hallucinated images from other sources)
-  const imagesHtml = (p.source === 'osm' && p.images?.length)
-    ? p.images.map(img => `<img src="${img.url}" alt="${img.alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">`).join('')
+  // Only show images for OSM sources (remove hallucinated images from other sources).
+  // Static OSM records carry the raw URLs in imageRefs (loadStatic leaves images [] to
+  // keep the GeoJSON lean); fall back to images for non-static shapes.
+  const imgSrc = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : (p.images || []);
+  const imagesHtml = (p.source === 'osm' && imgSrc.length)
+    ? imgSrc.map(renderImageHTML).join('')
     : '';
 
   const osmUrl = getOsmUrl(p);
