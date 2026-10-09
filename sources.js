@@ -378,7 +378,7 @@ async function loadStatic() {
         verified: p.verified,
         lastVerified: p.lastVerified,
         images: [],  // images are NOT fetched here; resolved on-demand via getImagesForPlayground()
-        imageRefs: p.images || [],  // keep raw OSM image refs for lazy load
+        imageRefs: p.imageRefs || [],  // raw OSM image URLs for lazy load
         age: p.age,
         opening: p.opening || '',
         equipment: p.equipment || [],

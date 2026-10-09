@@ -1,28 +1,32 @@
 {
-  "total_playgrounds": 24,
+  "total_playgrounds": 2858,
   "highest_rating": {
     "name": "",
     "rating": 0
   },
   "highest_data_quality": {
-    "name": "Ukjent lekeplass",
-    "score": 13
+    "name": "Leo's lekeland",
+    "score": 15
   },
   "last_verified": {
     "name": "Ukjent lekeplass",
-    "date": "2026-10-08"
+    "date": "2026-10-09"
   },
   "most_verified": {
-    "name": "",
-    "count": 0
+    "name": "Myntgata lekeplass",
+    "count": 1
   },
   "municipality_stats": {
-    "os": 22,
-    "drammen": 2
+    "os": 2858
   },
-  "equipment_stats": {},
+  "equipment_stats": {
+    "swing": 2,
+    "seesaw": 1,
+    "slide": 1,
+    "sandpit": 1
+  },
   "accessibility_stats": {
-    "wheelchair": 0,
+    "wheelchair": 14,
     "stroller": 0
   }
 }

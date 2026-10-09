@@ -99,11 +99,13 @@ if (sidebarToggle && sidebar) {
 let state = {
   isLoading: false,
   playgrounds: [],
+  staticPlaygrounds: [],
   sourceErrors: [],
   lastView: null,
   filteredPlaygrounds: [],
   searchTerm: '',
   markerLookup: new Map(),  // id -> marker
+  markerObjects: new Map(),  // id -> {marker, playground}
 };
 
 // -------------------------------------------------------------
@@ -208,13 +210,20 @@ function getMarkerColor(source) {
 }
 
 function syncMapMarkers() {
-  // Clear existing markers and lookup
+  // Always render ALL markers from the full workflow dataset.
+  // Filters only hide some; they never remove the base set.
   playgroundLayer.clearLayers();
   state.markerLookup.clear();
+  state.markerObjects.clear();
 
-  // Use the filtered list of playgrounds (respecting source filter)
-  const list = state.filteredPlaygrounds && state.filteredPlaygrounds.length ? state.filteredPlaygrounds : state.playgrounds;
+  const list = state.playgrounds || [];
+  if (!list.length) {
+    console.warn('No playgrounds to render on map');
+    return;
+  }
+
   list.forEach(p => {
+    if (!p.location || p.location.lat == null || p.location.lng == null) return;
     const marker = L.circleMarker([p.location.lat, p.location.lng], {
       radius: 8,
       fillColor: getMarkerColor(p.source),
@@ -227,6 +236,26 @@ function syncMapMarkers() {
     marker.on('click', () => openPopup(p, marker));
     playgroundLayer.addLayer(marker);
     state.markerLookup.set(p.id, marker);
+    state.markerObjects.set(p.id, { marker, playground: p });
+  });
+
+  // Apply the active filter to show/hide markers immediately.
+  updateMarkerVisibility();
+}
+
+// Toggle individual marker visibility based on the current filters.
+// Called after syncMapMarkers and whenever a filter value changes.
+function updateMarkerVisibility() {
+  const filter = getActiveFilters();
+  const filterFn = (p) => filterPlaygrounds([p], filter).length === 1;
+
+  state.markerObjects.forEach(({ marker, playground: p }) => {
+    const visible = filterFn(p);
+    if (visible) {
+      playgroundLayer.addLayer(marker);
+    } else {
+      playgroundLayer.removeLayer(marker);
+    }
   });
 }
 
@@ -449,6 +478,9 @@ function getActiveFilters() {
   const ratingMin = parseInt(document.getElementById('filter-rating').value);
   if (!isNaN(ratingMin)) filters.ratingMin = ratingMin;
 
+  const hasImage = document.getElementById('filter-has-image');
+  if (hasImage && hasImage.checked) filters.hasImage = true;
+
   const source = document.getElementById('filter-source').value;
   if (source !== 'alle') filters.source = source;
 
@@ -464,7 +496,11 @@ function filterPlaygrounds(plays, filters) {
     if (filters.paidParking && !p.paidParking) return false;
     if (filters.dogsAllowed && !p.dogsAllowed) return false;
     if (filters.dogsLeash && !p.dogsLeash) return false;
-    if (filters.hasImage && (!p.images || p.images.length === 0)) return false;
+    if (filters.hasImage) {
+      // Static records keep OSM image URLs in imageRefs (images are lazy-loaded).
+      const hasImg = (p.imageRefs && p.imageRefs.length > 0) || (p.images && p.images.length > 0);
+      if (!hasImg) return false;
+    }
     if (p.minAge !== undefined && p.minAge > filters.minAge) return false;
     if (p.maxAge !== undefined && p.maxAge < filters.maxAge) return false;
     if (filters.equipment.length > 0 && filters.equipment.some(e => e)) {
@@ -532,20 +568,41 @@ searchInput.addEventListener('input', (e) => {
   syncMapMarkers();
 });
 
-// Rating range slider
-document.getElementById('filter-rating').addEventListener('input', (e) => {
-  document.getElementById('rating-value').textContent = e.target.value;
-  loadFromViewport();
+// -------------------------------------------------------------
+// Filter event listeners — all re-render the list and toggle marker
+// visibility (markers are always present; filters only hide them).
+// Checkboxes/selects fire 'change'; the rating slider fires 'input'.
+// -------------------------------------------------------------
+function onFilterChange() {
+  // Re-filter the list, then only toggle marker visibility (markers are
+  // already on the map — we never rebuild them on a filter change).
+  renderPlaygroundList();
+  updateMarkerVisibility();
+}
+
+const filterIds = [
+  'filter-fenced', 'filter-toilets', 'filter-free-parking',
+  'filter-paid-parking', 'filter-dogs-allowed', 'filter-dogs-leash',
+  'filter-age-min', 'filter-age-max', 'filter-equipment', 'filter-source',
+  'filter-has-image',
+];
+
+filterIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('change', onFilterChange);
 });
 
-// Has-image filter
-const filterHasImage = document.getElementById('filter-has-image');
-if (filterHasImage) {
-  filterHasImage.addEventListener('change', () => {
-    CONFIG.DEFAULT_FILTERS.hasImage = filterHasImage.checked;
-    loadFromViewport();
+// Rating range slider — continuous, fire on every input.
+const ratingSlider = document.getElementById('filter-rating');
+if (ratingSlider) {
+  ratingSlider.addEventListener('input', (e) => {
+    const rv = document.getElementById('rating-value');
+    if (rv) rv.textContent = e.target.value;
+    onFilterChange();
   });
 }
+
 
 // Search clear button
 const searchClear = document.getElementById('search-clear');
