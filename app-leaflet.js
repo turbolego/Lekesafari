@@ -334,7 +334,12 @@ function getOsmUrl(p) {
   // osmSource.id format is like "node/123456" or "way/123456"
   const [type, id] = osmSource.id.split('/');
   if (id) {
-    return `https://www.openstreetmap.org/${type}/${id}`;
+    // Deep-link so OSM opens centred on the feature: /way/123#map=19/lat/lng
+    let url = `https://www.openstreetmap.org/${type}/${id}`;
+    if (p.location && p.location.lat != null && p.location.lng != null) {
+      url += `#map=19/${p.location.lat}/${p.location.lng}`;
+    }
+    return url;
   }
   return null;
 }
@@ -348,16 +353,25 @@ function renderImageHTML(img) {
   const url = img.url;
   const page = img.page || url;
   const alt = String(img.alt || 'Lekeplass').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const isDirect = /^(https?:)?\/\//i.test(url)
-    && /\.(png|jpe?g|gif|webp|svg)(\?|#|$)/i.test(url)
-    && !/^https?:\/\/photos\.app\.goo\.gl\//i.test(url);
+  // Embeddable when it's a real image: a known image-file extension, OR a
+  // Google CDN thumbnail (lh3.googleusercontent.com/pw/... has no extension
+  // but serves image bytes). Bare Google Photos share links (photos.app.goo.gl)
+  // are NOT embeddable — those fall through to the link card below.
+  let host = '';
+  try { host = new URL(url).host; } catch (e) {}
+  const isImageFile = /\.(png|jpe?g|gif|webp|svg)(\?|#|$)/i.test(url);
+  const isGoogleCdn = host && (host === 'lh3.googleusercontent.com' || /^lh\d\.googleusercontent\.com$/.test(host));
+  const isShareLink = /^https?:\/\/photos\.app\.goo\.gl\//i.test(url);
+  const isDirect = isImageFile || (isGoogleCdn && !isShareLink);
   if (isDirect) {
-    return `<img src="${url}" alt="${alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">` +
-      `<a href="${page}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:0.25rem;font-size:0.75rem;color:#1a73e8;">🔗 Åpne bilde</a>`;
+    const link = page && page !== url
+      ? `<a href="${page}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:0.25rem;font-size:0.75rem;color:#1a73e8;">🔗 Åpne bilde</a>` : '';
+    return `<img src="${url}" alt="${alt}" style="width:100%;margin-top:0.4rem;border-radius:4px;" onerror="this.style.display='none'">` + link;
   }
   // Share link / unknown host -> render a link card the user can open.
   return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;box-sizing:border-box;margin-top:0.4rem;padding:0.5rem 0.6rem;border:1px solid #cfd8dc;border-radius:4px;font-size:0.75rem;color:#1a73e8;text-align:center;background:#f5f9ff;">📷 Vis bilde (åpne i nettleser)</a>`;
 }
+
 
 function buildPopupContent(p) {
   const src = p.source || 'osm';

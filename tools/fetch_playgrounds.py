@@ -25,6 +25,7 @@ Run in CI:
 
 import json
 import os
+import re
 import sys
 import time
 from datetime import date
@@ -129,6 +130,49 @@ def dogs_from_osm(t):
     return {"allowed": "unknown", "leash": "unknown"}
 
 
+# ------------------------------------------------------------------
+# Google Photos share links cannot be embedded in <img> — the browser
+# gets a page, not image bytes. Resolve them to a direct public image
+# URL (og:image) so the popup can render the photo, and keep the share
+# page URL for the "open" link underneath.
+# ------------------------------------------------------------------
+_OG_RE = re.compile(r'<meta\s+property="og:image"\s+content="([^"]+)"', re.I)
+
+
+def resolve_image(raw_url, timeout=12):
+    """Return {url, page, alt} for an OSM image tag.
+
+    * Direct image URL  -> embed it as-is.
+    * Google Photos share link -> scrape og:image for the direct thumbnail
+      and keep the share page as the link target.
+    * Anything unresolvable -> leave the raw URL; the frontend falls back
+      to a clickable link card. Never raises.
+    """
+    if not raw_url:
+        return None
+    alt = "Lekeplass"
+    # Already a direct image file.
+    if re.search(r"\.(png|jpe?g|gif|webp|svg)(\?|#|$)", raw_url, re.I):
+        return {"url": raw_url, "page": raw_url, "alt": alt}
+    try:
+        r = requests.get(
+            raw_url,
+            headers={"User-Agent": "Lekesafari-data-bake/1.0 (+https://turbolego.github.io/Lekesafari)"},
+            timeout=timeout,
+            allow_redirects=True,
+        )
+        page_url = r.url
+        m = _OG_RE.search(r.text[:400_000])
+        if m:
+            direct = m.group(1)
+            # Strip sizing params (=w..-h..) to get a usable thumbnail.
+            direct = re.sub(r"=w\d+-h\d+.*$", "", direct)
+            return {"url": direct, "page": page_url, "alt": alt}
+        return {"url": page_url, "page": page_url, "alt": alt}
+    except Exception:
+        return {"url": raw_url, "page": raw_url, "alt": alt}
+
+
 def normalize(el, city, now):
     """Turn one OSM element into the shared Playground shape."""
     t = el.get("tags", {}) or {}
@@ -150,7 +194,9 @@ def normalize(el, city, now):
 
     # Image: reference by URL only. The frontend loads it lazily on popup open.
     image_url = t.get("image")
-    image_refs = [{"url": image_url, "alt": t.get("name", "Lekeplass")}] if image_url else []
+    resolved = resolve_image(image_url) if image_url else None
+    image_refs = [{"url": resolved["url"], "alt": t.get("name", "Lekeplass")}] if resolved else []
+    image_pages = [resolved["page"]] if resolved else []
 
     rec = {
         "id": f"osm-{osm_type}-{osm_id}",
@@ -159,7 +205,8 @@ def normalize(el, city, now):
         "source": "osm",
         "sourceId": f"{osm_type}/{osm_id}",
         "images": [],               # never embedded; resolved lazily on popup open
-        "imageRefs": image_refs,    # raw OSM image URLs for lazy loading
+        "imageRefs": image_refs,    # direct image URLs (Google Photos share links resolved)
+        "imagePages": image_pages,  # corresponding share-page URL for the "open" link
         "age": {"min": parse_int(t.get("min_age"), 0), "max": parse_int(t.get("max_age"), 16)},
         "opening": t.get("opening_hours", ""),
         "equipment": equipment,
