@@ -392,7 +392,7 @@ function openPopup(p, marker) {
 // List Rendering
 // -------------------------------------------------------------
 function renderPlaygroundList() {
-  const list = document.getElementById('playground-list');
+  const list = document.getElementById('result-list') || document.getElementById('playground-list');
   const count = document.getElementById('result-count');
 
   const filter = getActiveFilters();
