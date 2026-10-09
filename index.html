@@ -54,10 +54,9 @@
     }
     .sidebar.open { left: 0; }
     /* Filters scroll independently; results docked at the bottom */
-    .filter-group { overflow-y: auto; flex: 1 1 auto; }
+    .filter-group { overflow-y: auto; flex: 0 0 auto; }
     .results-section {
-      flex-shrink: 0;
-      max-height: 40vh;
+      flex: 1 1 auto;
       overflow-y: auto;
       border-top: 1px solid var(--border-color, #ddd);
     }
