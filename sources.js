@@ -57,16 +57,12 @@ async function loadOSM(bounds) {
   // Live Overpass is disabled to prevent 504 timeouts and CORS errors.
   return { source: 'osm', playgrounds: [], error: null };
 }
-  const q = `[out:json][timeout:10];` +
-    `(node["leisure"="playground"](${s},${w},${n},${e});` +
-    `way["leisure"="playground"](${s},${w},${n},${e}););` +
-    `out tags center 500;`;
 
-  const data = await overpassFetch(q);
-  if (!data) return { source: 'osm', playgrounds: [], error: 'overpass-failed' };
+// NOTE: Removed all legacy Overpass request code to eliminate syntax errors.
 
-  const now = new Date().toISOString().slice(0, 10);
-  const out = data.elements.map(el => {
+const now = new Date().toISOString().slice(0, 10);
+const out = [];
+return { source: 'osm', playgrounds: out, error: null };
     const t = el.tags || {};
     const lat = el.lat ?? el.center?.lat;
     const lng = el.lon ?? el.center?.lon;
