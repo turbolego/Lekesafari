@@ -58,46 +58,6 @@ async function loadOSM(bounds) {
   return { source: 'osm', playgrounds: [], error: null };
 }
 
-// NOTE: Removed all legacy Overpass request code to eliminate syntax errors.
-
-const now = new Date().toISOString().slice(0, 10);
-const out = [];
-return { source: 'osm', playgrounds: out, error: null };
-    const t = el.tags || {};
-    const lat = el.lat ?? el.center?.lat;
-    const lng = el.lon ?? el.center?.lon;
-    if (lat == null || lng == null) return null;
-
-    const equipment = [];
-    for (const k of Object.keys(t)) {
-      if (k.startsWith('playground:') && OSM_EQUIPMENT[k]) {
-        equipment.push({ type: k, name: OSM_EQUIPMENT[k], count: 1 });
-      }
-    }
-
-    return normalizePlayground({
-      id: `osm-${el.type}-${el.id}`,
-      name: t.name || 'Utkjent lekeplass',
-      lat, lng,
-      source: 'osm',
-      sourceId: `${el.type}/${el.id}`,
-      images: t.image ? [{ url: t.image, alt: t.name || 'Lekeplass' }] : [],
-      age: { min: parseInt(t.min_age, 10) || 0, max: parseInt(t.max_age, 10) || 16 },
-      opening: t.opening_hours || '',
-      equipment,
-      fenced: t.fenced === 'yes' || t.fenced === 'true',
-      toilets: t.toilets === 'yes' || t.toilets === 'true',
-      parking: parkFromOSM(t),
-      dogs: dogsFromOSM(t),
-      wheelchair: normYesNoLimited(t.wheelchair),
-      verified: !!t.name || equipment.length > 0,
-      lastVerified: now,
-    });
-  }).filter(Boolean);
-
-  return { source: 'osm', playgrounds: out, error: null };
-}
-
 function parkFromOSM(t) {
   if (t.parking === 'no') return { free: false, paid: false };
   if (t.parking_access === 'no') return { free: false, paid: false };
