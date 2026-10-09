@@ -415,6 +415,9 @@ function renderPlaygroundList() {
     return;
   }
 
+  // Clear existing list items before adding new ones
+  list.innerHTML = '';
+
   filtered.forEach(p => {
     const item = document.createElement('div');
     item.className = 'playground-item';
