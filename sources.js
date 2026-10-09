@@ -53,8 +53,10 @@ async function overpassFetch(query) {
 }
 
 async function loadOSM(bounds) {
-  if (!bounds) return { source: 'osm', playgrounds: [], error: 'overpass-failed' };
-  const [s, n, w, e] = [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()];
+  // Static source is already baked into playgrounds_all.geojson.
+  // Live Overpass is disabled to prevent 504 timeouts and CORS errors.
+  return { source: 'osm', playgrounds: [], error: null };
+}
   const q = `[out:json][timeout:10];` +
     `(node["leisure"="playground"](${s},${w},${n},${e});` +
     `way["leisure"="playground"](${s},${w},${n},${e}););` +
