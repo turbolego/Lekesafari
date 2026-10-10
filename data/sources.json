@@ -5,7 +5,7 @@
       "name": "osm",
       "type": "live",
       "mirror": "https://overpass-api.de/api/interpreter",
-      "records": 769
+      "records": 269
     },
     {
       "name": "seed",
