@@ -1,16 +1,16 @@
 {
-  "generated": "2026-10-09",
+  "generated": "2026-10-10",
   "sources": [
     {
       "name": "osm",
       "type": "live",
       "mirror": "https://overpass-api.de/api/interpreter",
-      "records": 500
+      "records": 769
     },
     {
       "name": "seed",
       "type": "static",
-      "records": 1631
+      "records": 1632
     }
   ],
   "recordCount": 1632
