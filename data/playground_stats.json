@@ -1,5 +1,5 @@
 {
-  "total_playgrounds": 2496,
+  "total_playgrounds": 879,
   "highest_rating": {
     "name": "",
     "rating": 0
@@ -10,18 +10,18 @@
   },
   "last_verified": {
     "name": "Ukjent lekeplass",
-    "date": "2026-10-09"
+    "date": "2026-10-10"
   },
   "most_verified": {
-    "name": "Myntgata lekeplass",
+    "name": "Lekerom/stellerom",
     "count": 1
   },
   "municipality_stats": {
-    "os": 2496
+    "os": 879
   },
   "equipment_stats": {},
   "accessibility_stats": {
-    "wheelchair": 13,
+    "wheelchair": 2,
     "stroller": 0
   }
 }
