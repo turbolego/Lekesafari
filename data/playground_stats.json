@@ -1,5 +1,5 @@
 {
-  "total_playgrounds": 879,
+  "total_playgrounds": 1046,
   "highest_rating": {
     "name": "",
     "rating": 0
@@ -10,18 +10,18 @@
   },
   "last_verified": {
     "name": "Ukjent lekeplass",
-    "date": "2026-10-10"
+    "date": "2026-10-11"
   },
   "most_verified": {
     "name": "Lekerom/stellerom",
     "count": 1
   },
   "municipality_stats": {
-    "os": 879
+    "os": 1046
   },
   "equipment_stats": {},
   "accessibility_stats": {
-    "wheelchair": 2,
+    "wheelchair": 3,
     "stroller": 0
   }
 }
