@@ -195,7 +195,7 @@ def osm_query(bbox):
         f"[out:json][timeout:{OVERRAID}];"
         f'(node["leisure"="playground"]({s},{w},{n},{e});'
         f'way["leisure"="playground"]({s},{w},{n},{e}););'
-        f"out center 500;"
+        f"out center;"
     )
     return q
 
