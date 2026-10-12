@@ -7,7 +7,7 @@
 //
 // Bump CACHE_VERSION on every deploy that changes a precached asset so old
 // caches are cleaned up on activate.
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `lekesafari-${CACHE_VERSION}`;
 
 // Shell assets that must be available offline. Keep this list small and

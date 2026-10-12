@@ -209,6 +209,7 @@ function getMarkerColor(source) {
   const colors = {
     osm: '#2e7d32',        // green
     geonorge: '#1565c0',   // blue
+    'wms-tilgjengelighet': '#1565c0', // blue — Geonorge WMS (same family)
     municipality: '#7b1fa2', // purple
     user: '#e65100',       // orange
   };
@@ -333,15 +334,16 @@ function buildPopupContent(p) {
     ? '<span class="verified-badge">✓ Verifisert</span>'
     : '';
 
-  // Only show images for OSM sources (remove hallucinated images from other sources).
-  // Static OSM records carry resolved direct URLs in imageRefs (loadStatic leaves images
-  // [] to keep the GeoJSON lean); imagePages holds the corresponding Google Photos page
-  // link for each image so we can render a link below the embedded <img>.
-  // Alt text is OSM-supplied, so renderImageHTML escapes it before it is
-  // interpolated into an HTML string.
+  // Only show images for OSM + WMS sources (the static OSM-baked layer and the
+  // Geonorge WMS adapter both carry resolved direct image URLs in imageRefs;
+  // other/legacy sources had hallucinated images and are excluded). imagePages
+  // holds the original page link per image so we can render a link below the
+  // embedded <img>. Alt text is OSM/Geonorge-supplied, so renderImageHTML
+  // escapes it before it is interpolated into an HTML string.
+  const hasImages = (p.source === 'osm' || p.source === 'wms-tilgjengelighet');
   const imgSrc = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : (p.images || []);
   const pages = (p.imagePages && p.imagePages.length) ? p.imagePages : (imgSrc.map(() => null));
-  const imagesHtml = (p.source === 'osm' && imgSrc.length)
+  const imagesHtml = (hasImages && imgSrc.length)
     ? imgSrc.map((img, i) => renderImageHTML({ ...img, page: pages[i] })).join('')
     : '';
 
@@ -625,7 +627,60 @@ searchInput.addEventListener('input', (e) => {
   // visibility. Rebuilding all ~2850 markers per keystroke was very janky.
   renderPlaygroundList();
   updateMarkerVisibility();
+  queueStedsnavnSearch(e.target.value);
 });
+
+// -------------------------------------------------------------
+// Stedsnavn (place-name) search — live lookup in Kartverket's Stedsnavn API
+// (same source the reference Tilgjengelighet app uses). Results render in a
+// small dropdown under the search box; clicking one flies the map to it.
+// -------------------------------------------------------------
+const stedsnavnResults = document.getElementById('stedsnavn-results');
+let stedsnavnTimer = null;
+let stedsnavnSeq = 0;
+
+function clearStedsnavnResults() {
+  stedsnavnSeq++;
+  if (stedsnavnResults) stedsnavnResults.innerHTML = '';
+}
+
+function renderStedsnavnResults(places) {
+  if (!stedsnavnResults) return;
+  stedsnavnResults.innerHTML = places.map(p =>
+    `<div class="stedsnavn-item" data-lat="${p.lat}" data-lng="${p.lng}" role="option" tabindex="0">` +
+    `<strong>${esc(p.name)}</strong>` +
+    (p.kommune ? ` <span>· ${esc(p.kommune)}</span>` : '') +
+    (p.type ? ` <span class="stedsnavn-type">· ${esc(p.type)}</span>` : '') +
+    `</div>`
+  ).join('');
+  stedsnavnResults.querySelectorAll('.stedsnavn-item').forEach(el => {
+    const fly = () => {
+      const lat = parseFloat(el.dataset.lat);
+      const lng = parseFloat(el.dataset.lng);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        map.flyTo([lat, lng], Math.max(map.getZoom(), 14));
+      }
+      clearStedsnavnResults();
+    };
+    el.addEventListener('click', fly);
+    el.addEventListener('keydown', ev => { if (ev.key === 'Enter') fly(); });
+  });
+}
+
+function queueStedsnavnSearch(raw) {
+  clearTimeout(stedsnavnTimer);
+  if (String(raw).trim().length < 3) {
+    clearStedsnavnResults();
+    return;
+  }
+  stedsnavnTimer = setTimeout(async () => {
+    const seq = ++stedsnavnSeq;
+    const places = await searchStedsnavn(raw);
+    if (seq !== stedsnavnSeq) return;  // stale — a newer request superseded it
+    if (places.length) renderStedsnavnResults(places);
+    else if (stedsnavnResults) stedsnavnResults.innerHTML = '';
+  }, 400);
+}
 
 // -------------------------------------------------------------
 // Filter event listeners — all re-render the list and toggle marker
@@ -669,6 +724,7 @@ if (searchClear) {
   searchClear.addEventListener('click', () => {
     document.getElementById('search-input').value = '';
     state.searchTerm = '';
+    clearStedsnavnResults();
     renderPlaygroundList();
     updateMarkerVisibility();
   });

@@ -103,6 +103,7 @@
     <div class="search-block">
       <input id="search-input" type="text" placeholder="Søk navn, by, apparat…" autocomplete="off" aria-label="Søk lekeplasser">
       <button id="search-clear" class="clear-btn" title="Tøm søk" aria-label="Tøm søk">×</button>
+      <div id="stedsnavn-results" class="stedsnavn-results" role="listbox" aria-label="Stedsnavn-søkresultater"></div>
     </div>
 
     <div class="filter-group">
@@ -170,6 +171,7 @@
           <option value="alle">Alle kilder</option>
           <option value="osm">OSM</option>
           <option value="geonorge">Geonorge</option>
+          <option value="wms-tilgjengelighet">Geonorge WMS</option>
           <option value="municipality">Kommune</option>
           <option value="user">Bruker</option>
         </select>
@@ -190,8 +192,8 @@
   <!-- Load Leaflet first, then seed data, sources (data loading), then app -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="seed-data.js?v=3"></script>
-  <script src="sources.js?v=6"></script>
-  <script src="app-leaflet.js?v=11"></script>
+  <script src="sources.js?v=7"></script>
+  <script src="app-leaflet.js?v=12"></script>
   <script>
     // Register PWA Service Worker. Relative path: the site is served from the
     // /Lekesafari/ subpath on GitHub Pages, so an absolute /sw.js 404s there.
