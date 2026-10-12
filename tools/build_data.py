@@ -130,7 +130,7 @@ def resolve_google_image(raw_url, timeout=10):
         )
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             final_url = resp.geturl()  # follows redirects
-            html = resp.read(200_000).decode("utf-8", errors="ignore")
+            html = resp.read().decode("utf-8", errors="ignore")
         # Extract direct image URL from og:image
         m = _OG_RE.search(html)
         if m:
@@ -311,6 +311,40 @@ def main():
 
     # Stable sort by id so diffs are small across runs.
     features = sorted(merged.values(), key=lambda f: f["properties"].get("id", ""))
+
+    # Post-processing: resolve any Google Photos share URLs that the inline
+    # resolve_google_image calls missed (rate-limited, timed out, etc.).
+    _GPHOTO_RE = re.compile(r'photos\.google\.com/share/|photos\.app\.goo\.gl/')
+    share_urls = set()
+    for feat in features:
+        for ref in feat["properties"].get("imageRefs", []):
+            url = ref.get("url", "")
+            if _GPHOTO_RE.search(url):
+                share_urls.add(url)
+    if share_urls:
+        print(f"[resolve] {len(share_urls)} Google Photos share URL(s) to resolve", file=sys.stderr)
+    url_map = {}
+    for share_url in share_urls:
+        resolved = resolve_google_image(share_url, timeout=20)
+        if resolved and "lh" in resolved.get("url", ""):
+            url_map[share_url] = resolved
+            print(f"[ok] {share_url[:60]}... -> {resolved['url'][:60]}...", file=sys.stderr)
+        else:
+            print(f"[warn] could not resolve: {share_url[:60]}...", file=sys.stderr)
+        time.sleep(1)
+    if url_map:
+        for feat in features:
+            props = feat["properties"]
+            refs = props.get("imageRefs", [])
+            pages = props.get("imagePages", [])
+            for i, ref in enumerate(refs):
+                old_url = ref.get("url", "")
+                if old_url in url_map:
+                    ref["url"] = url_map[old_url]["url"]
+                    if i < len(pages):
+                        pages[i] = url_map[old_url]["page"]
+            if pages:
+                props["imagePages"] = pages
 
     geojson = {
         "type": "FeatureCollection",

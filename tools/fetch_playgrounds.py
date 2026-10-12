@@ -180,7 +180,7 @@ def resolve_image(raw_url, timeout=12):
             allow_redirects=True,
         )
         page_url = r.url
-        m = _OG_RE.search(r.text[:400_000])
+        m = _OG_RE.search(r.text)
         if m:
             direct = m.group(1)
             # Strip sizing params (=w..-h..) to get a usable thumbnail.
@@ -359,6 +359,42 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
+
+    # Post-processing: resolve any Google Photos share URLs that the inline
+    # resolve_image calls missed (rate-limited, timed out, etc.).
+    # Scans all features for share URLs, fetches og:image, and patches in
+    # the direct lh3.googleusercontent.com URL so the popup can render <img>.
+    _GPHOTO_RE = re.compile(r'photos\.google\.com/share/|photos\.app\.goo\.gl/')
+    share_urls = set()
+    for feat in features:
+        for ref in feat["properties"].get("imageRefs", []):
+            url = ref.get("url", "")
+            if _GPHOTO_RE.search(url):
+                share_urls.add(url)
+    if share_urls:
+        print(f"[resolve] {len(share_urls)} Google Photos share URL(s) to resolve", file=sys.stderr)
+    url_map = {}
+    for share_url in share_urls:
+        resolved_url = resolve_image(share_url, timeout=20)
+        if resolved_url and "lh" in resolved_url.get("url", ""):
+            url_map[share_url] = resolved_url
+            print(f"[ok] {share_url[:60]}... -> {resolved_url['url'][:60]}...", file=sys.stderr)
+        else:
+            print(f"[warn] could not resolve: {share_url[:60]}...", file=sys.stderr)
+        time.sleep(1)
+    if url_map:
+        for feat in features:
+            props = feat["properties"]
+            refs = props.get("imageRefs", [])
+            pages = props.get("imagePages", [])
+            for i, ref in enumerate(refs):
+                old_url = ref.get("url", "")
+                if old_url in url_map:
+                    ref["url"] = url_map[old_url]["url"]
+                    if i < len(pages):
+                        pages[i] = url_map[old_url]["page"]
+            if pages:
+                props["imagePages"] = pages
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     payload = {
