@@ -95,6 +95,17 @@ NORWAY_BBOXES = [
 ]
 
 
+def _previous_count():
+    """Record count already on disk, for the shrink guard. None if unreadable."""
+    try:
+        with open(OUT) as f:
+            existing = json.load(f)
+        count = len(existing.get("features", []))
+        return count if count else None
+    except (OSError, ValueError, AttributeError):
+        return None
+
+
 def parse_int(v, default):
     try:
         return int(v)
@@ -111,13 +122,20 @@ def norm_yes_no(v):
 
 
 def parking_from_osm(t):
+    """Map OSM parking tags. Untagged means UNKNOWN, not free.
+
+    The old fallback returned {"free": True} whenever no parking tag was
+    present, which asserted free parking for every untagged playground and
+    made the "free parking" filter match the entire dataset.
+    """
     if t.get("parking") == "no" or t.get("parking_access") == "no":
         return {"free": False, "paid": False}
     free = t.get("parking") == "yes" or t.get("parking_fee") == "no"
     paid = t.get("parking_fee") == "yes" or (t.get("parking") == "yes" and not free)
     if free or paid:
         return {"free": free, "paid": paid}
-    return {"free": True, "paid": False}
+    # No parking tags: do not claim free parking we cannot verify.
+    return {"free": False, "paid": False}
 
 
 def dogs_from_osm(t):
@@ -272,23 +290,31 @@ def run_query(query):
 
 def main():
     now = date.today().isoformat()
-    elements = []
+    # Each element is paired with the city of the tile it came from, so the
+    # municipality fallback reflects where the playground actually is rather
+    # than a hardcoded value for every record.
+    elements = []  # list of (element, city)
+    failed_tiles = []
     for bbox in NORWAY_BBOXES:
         city = bbox[0]
         try:
             got = run_query(build_query(bbox))
         except RuntimeError as exc:
+            # Record the failure rather than silently dropping the tile: a
+            # skipped tile shrinks the dataset while the run still exits 0,
+            # which is how the nightly job overwrote 2,683 records with 1,046.
             print(f"[warn] {city}: {exc}", file=sys.stderr)
+            failed_tiles.append(city)
             continue
-        elements.extend(got)
+        elements.extend((el, city) for el in got)
         print(f"[ok] {city}: {len(got)} elements", file=sys.stderr)
         time.sleep(2)  # stay under rate limits between cities
 
     # Dedup by OSM source id (city tiles can overlap).
     seen = set()
     features = []
-    for el in elements:
-        rec = normalize(el, "os", now)
+    for el, city in elements:
+        rec = normalize(el, city, now)
         if rec is None:
             continue
         key = rec["sourceId"]
@@ -309,6 +335,29 @@ def main():
     if not features:
         print("Error: no playgrounds fetched (total Overpass outage) — refusing to write empty data.",
               file=sys.stderr)
+        sys.exit(1)
+
+    # Partial-outage guard: a few reachable tiles must not overwrite a healthy
+    # dataset. 1,000 was well under the 2,300-2,900 the tiles normally yield.
+    MIN_RECORDS = 1000
+    if failed_tiles or len(features) < MIN_RECORDS:
+        print(
+            f"Error: refusing to write a partial dataset.\n"
+            f"  fetched {len(features)} playgrounds (floor {MIN_RECORDS})\n"
+            f"  failed tiles ({len(failed_tiles)}): {', '.join(failed_tiles) or '-'}\n"
+            "The committed file is left untouched so a flaky mirror cannot shrink the map.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # Guard against a regression like the one that dropped 2,683 -> 1,046.
+    previous = _previous_count()
+    if previous and len(features) < previous * 0.5:
+        print(
+            f"Error: refusing to shrink from {previous} to {len(features)} records "
+            f"(more than a 50% drop). The committed file is left untouched.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)

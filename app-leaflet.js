@@ -131,6 +131,15 @@ function mergeWithSeed(live, seed, bounds) {
 // -------------------------------------------------------------
 function loadFromViewport() {
   if (state.isLoading) return;
+
+  // The static layer is NOT viewport-filtered — it is the full nationwide
+  // dataset, identical for every viewport. So once it has loaded there is
+  // nothing to reload on pan/zoom, and rebuilding ~2850 markers on every
+  // moveend made panning very janky. Live enrichment (loadForViewport) is
+  // viewport-dependent, but its adapters are currently stubs; if they are
+  // re-enabled, move that work here behind a zoom/viewport check.
+  if (state.staticPlaygrounds.length > 0) return;
+
   state.isLoading = true;
 
   const bounds = map.getBounds();
@@ -148,7 +157,6 @@ function loadFromViewport() {
   // Static GeoJSON is the PRIMARY source: loaded at ALL zooms, same-origin,
   // never viewport-filtered so the list/markers never vanish on pan.
   // Live Overpass only enriches the viewport at zoom >= 9.
-  state.isLoading = true;
   loadStatic().then(result => {
     const staticPlaygrounds = result.playgrounds || [];
     state.staticPlaygrounds = staticPlaygrounds;
@@ -157,7 +165,6 @@ function loadFromViewport() {
     state.sourceErrors = result.error ? [result.error] : [];
     renderPlaygroundList();
     syncMapMarkers();
-    reapplySearch();
 
     if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
       loadForViewport(bounds).then(({ playgrounds: live, errors }) => {
@@ -169,11 +176,9 @@ function loadFromViewport() {
         state.isLoading = false;
         renderPlaygroundList();
         syncMapMarkers();
-        reapplySearch();
       }).catch(err => {
         state.isLoading = false;
         renderPlaygroundList();
-        syncMapMarkers();
         console.warn('Live viewport load failed:', err);
       });
     } else {
@@ -182,20 +187,19 @@ function loadFromViewport() {
   }).catch(err => {
     state.isLoading = false;
     console.warn('Static load failed:', err);
-    // Fallback: keep whatever the static layer produced (may be []),
-    // so we never show a fully-empty map without surfacing the error.
+    // Fallback: keep whatever the static layer produced (may be []), so we
+    // never show a fully-empty map without surfacing the error. Clear the
+    // flag so the next viewport change retries the fetch.
+    state.staticPlaygrounds = [];
     renderPlaygroundList();
-    syncMapMarkers();
-    reapplySearch();
   });
 }
 
-// Re-apply current search term + filters after a data refresh
+// Re-apply current search term + filters after a data refresh.
+// Markers are already synced by the caller; only the sidebar list needs
+// rebuilding here.
 function reapplySearch() {
-  if (state.searchTerm) {
-    renderPlaygroundList();
-    syncMapMarkers();
-  }
+  if (state.searchTerm) renderPlaygroundList();
 }
 
 // -------------------------------------------------------------
@@ -249,7 +253,9 @@ function syncMapMarkers() {
 // Called after syncMapMarkers and whenever a filter value changes.
 function updateMarkerVisibility() {
   const filter = getActiveFilters();
-  const filterFn = (p) => filterPlaygrounds([p], filter).length === 1;
+  // Include the active search term: markers now hide/show in step with the
+  // sidebar list instead of requiring a full marker rebuild per keystroke.
+  const filterFn = (p) => filterPlaygrounds([p], filter).length === 1 && matchesSearch(p);
 
   state.markerObjects.forEach(({ marker, playground: p }) => {
     const visible = filterFn(p);
@@ -259,66 +265,6 @@ function updateMarkerVisibility() {
       playgroundLayer.removeLayer(marker);
     }
   });
-}
-
-// -------------------------------------------------------------
-// Detail Modal
-// -------------------------------------------------------------
-async function openDetail(p) {
-  const modal = document.getElementById('detail-modal');
-  const content = document.getElementById('detail-content');
-
-  const src = p.source || 'osm';
-  const ratingLine = p.rating?.count
-    ? `Rating: ${p.rating.average} (${p.rating.count})`
-    : 'Ingen rating';
-
-  const eqNames = p.equipment?.length
-    ? p.equipment.map(eq => eq.name).join(', ')
-    : '—';
-
-  const verif = p.verified ? '<span class="verified-badge">✓ Verifisert</span>'
-    : '<span class="badge-no" style="padding:0.1rem 0.5rem;border-radius:4px;font-size:0.75rem;">Ikke verifisert</span>';
-
-  // Placeholder while images load lazily
-  content.innerHTML = `
-    <span class="detail-close" aria-label="Lukk">&times;</span>
-    <h2 style="font-weight:600;font-size:1.1rem;">${p.name}</h2>
-    <div style="font-size:0.9rem;color:#666;">
-      ${ratingLine}
-    </div>
-    <div style="font-size:0.85rem;color:#555;margin-top:0.5rem;">
-      <span class="pin-badge badge-${src}">${p.source}</span> ${verif}
-    </div>
-    <div style="font-size:0.8rem;color:#777;margin-top:0.3rem;">
-      ${eqNames}
-    </div>
-    <div id="lazy-images-container"></div>
-  `;
-
-  modal.style.display = 'block';
-
-  // Lazy-fetch images from imageRefs (only if present in OSM data).
-  // Merge imageRefs with imagePages so renderImageHTML can render the link too.
-  const imageRefs = p.imageRefs || [];
-  const imagePages = p.imagePages || [];
-  const images = imageRefs.length
-    ? imageRefs.map((img, i) => ({ url: img.url, alt: img.alt, page: imagePages[i] || img.url }))
-    : (await getImagesForPlayground(p));
-  const imagesContainer = document.getElementById('lazy-images-container');
-  if (images.length > 0) {
-    imagesContainer.innerHTML = images.map(renderImageHTML).join('');
-  } else {
-    imagesContainer.innerHTML = '<div style="font-size:0.75rem;color:#999;margin-top:0.5rem;">Ingen bilder tilgjengelig</div>';
-  }
-
-  // Close handlers
-  modal.querySelector('.detail-close').onclick = () => {
-    modal.style.display = 'none';
-  };
-  modal.onclick = (e) => {
-    if (e.target === modal) modal.style.display = 'none';
-  };
 }
 
 // -------------------------------------------------------------
@@ -391,27 +337,30 @@ function buildPopupContent(p) {
   // Static OSM records carry resolved direct URLs in imageRefs (loadStatic leaves images
   // [] to keep the GeoJSON lean); imagePages holds the corresponding Google Photos page
   // link for each image so we can render a link below the embedded <img>.
+  // Alt text is OSM-supplied, so renderImageHTML escapes it before it is
+  // interpolated into an HTML string.
   const imgSrc = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : (p.images || []);
-  const pages = p.imagePages && p.imagePages.length ? p.imagePages : (imgSrc.map(() => null));
+  const pages = (p.imagePages && p.imagePages.length) ? p.imagePages : (imgSrc.map(() => null));
   const imagesHtml = (p.source === 'osm' && imgSrc.length)
     ? imgSrc.map((img, i) => renderImageHTML({ ...img, page: pages[i] })).join('')
     : '';
 
+
   const osmUrl = getOsmUrl(p);
   const osmLink = osmUrl
-    ? `<a href="${osmUrl}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:0.5rem;font-size:0.75rem;color:#1a73e8;">Vis på OpenStreetMap →</a>`
+    ? `<a href="${esc(osmUrl)}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:0.5rem;font-size:0.75rem;color:#1a73e8;">Vis på OpenStreetMap →</a>`
     : '';
 
   return `
-    <div style="font-weight:600;font-size:1rem;margin-bottom:0.3rem;">${p.name}</div>
+    <div style="font-weight:600;font-size:1rem;margin-bottom:0.3rem;">${esc(p.name)}</div>
     <div style="font-size:0.85rem;color:#666;margin-bottom:0.3rem;">
       ${ratingLine}
     </div>
     <div style="font-size:0.8rem;color:#555;">
-      <span class="pin-badge badge-${src}">${p.source}</span> ${verif}
+      <span class="pin-badge badge-${esc(src)}">${esc(p.source)}</span> ${verif}
     </div>
     <div style="font-size:0.75rem;color:#777;margin-top:0.3rem;">
-      ${eqNames}
+      ${esc(eqNames)}
     </div>
     ${imagesHtml}
     ${osmLink}
@@ -433,23 +382,30 @@ function openPopup(p, marker) {
 // -------------------------------------------------------------
 // List Rendering
 // -------------------------------------------------------------
+// True when the active search term matches this playground.
+// Shared by the sidebar list and the marker-visibility toggle so both stay
+// in sync without rebuilding every marker on each keystroke.
+function matchesSearch(p) {
+  if (!state.searchTerm) return true;
+  const term = state.searchTerm;
+  if (p.name && p.name.toLowerCase().includes(term)) return true;
+  if (p.municipality && p.municipality.toLowerCase().includes(term)) return true;
+  if (p.equipment && p.equipment.some(e => e.name && e.name.toLowerCase().includes(term))) return true;
+  return false;
+}
+
+const MAX_LIST_ROWS = 200;
+
 function renderPlaygroundList() {
   const list = document.getElementById('result-list') || document.getElementById('playground-list');
   const count = document.getElementById('result-count');
 
   const filter = getActiveFilters();
-  let filtered = filterPlaygrounds(state.playgrounds, filter);
-
-  // If search term is active, further filter by name
-  if (state.searchTerm) {
-    filtered = filtered.filter(p =>
-      p.name.toLowerCase().includes(state.searchTerm) ||
-      (p.location &&
-        (String(p.location.lat).includes(state.searchTerm) || String(p.location.lng).includes(state.searchTerm)))
-    );
-  }
+  const filtered = filterPlaygrounds(state.playgrounds, filter).filter(matchesSearch);
   state.filteredPlaygrounds = filtered;
 
+  // The count always reflects the TRUE total; only the rendered rows are
+  // capped (see MAX_LIST_ROWS).
   count.textContent = filtered.length;
 
   if (filtered.length === 0) {
@@ -457,24 +413,18 @@ function renderPlaygroundList() {
     return;
   }
 
-  // Clear existing list items before adding new ones
-  list.innerHTML = '';
+  // Build into a DocumentFragment and attach ONE delegated click listener
+  // (see bindListClicks). Creating ~2850 per-item listeners on every filter
+  // change made filtering noticeably janky.
+  const frag = document.createDocumentFragment();
 
-  filtered.forEach(p => {
+  const rendered = filtered.slice(0, MAX_LIST_ROWS);
+
+  rendered.forEach(p => {
     const item = document.createElement('div');
     item.className = 'playground-item';
     item.style.cssText = 'cursor:pointer;border-bottom:1px solid #eee;padding:0.75rem;';
     item.dataset.id = p.id;
-    item.addEventListener('click', () => {
-      // Find the marker for this playground and open its popup on the map
-      const marker = state.markerLookup.get(p.id);
-      if (marker) {
-        const popupContent = buildPopupContent(p);
-        marker.bindPopup(popupContent).openPopup();
-        // Pan map to show the popup
-        map.setView(marker.getLatLng(), map.getZoom(), { animate: true });
-      }
-    });
 
     const nameDiv = document.createElement('div');
     nameDiv.style.cssText = 'font-weight:500;margin-bottom:0.25rem;';
@@ -483,13 +433,49 @@ function renderPlaygroundList() {
     const infoDiv = document.createElement('div');
     infoDiv.style.cssText = 'font-size:0.8rem;color:#666;';
     const src = p.source || 'osm';
-    infoDiv.innerHTML = '<span class="pin-badge badge-' + src + '">' + p.source + '</span>' +
+    infoDiv.innerHTML =
+      '<span class="pin-badge badge-' + esc(src) + '">' + esc(src) + '</span>' +
       (p.verified ? '<span class="verified-badge">✓</span>' : '') +
-      (p.rating?.count ? '<span style="margin-left:0.5rem;">⭐ ' + p.rating.average + '</span>' : '');
+      (p.rating?.count ? '<span style="margin-left:0.5rem;">⭐ ' + esc(String(p.rating.average)) + '</span>' : '');
 
     item.appendChild(nameDiv);
     item.appendChild(infoDiv);
-    list.appendChild(item);
+    frag.appendChild(item);
+  });
+
+  // Replace contents in one go; appending 2850 nodes one-by-one forces a
+  // reflow per append.
+  list.innerHTML = '';
+  list.appendChild(frag);
+
+  // Only MAX_LIST_ROWS rows were rendered, so be explicit about the rest.
+  if (filtered.length > rendered.length) {
+    const more = document.createElement('div');
+    more.className = 'list-overflow';
+    more.textContent =
+      'Viser ' + rendered.length + ' av ' + filtered.length +
+      ' – zoom inn eller avgrens filteret for å se flere.';
+    list.appendChild(more);
+  }
+}
+
+// One click listener for the whole result list (event delegation). The list
+// is fully rebuilt on each filter change, so per-item listeners would be
+// allocated and thrown away thousands of times.
+function bindListClicks() {
+  const list = document.getElementById('result-list') || document.getElementById('playground-list');
+  if (!list) return;
+  list.addEventListener('click', (e) => {
+    const item = e.target.closest('.playground-item');
+    if (!item) return;
+    const id = item.dataset.id;
+    const p = state.filteredPlaygrounds.find(x => x.id === id) ||
+              state.playgrounds.find(x => x.id === id);
+    const marker = state.markerLookup.get(id);
+    if (!p || !marker) return;
+    marker.bindPopup(buildPopupContent(p)).openPopup();
+    // Pan map to show the popup
+    map.setView(marker.getLatLng(), map.getZoom(), { animate: true });
   });
 }
 
@@ -539,7 +525,8 @@ function getActiveFilters() {
   const selected = Array.from(eqSelect.selectedOptions).map(o => o.value).filter(v => v !== '');
   filters.equipment = selected;
 
-  const ratingMin = parseInt(document.getElementById('filter-rating').value);
+  // Slider steps are 0.5, so parseFloat: parseInt silently turned 2.5 into 2.
+  const ratingMin = parseFloat(document.getElementById('filter-rating').value);
   if (!isNaN(ratingMin)) filters.ratingMin = ratingMin;
 
   const hasImage = document.getElementById('filter-has-image');
@@ -565,8 +552,15 @@ function filterPlaygrounds(plays, filters) {
       const hasImg = (p.imageRefs && p.imageRefs.length > 0) || (p.images && p.images.length > 0);
       if (!hasImg) return false;
     }
-    if (p.minAge !== undefined && p.minAge > filters.minAge) return false;
-    if (p.maxAge !== undefined && p.maxAge < filters.maxAge) return false;
+    // Age: keep playgrounds whose recommended range OVERLAPS the selected
+    // range. The previous strict containment test (`maxAge < filters.maxAge`)
+    // excluded every playground once maxAge was populated, because the data's
+    // max age (16) is below the control's default (18).
+    const pMin = p.minAge ?? p.age?.min;
+    const pMax = p.maxAge ?? p.age?.max;
+    if (pMin !== undefined && pMax !== undefined) {
+      if (pMax < filters.minAge || pMin > filters.maxAge) return false;
+    }
     if (filters.equipment.length > 0 && filters.equipment.some(e => e)) {
       const pEquip = p.equipment?.map(e => e.name) || [];
       if (!filters.equipment.some(e => pEquip.includes(e))) return false;
@@ -627,9 +621,10 @@ document.getElementById('locate-btn').addEventListener('click', () => {
 const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
   state.searchTerm = e.target.value.toLowerCase();
-  // Always render - re-search even if data was already loaded
+  // Re-filter in place: markers are already on the map, so only toggle their
+  // visibility. Rebuilding all ~2850 markers per keystroke was very janky.
   renderPlaygroundList();
-  syncMapMarkers();
+  updateMarkerVisibility();
 });
 
 // -------------------------------------------------------------
@@ -675,18 +670,21 @@ if (searchClear) {
     document.getElementById('search-input').value = '';
     state.searchTerm = '';
     renderPlaygroundList();
-    syncMapMarkers();
+    updateMarkerVisibility();
   });
 }
 
 // Sidebar close button (mobile)
-const detailClose = document.getElementById('detail-close');
-if (detailClose) {
-  detailClose.addEventListener('click', () => {
+const sidebarClose = document.getElementById('sidebar-close');
+if (sidebarClose) {
+  sidebarClose.addEventListener('click', () => {
     document.getElementById('sidebar').classList.remove('open');
     setTimeout(() => map.invalidateSize(), 300);
   });
 }
+
+// One delegated click listener for the whole result list.
+bindListClicks();
 
 // Initial load
 loadFromViewport();

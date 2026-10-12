@@ -8,6 +8,11 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://unpkg.com">
+  <!-- PWA: manifest was never linked, so browsers could not install the app -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a73e8">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <style>
     /* Fullscreen map */
     html, body { height: 100%; margin: 0; padding: 0; }
@@ -67,8 +72,8 @@
       bottom: 10px !important;
     }
     
-    /* Close button for detail modal */
-    .detail-close {
+    /* Close button for the filter sidebar */
+    .sidebar-close {
       position: absolute;
       top: 5px;
       right: 10px;
@@ -77,6 +82,7 @@
       font-size: 20px;
       cursor: pointer;
       color: #666;
+      z-index: 2;
     }
   </style>
 </head>
@@ -92,7 +98,7 @@
 
   <!-- Sidebar for filters and results -->
   <aside class="sidebar" id="sidebar">
-    <button id="detail-close" class="detail-close" aria-label="Lukk">&times;</button>
+    <button id="sidebar-close" class="sidebar-close" aria-label="Lukk">&times;</button>
     
     <div class="search-block">
       <input id="search-input" type="text" placeholder="Søk navn, by, apparat…" autocomplete="off" aria-label="Søk lekeplasser">
@@ -124,11 +130,11 @@
       </label>
       <label class="filter-row">
         <input type="checkbox" id="filter-dogs-leash">
-        <span>Hunder på skrud</span>
+        <span>Hunder på bånd</span>
       </label>
 
       <div class="age-filter">
-        <label>Alikn. alder: 
+        <label>Aldersområde: 
           <input type="number" id="filter-age-min" min="0" max="18" value="0" style="width:50px;">
           <span>–</span>
           <input type="number" id="filter-age-max" min="0" max="18" value="18" style="width:50px;">
@@ -181,18 +187,19 @@
     </div>
   </aside>
 
-  <!-- Detail modal -->
-  <div id="detail-modal" class="detail-modal" style="display: none;">
-    <div class="detail-card">
-      <button id="detail-close" class="detail-close" aria-label="Lukk">×</button>
-      <div id="detail-content" class="detail-content"></div>
-    </div>
-  </div>
-
   <!-- Load Leaflet first, then seed data, sources (data loading), then app -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="seed-data.js?v=3"></script>
-  <script src="sources.js?v=4"></script>
-  <script src="app-leaflet.js?v=10"></script>
+  <script src="sources.js?v=6"></script>
+  <script src="app-leaflet.js?v=11"></script>
+  <script>
+    // Register PWA Service Worker. Relative path: the site is served from the
+    // /Lekesafari/ subpath on GitHub Pages, so an absolute /sw.js 404s there.
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch(console.error);
+    }
+  </script>
 </body>
 </html>

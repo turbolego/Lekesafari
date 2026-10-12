@@ -65,7 +65,9 @@ function parkFromOSM(t) {
   const free = t.parking === 'yes' || t.parking_fee === 'no';
   const paid = t.parking_fee === 'yes' || (t.parking === 'yes' && !free);
   if (free || paid) return { free, paid };
-  return { free: true, paid: false }; // assume free when unspecified (parks default)
+  // Untagged means UNKNOWN. Do not assert free parking for every untagged
+  // playground — that made the free-parking filter match the entire dataset.
+  return { free: false, paid: false };
 }
 
 function dogsFromOSM(t) {
@@ -247,6 +249,19 @@ function loadSeed() {
 
 // --- Normalization: every source returns the SAME shape ---
 function normalizePlayground(o) {
+  // Age is exposed BOTH nested (age.min/age.max, the data-file shape) and flat
+  // (minAge/maxAge) because filterPlaygrounds() reads the flat form. Without the
+  // flat aliases the "Alder" filter silently matched everything.
+  const age = o.age || {};
+  const minAge = o.minAge ?? age.min;
+  const maxAge = o.maxAge ?? age.max;
+  // Preserve the real source references when the adapter supplies them
+  // (e.g. static loader passes the OSM {type:'osm', id:'node/123'} entries).
+  // Falling back to sourceId/id here would break deep links, because those
+  // are the internal `osm-node-123` form rather than OSM's `node/123`.
+  const sources = Array.isArray(o.sources) && o.sources.length
+    ? o.sources
+    : [{ type: o.source, id: o.sourceId || o.id, retrievedAt: o.lastVerified || new Date().toISOString().slice(0, 10) }];
   return {
     id: o.id,
     name: o.name,
@@ -256,21 +271,28 @@ function normalizePlayground(o) {
     images: o.images || [],
     imageRefs: o.imageRefs || [],  // raw OSM image URLs; fetched on-demand for detail modal
     imagePages: o.imagePages || [],  // original Google Photos page URL for each image (for the link under it)
-    age: o.age || { min: 0, max: 16 },
+    // Flat minAge/maxAge aliases: filterPlaygrounds reads these, so normalizing
+    // only the nested `age` object left the age filter a silent no-op.
+    age: { min: minAge ?? o.age?.min ?? 0, max: maxAge ?? o.age?.max ?? 16 },
+    minAge: minAge ?? o.age?.min ?? 0,
+    maxAge: maxAge ?? o.age?.max ?? 16,
     opening: o.opening || '',
     equipment: o.equipment || [],
     rating: o.rating || { average: 0, count: 0 },
     accessibility: o.accessibility || { wheelchair: o.wheelchair || 'unknown', stroller: 'unknown' },
     fenced: o.fenced === true,
     toilets: o.toilets === true,
-    freeParking: o.parking?.free || false,
-    paidParking: o.parking?.paid || false,
-    dogsAllowed: o.dogs?.allowed || false,
-    dogsLeash: o.dogs?.leash || false,
+    // Only an explicit true counts. The baked data stores 'unknown' strings
+    // for dogs and 'free' defaults, and a truthy string previously made every
+    // record pass the dog/parking filters.
+    freeParking: o.parking?.free === true,
+    paidParking: o.parking?.paid === true,
+    dogsAllowed: o.dogs?.allowed === true,
+    dogsLeash: o.dogs?.leash === true,
     municipality: o.municipality || '',
     verified: o.verified === true,
     lastVerified: o.lastVerified || null,
-    sources: [{ type: o.source, id: o.sourceId || o.id, retrievedAt: o.lastVerified || new Date().toISOString().slice(0, 10) }],
+    sources,
   };
 }
 
@@ -318,44 +340,59 @@ function mergeSources(results) {
 // loaded at ALL zooms. Live OSM enriches it only at zoom >= 9.
 // The nightly GitHub Actions workflow (fetch-playgrounds.yml) bakes fresh
 // Norwegian OSM playgrounds into this file.
+//
+// The payload is ~3.5 MB and used to be re-fetched and re-normalized on every
+// map moveend/zoomend. Memoize the parsed result for the lifetime of the page:
+// the file only changes when the nightly bake commits, so a page reload is the
+// natural refresh point.
+let staticCache = null;
 async function loadStatic() {
-  try {
-    const r = await fetch('data/playgrounds_all.geojson', { cache: 'no-store' });
-    if (!r.ok) return { source: 'static', playgrounds: [], error: `static-${r.status}` };
-    const fc = await r.json();
+  if (staticCache) return staticCache;
+  staticCache = (async () => {
+    try {
+      const r = await fetch('data/playgrounds_all.geojson', { cache: 'no-store' });
+      if (!r.ok) return { source: 'static', playgrounds: [], error: `static-${r.status}` };
+      const fc = await r.json();
 
-    const out = (fc.features || []).map(f => {
-      const p = f.properties || {};
-      if (!f.geometry || f.geometry.type !== 'Point') return null;
-      const [lng, lat] = f.geometry.coordinates;
-      return normalizePlayground({
-        id: p.id,
-        name: p.name,
-        lat, lng,
-        source: p.source || 'static',
-        sourceId: p.id || `osm-node-${p.osm_id || ''}`,
-        verified: p.verified,
-        lastVerified: p.lastVerified,
-        images: [],  // images are NOT fetched here; resolved on-demand via getImagesForPlayground()
-        imageRefs: p.imageRefs || [],  // direct image URLs (resolved at bake time)
-        imagePages: p.imagePages || [],  // source page URL (e.g. Google Photos share) for the "open" link
-        age: p.age,
-        opening: p.opening || '',
-        equipment: p.equipment || [],
-        rating: p.rating || { average: 0, count: 0 },
-        accessibility: p.accessibility,
-        fenced: p.fenced,
-        toilets: p.toilets,
-        parking: p.parking,
-        dogs: p.dogs,
-        municipality: p.municipality,
-        sources: p.sources,
+      const out = (fc.features || []).map(f => {
+        const p = f.properties || {};
+        if (!f.geometry || f.geometry.type !== 'Point') return null;
+        const [lng, lat] = f.geometry.coordinates;
+        return normalizePlayground({
+          id: p.id,
+          name: p.name,
+          lat, lng,
+          source: p.source || 'static',
+          // Prefer OSM's own `node/123` form (props.sourceId) so deep links work.
+          // p.id is the internal `osm-node-123` form and cannot be split into a
+          // valid openstreetmap.org path.
+          sourceId: p.sourceId || p.id,
+          verified: p.verified,
+          lastVerified: p.lastVerified,
+          images: [],  // images are NOT fetched here; resolved on-demand via getImagesForPlayground()
+          imageRefs: p.imageRefs || [],  // raw OSM image URLs for lazy load
+          imagePages: p.imagePages || [],  // source page URL (e.g. Google Photos share) for the "open" link
+          age: p.age,
+          opening: p.opening || '',
+          equipment: p.equipment || [],
+          rating: p.rating || { average: 0, count: 0 },
+          accessibility: p.accessibility,
+          fenced: p.fenced,
+          toilets: p.toilets,
+          parking: p.parking,
+          dogs: p.dogs,
+          municipality: p.municipality,
+          sources: p.sources,
+        });
       });
-    });
-    return { source: 'static', playgrounds: out.filter(Boolean), error: null };
-  } catch (e) {
-    return { source: 'static', playgrounds: [], error: 'static-' + String(e).slice(0, 40) };
-  }
+      return { source: 'static', playgrounds: out.filter(Boolean), error: null };
+    } catch (e) {
+      return { source: 'static', playgrounds: [], error: 'static-' + String(e).slice(0, 40) };
+    }
+  })();
+  // Never cache a failure — the next viewport change should retry the fetch.
+  staticCache.then(res => { if (res.error) staticCache = null; });
+  return staticCache;
 }
 
 // --- One-shot loader the app calls on viewport change ---
