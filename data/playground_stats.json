@@ -1,25 +1,38 @@
 {
-  "total_playgrounds": 1046,
+  "total_playgrounds": 2077,
   "highest_rating": {
     "name": "",
     "rating": 0
   },
   "highest_data_quality": {
-    "name": "Leo's lekeland",
+    "name": "Leo's Lekeland",
     "score": 15
   },
   "last_verified": {
     "name": "Ukjent lekeplass",
-    "date": "2026-10-11"
+    "date": "2026-10-13"
   },
   "most_verified": {
-    "name": "Lekerom/stellerom",
+    "name": "Sykkelbane",
     "count": 1
   },
   "municipality_stats": {
-    "os": 1046
+    "kristiansand": 131,
+    "halden": 63,
+    "stavanger": 647,
+    "porsgrunn": 43,
+    "tromso": 114,
+    "os": 92,
+    "bergen": 963,
+    "drammen": 8,
+    "moss": 16
   },
-  "equipment_stats": {},
+  "equipment_stats": {
+    "swing": 2,
+    "seesaw": 1,
+    "slide": 1,
+    "sandpit": 1
+  },
   "accessibility_stats": {
     "wheelchair": 3,
     "stroller": 0
