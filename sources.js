@@ -396,6 +396,7 @@ async function loadWmsTilgjengelighet(bounds) {
         lng: +lng.toFixed(6),
         description: f.props.get('kommentar') || '',
         source: 'wms-tilgjengelighet',
+        poiType: objtype,
         imageRefs: f.images.slice(0, 3).map(fn => ({ url: `${IMAGE_BASE_URL}/${encodeURIComponent(fn)}`, alt: name })),
         imagePages: f.images.slice(0, 3).map(fn => `${IMAGE_BASE_URL}/${encodeURIComponent(fn)}`),
         accessibility: {
@@ -509,6 +510,7 @@ function normalizePlayground(o) {
     municipality: o.municipality || '',
     verified: o.verified === true,
     lastVerified: o.lastVerified || null,
+    poiType: o.poiType || null,
     sources,
   };
 }

@@ -106,7 +106,26 @@ let state = {
   searchTerm: '',
   markerLookup: new Map(),  // id -> marker
   markerObjects: new Map(),  // id -> {marker, playground}
+  // Per-type toggles for Geonorge WMS POIs (all default ON for the initial
+  // load; the sidebar checkboxes turn them off individually, and the sidebar
+  // is built from WMS_POI_TYPES at page load time so new types are auto-picked
+  // up).
+  wmsTypeFilter: new Set(),
 };
+
+// All 7 Geonorge tilgjengelighet3 point-POI objtypes.
+const WMS_POI_TYPES = new Set([
+  'Sittegruppe',
+  'FriluftToalett',
+  'FriluftGrillBålplass',
+  'FriluftFiskeplassBrygge',
+  'FriluftBaderampe',
+  'FriluftGapahuk',
+  'FriluftHytterTilrettelagt',
+]);
+
+// Populate the Set with all types so they are all enabled initially.
+[...WMS_POI_TYPES].forEach(t => state.wmsTypeFilter.add(t));
 
 // -------------------------------------------------------------
 // Data Loading Functions
@@ -540,6 +559,17 @@ function getActiveFilters() {
   return filters;
 }
 
+// Apply the current WMS POI type filter to the checkboxes and re-render
+// markers when a checkbox is toggled.
+function applyWmsTypeFilter() {
+  document.querySelectorAll('.wms-poi-toggle').forEach(cb => {
+    const t = cb.getAttribute('data-poi-type');
+    if (state.wmsTypeFilter.has(t)) cb.checked = true;
+    else cb.checked = false;
+  });
+  updateMarkerVisibility();
+}
+
 function filterPlaygrounds(plays, filters) {
   return plays.filter(p => {
     if (filters.source !== 'alle' && p.source !== filters.source) return false;
@@ -568,6 +598,8 @@ function filterPlaygrounds(plays, filters) {
       if (!filters.equipment.some(e => pEquip.includes(e))) return false;
     }
     if (p.rating?.average < filters.ratingMin) return false;
+    // WMS POI type filter: a `poiType` must be in the active Set.
+    if (p.poiType && !state.wmsTypeFilter.has(p.poiType)) return false;
     return true;
   });
 }
@@ -739,8 +771,24 @@ if (sidebarClose) {
   });
 }
 
+// Toggle WMS POI type checkboxes — no marker rebuild needed (markers already
+// on map; we just filter visibility).
+document.querySelectorAll('.wms-poi-toggle').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const t = cb.getAttribute('data-poi-type');
+    if (cb.checked) state.wmsTypeFilter.add(t);
+    else state.wmsTypeFilter.delete(t);
+    onFilterChange();
+  });
+});
+
 // One delegated click listener for the whole result list.
 bindListClicks();
+
+// Apply the initial (all-enabled) WMS type filter to the sidebar checkboxes.
+// We do this after bindListClicks because we need the DOM to be parsed; the
+// querySelectorAll('.wms-poi-toggle') runs once here and that is enough.
+applyWmsTypeFilter();
 
 // Initial load
 loadFromViewport();

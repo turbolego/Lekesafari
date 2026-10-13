@@ -218,6 +218,13 @@ body {
   user-select: none;
 }
 
+.filter-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0.4rem 0;
+  margin: 0;
+}
+
 .filter-row input[type="checkbox"] {
   accent-color: var(--primary);
 }
