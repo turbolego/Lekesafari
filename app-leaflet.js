@@ -113,18 +113,10 @@ let state = {
   wmsTypeFilter: new Set(),
 };
 
-// All 7 Geonorge tilgjengelighet3 point-POI objtypes.
-const WMS_POI_TYPES = new Set([
-  'Sittegruppe',
-  'FriluftToalett',
-  'FriluftGrillBålplass',
-  'FriluftFiskeplassBrygge',
-  'FriluftBaderampe',
-  'FriluftGapahuk',
-  'FriluftHytterTilrettelagt',
-]);
-
-// Populate the Set with all types so they are all enabled initially.
+// WMS_POI_TYPES is declared in sources.js (loaded before this script via
+// <script src="sources.js">); it holds the 7 Geonorge tilgjengelighet3
+// point-POI objtypes. Populate the active Set with all types so they are
+// all enabled initially.
 [...WMS_POI_TYPES].forEach(t => state.wmsTypeFilter.add(t));
 
 // -------------------------------------------------------------
