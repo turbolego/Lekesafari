@@ -130,7 +130,7 @@ const WMS_TYPE_LABELS = {
 const WMS_FEATURE_COUNT = 5000;
 const WMS_MAX_FEATURES = 200;  // cap markers shown per scan
 // Zoom gate: only scan at district/city scale (span <= 0.1 deg, ~zoom 12+).
-const WMS_SPAN_LIMIT = 0.1;
+const WMS_SPAN_LIMIT = 0.5;
 // Small in-memory cache keyed on a coarsened viewport so panning a little
 // (and panning back) doesn't re-download the multi-MB GML sample.
 const WMS_CACHE = new Map();
