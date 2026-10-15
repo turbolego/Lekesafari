@@ -551,14 +551,17 @@ function getActiveFilters() {
   return filters;
 }
 
-// Apply the current WMS POI type filter to the checkboxes and re-render
-// markers when a checkbox is toggled.
+// Apply the current WMS POI type filter to the dropdown and re-render
+// markers when the selection changes.
 function applyWmsTypeFilter() {
-  document.querySelectorAll('.wms-poi-toggle').forEach(cb => {
-    const t = cb.getAttribute('data-poi-type');
-    if (state.wmsTypeFilter.has(t)) cb.checked = true;
-    else cb.checked = false;
-  });
+  const dropdown = document.getElementById('filter-poi-type');
+  const selected = new Set();
+  for (const option of dropdown.selectedOptions) {
+    selected.add(option.value);
+  }
+  for (const option of dropdown.options) {
+    option.selected = selected.has(option.value);
+  }
   updateMarkerVisibility();
 }
 
@@ -777,10 +780,15 @@ document.querySelectorAll('.wms-poi-toggle').forEach(cb => {
 // One delegated click listener for the whole result list.
 bindListClicks();
 
-// Apply the initial (all-enabled) WMS type filter to the sidebar checkboxes.
-// We do this after bindListClicks because we need the DOM to be parsed; the
-// querySelectorAll('.wms-poi-toggle') runs once here and that is enough.
-applyWmsTypeFilter();
+// Initialize the dropdown from state.
+document.getElementById('filter-poi-type').addEventListener('change', () => {
+  const selected = new Set();
+  for (const option of document.getElementById('filter-poi-type').selectedOptions) {
+    selected.add(option.value);
+  }
+  state.wmsTypeFilter = selected;
+  applyWmsTypeFilter();
+});
 
 // Initial load
 loadFromViewport();

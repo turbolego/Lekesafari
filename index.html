@@ -185,35 +185,16 @@
 
     <div class="filter-group">
       <h2>Geonorge POI-typer</h2>
-      <p class="filter-hint">Tilgjengelighet3 fra Geonorge. Alle er av som standard.</p>
-      <label class="filter-row">
-        <input type="checkbox" class="wms-poi-toggle" data-poi-type="Sittegruppe">
-        <span>Sittedue</span>
-      </label>
-      <label class="filter-row">
-        <input type="checkbox" class="wms-poi-toggle" data-poi-type="FriluftToalett">
-        <span>Toalett</span>
-      </label>
-      <label class="filter-row">
-        <input type="checkbox" class="wms-poi-toggle" data-poi-type="FriluftGrillBålplass">
-        <span>Grillplass</span>
-      </label>
-      <label class="filter-row">
-        <input type="checkbox" class="wms-poi-toggle" data-poi-type="FriluftFiskeplassBrygge">
-        <span>Fiskeplass</span>
-      </label>
-      <label class="filter-row">
-        <input type="checkbox" class="wms-poi-toggle" data-poi-type="FriluftBaderampe">
-        <span>Baderampe</span>
-      </label>
-      <label class="filter-row">
-        <input type="checkbox" class="wms-poi-toggle" data-poi-type="FriluftGapahuk">
-        <span>Gapahuk</span>
-      </label>
-      <label class="filter-row">
-        <input type="checkbox" class="wms-poi-toggle" data-poi-type="FriluftHytterTilrettelagt">
-        <span>Tilrettelagt hytte</span>
-      </label>
+      <p class="filter-hint">Tilgjengelighet3 fra Geonorge. Alle er på som standard.</p>
+      <select id="filter-poi-type" multiple size="7" style="width: 100%;">
+        <option value="Sittegruppe" selected>Sittedue</option>
+        <option value="FriluftToalett" selected>Toalett</option>
+        <option value="FriluftGrillBålplass" selected>Grillplass</option>
+        <option value="FriluftFiskeplassBrygge" selected>Fiskeplass</option>
+        <option value="FriluftBaderampe" selected>Baderampe</option>
+        <option value="FriluftGapahuk" selected>Gapahuk</option>
+        <option value="FriluftHytterTilrettelagt" selected>Tilrettelagt hytte</option>
+      </select>
     </div>
 
     <div class="results-section">
