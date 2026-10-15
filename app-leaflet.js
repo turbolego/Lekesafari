@@ -46,7 +46,7 @@ const CONFIG = {
 // -------------------------------------------------------------
 const map = L.map('map', {
   center: [61.5, 15.5],  // Norway center
-  zoom: 5,
+  zoom: 10,
   minZoom: 4,
   maxZoom: 17,
   attributionControl: true,
