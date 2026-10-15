@@ -640,7 +640,9 @@ document.getElementById('locate-btn').addEventListener('click', () => {
       map.setView([pos.coords.latitude, pos.coords.longitude], 12);
     },
     () => {
-      map.setView([59.9139, 10.7522], 5);
+      // Default to Burudvann so Geonorge WMS POI markers (e.g. toilet) render
+      // visibly without requiring manual panning.
+      map.setView([59.9739, 10.5133], 13);
     },
     { timeout: 5000 }
   );
