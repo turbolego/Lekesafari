@@ -127,7 +127,7 @@ const WMS_TYPE_LABELS = {
 // the live endpoint). A single request over the viewport bbox with a high
 // feature_count is the efficient way to get the sample; extra grid cells
 // re-download the same global sample without improving POI recall.
-const WMS_FEATURE_COUNT = 300;
+const WMS_FEATURE_COUNT = 5000;
 const WMS_MAX_FEATURES = 200;  // cap markers shown per scan
 // Zoom gate: only scan at district/city scale (span <= 0.1 deg, ~zoom 12+).
 const WMS_SPAN_LIMIT = 0.1;
