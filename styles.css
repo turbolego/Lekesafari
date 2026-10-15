@@ -211,10 +211,10 @@ body {
 .filter-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.2rem 0;
+  gap: 0.4rem;
+  padding: 0.12rem 0;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   user-select: none;
 }
 
