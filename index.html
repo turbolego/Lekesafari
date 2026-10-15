@@ -58,10 +58,12 @@
       flex-direction: column;
     }
     .sidebar.open { left: 0; }
-    /* Filters scroll independently; results docked at the bottom */
-    .filter-group { overflow-y: auto; flex: 0 0 auto; }
+    /* Filters scroll with the sidebar; results section visible at bottom */
+    .filter-group {
+      flex: 0 0 auto;
+    }
     .results-section {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       overflow-y: auto;
       border-top: 1px solid var(--border-color, #ddd);
     }
