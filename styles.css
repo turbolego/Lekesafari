@@ -723,3 +723,21 @@ html, body, .app-shell, .map-wrap { height: 100%; margin: 0; }
   left: auto !important;
   top: auto !important;
 }
+
+/* ============================
+   Emoji Map Markers
+   ============================ */
+/* Emoji markers - replace blue dot with emoji icon */
+.playground-marker-emoji {
+  font-size: 3.2rem;  /* 200% of the original 1.6rem */
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.playground-marker-container {
+  display: block;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #fff;
+}
