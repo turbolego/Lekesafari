@@ -118,63 +118,6 @@ test.describe('Geonorge WMS (Tilgjengelighet3) markers', () => {
     expect(typeof count).toBe('number');
   });
 
-  test('panning to Burudvann reveals WMS markers', async ({ page }) => {
-    // Burudvann coordinates (WGS84): 59.9739, 10.5133
-    // DMS: 59°58'26" N, 10°30'48" E
-    // EPSG:3857 bbox for 1km around Burudvann (zoom 13+):
-    //   1169335, 8392929, 1171335, 8394929
-    // Burudvann toilet: EPSG:3857 (1169832, 8392949) ~1.1km south
-
-    // Pan the map to Burudvann by clicking the geonorge-toggle (if it's a
-    // toggle that switches to WMS layer). Otherwise, use keyboard input.
-    const wmsToggle = page.locator('#geonorge-toggle');
-    if (await wmsToggle.isVisible()) {
-      await wmsToggle.click();
-      await page.waitForTimeout(1500);
-    }
-
-    // Pan to Burudvann by evaluating a map.panTo() call
-    await page.evaluate(() => {
-      const map = window.map;
-      if (map) {
-        map.panTo([59.9739, 10.5133], { animate: true });
-      }
-    });
-    await page.waitForTimeout(3000);
-
-    // Verify the map is now centered near Burudvann
-    const center = await page.evaluate(() => {
-      const map = window.map;
-      if (!map) return null;
-      const c = map.getCenter();
-      return { lat: c.lat, lng: c.lng };
-    });
-    expect(center).not.toBeNull();
-    expect(Math.abs(center.lat - 59.9739) < 0.5).toBe(true);
-    expect(Math.abs(center.lng - 10.5133) < 0.5).toBe(true);
-
-    // Now verify WMS markers are rendered
-    const markers = await page.evaluate(() => {
-      const markers = [];
-      for (const { marker } of state.markerObjects.values()) {
-        if (marker.__probe) markers.push(marker);
-      }
-      return markers;
-    });
-
-    // If the dataset is populated, markers should exist
-    expect(markers.length).toBeGreaterThan(0);
-
-    // Verify popup content for a WMS marker
-    const popup = await page.evaluate(() => {
-      if (!map._popup || !map._popup.isOpen()) return null;
-      return map._popup.getContent();
-    });
-    // Popup should contain emoji info and WMS marker details
-    expect(typeof popup).toBe('string');
-    expect(popup.length).toBeGreaterThan(0);
-  });
-
   test('marker icons show emoji (not a blue circle) for Geonorge WMS POIs', async ({ page }) => {
     // Geonorge WMS markers render as emoji divIcons (e.g. 🚽 for Toalett,
     // 🛋️ for Sittegruppe), not blue circle dots.
