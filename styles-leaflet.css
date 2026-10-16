@@ -27,6 +27,21 @@
   border-radius: 50%;
 }
 
+/* Emoji markers - replace blue dot with emoji icon */
+.playground-marker-emoji {
+  font-size: 1.6rem;
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.playground-marker-container {
+  display: block;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #fff;
+}
+
 /* Leaflet popup styling */
 .leaflet-popup-content-wrapper {
   border-radius: 8px;

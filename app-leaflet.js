@@ -207,6 +207,33 @@ function reapplySearch() {
 // -------------------------------------------------------------
 // Marker Rendering
 // -------------------------------------------------------------
+// Emoji to display for each WMS POI type.
+const POI_EMOJI = {
+  Sittegruppe: '🛋️',
+  FriluftToalett: '🚽',
+  FriluftGrillBålplass: '🔥',
+  FriluftFiskeplassBrygge: '🎣',
+  FriluftBaderampe: '🤿',
+  FriluftGapahuk: '🛖',
+  FriluftHytterTilrettelagt: '🏠',
+};
+
+// Return the emoji icon for a playground marker, or a generic pin if the
+// POI type has no emoji.
+function getMarkerEmoji(p) {
+  const label = p.poiType ? POI_EMOJI[p.poiType] : null;
+  return label || '📍';
+}
+
+function getMarkerIcon(p) {
+  return L.divIcon({
+    html: `<div class="playground-marker-emoji">${getMarkerEmoji(p)}</div>`,
+    className: 'playground-marker-container emoji-marker',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+  });
+}
+
 function getMarkerColor(source) {
   const colors = {
     osm: '#2e7d32',        // green
@@ -233,13 +260,9 @@ function syncMapMarkers() {
 
   list.forEach(p => {
     if (!p.location || p.location.lat == null || p.location.lng == null) return;
-    const marker = L.circleMarker([p.location.lat, p.location.lng], {
-      radius: 8,
-      fillColor: getMarkerColor(p.source),
-      color: '#fff',
-      weight: 2,
-      fillOpacity: 0.8,
-      className: 'playground-marker playground-' + p.source,
+    const marker = L.marker([p.location.lat, p.location.lng], {
+      icon: getMarkerIcon(p),
+      zIndexOffset: 1000,
     });
 
     marker.on('click', () => openPopup(p, marker));
