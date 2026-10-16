@@ -120,10 +120,38 @@ let state = {
 [...WMS_POI_TYPES].forEach(t => state.wmsTypeFilter.add(t));
 
 // -------------------------------------------------------------
-// Data Loading Functions
+// --- Data Loading Functions
 // Use shared implementations from sources.js (already loaded)
 // loadStatic(bounds) and loadForViewport(bounds) are defined in sources.js
 // -------------------------------------------------------------
+
+// Fetch images for a Geonorge Tilgjengelighet3 playground from the API
+// (same method as the live WMS adapter for OSM markers). Called on-demand
+// when a playground's popup opens. Returns {url, alt} objects.
+async function fetchImagesForPopup(p) {
+  const id = p.sourceId || p.id;
+  if (!id) return [];
+
+  try {
+    const r = await fetch(`api/images/${encodeURIComponent(id)}`, { cache: 'no-store' });
+    if (!r.ok) return [];
+    const data = await r.json();
+    // API returns [{url, alt, page}] or empty array
+    return (data || []).map(img => ({
+      url: img.url || '',
+      alt: img.alt || p.name || 'Lekeplass',
+      page: img.page || img.url,
+    }));
+  } catch (e) {
+    console.warn('fetchImagesForPopup failed:', e);
+    return [];
+  }
+}
+
+// Build popup content for a playground marker (shared by markers + list rows).
+// Shared with OSM source: images come from imageRefs, but Geonorge Tilgjengelighet3
+// has empty imageRefs, so those are replaced with the on-demand API fetch
+// (see openPopup()).
 
 // mergeWithSeed: merges live playgrounds with seed (viewport-filtered)
 function mergeWithSeed(live, seed, bounds) {
@@ -407,6 +435,27 @@ function openPopup(p, marker) {
     autoClose: false,
     className: 'playground-popup',
   }).openPopup();
+
+  // For Geonorge Tilgjengelighet3 markers: images are NOT in the static JSON
+  // (imageRefs is empty). Fetch them from the API on popup open (on-demand
+  // pattern, same as the live WMS adapter for OSM markers). While images
+  // load, show a placeholder so the popup doesn't look broken.
+  if (p.source === 'geonorge-tilgjengelighet3') {
+    fetchImagesForPopup(p).then(imgs => {
+      // Rebuild popup with images when they arrive.
+      const imgHtml = imgs.map(img => renderImageHTML(img)).join('');
+      const content = popupContent.replace('</div>', imgHtml + '</div>');
+      marker.setContent(content);
+      marker.update();
+    }).catch(err => {
+      console.warn('Geonorge image fetch failed:', err);
+      // Swap placeholder for a link card if images fail to load.
+      const imgHtml = '<div style="padding:1rem 0;font-size:0.75rem;color:#777;">No images available</div>';
+      const content = popupContent.replace('</div>', imgHtml + '</div>');
+      marker.setContent(content);
+      marker.update();
+    });
+  }
 }
 
 // -------------------------------------------------------------

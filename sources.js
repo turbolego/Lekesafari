@@ -616,21 +616,72 @@ async function loadStatic() {
 
 // --- One-shot loader the app calls on viewport change ---
 async function loadForViewport(bounds) {
-  const [osm, geo, stat, wms] = await Promise.all([
+  const [osm, geo, stat, geoStatic, wms] = await Promise.all([
     loadOSM(bounds),
     loadGeonorge(bounds),
     loadStatic(bounds),
+    loadGeonorgeStatic(bounds),   // Geonorge Tilgjengelighet3 JSON (NEW)
     loadWmsTilgjengelighet(bounds),
   ]);
   // Static is the reliable baseline; live OSM + Geonorge WMS enrich it.
   // Seed is merged at the app layer so the user layer can be controlled
   // independently of the map sources.
-  const merged = mergeSources([stat, osm, geo, wms]);
+  const merged = mergeSources([stat, osm, geo, geoStatic, wms]);
   return {
     playgrounds: merged,
-    errors: [stat.error, osm.error, geo.error, wms.error].filter(Boolean),
+    errors: [stat.error, osm.error, geo.error, geoStatic.error, wms.error].filter(Boolean),
   };
 }
+
+// --- Static baked layer: Geonorge Tilgjengelighet3 ---
+// data/geonorge_tilgjengelighet3_all.json is served by GitHub Pages
+// same-origin (no CORS), so it never hangs on the public WMS endpoint.
+// It's the primary source at ALL zooms. Lowest priority (comes after
+// static + live OSM), so live OSM enrichment wins ties.
+let geonorgeStaticCache = null;
+async function loadGeonorgeStatic(bounds) {
+  if (geonorgeStaticCache) return geonorgeStaticCache;
+  geonorgeStaticCache = (async () => {
+    try {
+      const r = await fetch('data/geonorge_tilgjengelighet3_all.json', { cache: 'no-store' });
+      if (!r.ok) return { source: 'geonorge-static', playgrounds: [], error: `geonorge-static-${r.status}` };
+      const data = await r.json();
+
+      const out = data.map(rec => {
+        const base = {
+          id: rec.id,
+          name: rec.name,
+          emoji: rec.emoji,
+          location: { lat: rec.location.lat, lng: rec.location.lng },
+          source: 'geonorge-tilgjengelighet3',
+          sourceId: rec.sourceId,
+          description: rec.description || '',
+          poiType: rec.poiType,
+          imageRefs: [],        // no image URLs embedded; API for popup images
+          imagePages: [],
+          accessibility: rec.accessibility || { wheelchair: 'unknown', stroller: 'unknown' },
+          verified: true,
+          lastVerified: new Date().toISOString().slice(0, 10),
+          size: rec.size || 'small',
+        };
+        // Merge the shared normalized shape via normalizePlayground so the
+        // rest of the app (filterPlaygrounds, syncMapMarkers, openPopup) sees
+        // the same field names as other sources.
+        return normalizePlayground(base);
+      });
+      return { source: 'geonorge-static', playgrounds: out, error: null };
+    } catch (e) {
+      return { source: 'geonorge-static', playgrounds: [], error: 'geonorge-static-' + String(e).slice(0, 40) };
+    }
+  })();
+  // Never cache a failure — the next viewport change should retry the fetch.
+  geonorgeStaticCache.then(res => { if (res.error) geonorgeStaticCache = null; });
+  return geonorgeStaticCache;
+}
+
+// --- Static baked layer (same-origin, always available) ---
+// data/playgrounds_all.geojson is served by GitHub Pages same-origin (no CORS),
+// so it never hangs on public-mirror outages. It's the primary baseline —
 
 /**
  * Fetch images for a playground on-demand.
