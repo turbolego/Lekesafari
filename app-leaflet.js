@@ -231,9 +231,9 @@ function getMarkerIcon(p) {
   return L.divIcon({
     html: `<div class="playground-marker-emoji">${getMarkerEmoji(p)}</div>`,
     className: 'playground-marker-container emoji-marker',
-    // 200% size (doubled from the original 32px)
-    iconSize: [64, 64],
-    iconAnchor: [32, 64],
+    // 50% of the standard size (half of the previous 200% size)
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
   });
 }
 

@@ -729,7 +729,7 @@ html, body, .app-shell, .map-wrap { height: 100%; margin: 0; }
    ============================ */
 /* Emoji markers - replace blue dot with emoji icon */
 .playground-marker-emoji {
-  font-size: 3.2rem;  /* 200% of the original 1.6rem */
+  font-size: 1.6rem;  /* 50% of the previous 200% size (3.2rem) */
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   text-align: center;
   line-height: 1.1;
