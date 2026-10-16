@@ -197,6 +197,23 @@ function loadFromViewport() {
     renderPlaygroundList();
     syncMapMarkers();
 
+    // Load Geonorge Tilgjengelighet3 data from JSON at ALL zooms.
+    // The JSON file (data/geonorge_tilgjengelighet3_all.json) replaces the
+    // on-demand WMS fetch (loadWmsTilgjengelighet in sources.js).
+    // Images in popups are fetched from the API on-demand (see openPopup).
+    if (typeof loadGeonorgeStatic === 'function') {
+      loadGeonorgeStatic(bounds).then(geoRes => {
+        if (geoRes && geoRes.playgrounds && geoRes.playgrounds.length > 0) {
+          state.playgrounds = dedupePlaygrounds(staticPlaygrounds.concat(geoRes.playgrounds));
+          state.sourceErrors = geoRes.error ? [geoRes.error] : state.sourceErrors;
+          renderPlaygroundList();
+          syncMapMarkers();
+        }
+      }).catch(err => {
+        console.warn('Geonorge static load failed:', err);
+      });
+    }
+
     // Load the live viewport enrichment (WMS GetFeatureInfo) regardless of
     // whether static data was already loaded. The static layer is always the
     // same nationwide dataset, but the live WMS enrichment must run on every
