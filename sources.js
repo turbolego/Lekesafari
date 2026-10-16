@@ -614,25 +614,6 @@ async function loadStatic() {
   return staticCache;
 }
 
-// --- One-shot loader the app calls on viewport change ---
-async function loadForViewport(bounds) {
-  const [osm, geo, stat, geoStatic, wms] = await Promise.all([
-    loadOSM(bounds),
-    loadGeonorge(bounds),
-    loadStatic(bounds),
-    loadGeonorgeStatic(bounds),   // Geonorge Tilgjengelighet3 JSON (NEW)
-    loadWmsTilgjengelighet(bounds),
-  ]);
-  // Static is the reliable baseline; live OSM + Geonorge WMS enrich it.
-  // Seed is merged at the app layer so the user layer can be controlled
-  // independently of the map sources.
-  const merged = mergeSources([stat, osm, geo, geoStatic, wms]);
-  return {
-    playgrounds: merged,
-    errors: [stat.error, osm.error, geo.error, geoStatic.error, wms.error].filter(Boolean),
-  };
-}
-
 // --- Static baked layer: Geonorge Tilgjengelighet3 ---
 // data/geonorge_tilgjengelighet3_all.json is served by GitHub Pages
 // same-origin (no CORS), so it never hangs on the public WMS endpoint.
