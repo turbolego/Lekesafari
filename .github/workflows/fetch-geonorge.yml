@@ -1,0 +1,88 @@
+# Lekesafari — Geonorge Tilgjengelighet3 data bake (spec §8)
+#
+# Fetches all map markers from the Geonorge WMS endpoint Tilgjengelighet3
+# (wms.geonorge.no/skwms1/wms.tilgjengelighet3, layers friluft,felles) and
+# bakes them into data/geonorge_tilgjengelighet3_all.json. The frontend then
+# loads this static file instead of calling the WMS API at page-load time.
+#
+# Method (mirrors tools/fetch_playgrounds.py for OSM playgrounds):
+#   * Daily schedule (06:30 UTC, off-peak for the public WMS mirrors)
+#   * Single high-feature_count GetFeatureInfo request over the full Norway
+#     bbox (EPSG:3857); output is truncated by the endpoint, so the workflow
+#     uses feature_count=500 and the script paginates in the bake script.
+#   * Output JSON keeps image REFERENCES only (no binary images). The frontend
+#     loads the <img> lazily when a playground's popup opens — same pattern as
+#     the OSM playgrounds.
+#   * If the WMS endpoint is unreachable, the last known good JSON is
+#     retained (never empties the map).
+#
+# No secrets are needed: the WMS endpoint is public and CORS-open.
+
+name: fetch-geonorge-tilgjengelighet3
+
+on:
+  schedule:
+    # 06:30 UTC daily — off-peak for the public WMS endpoint.
+    - cron: '30 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.15'
+
+      - name: Install deps
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -c "import urllib.request, json, math; print('deps ok')"
+
+      - name: Bake Geonorge Tilgjengelighet3 data
+        id: bake
+        run: |
+          set -euo pipefail
+          python3 tools/fetch_geonorge_tilgjengelighet3.py 2> bake.err || {
+            echo "Bake exited non-zero; showing tail of stderr:"
+            tail -n 40 bake.err || true
+            exit 1
+          }
+          # Truncate any captured build output shown to the log.
+          echo "bake-output-tail" > /dev/null
+
+      - name: Show data manifest
+        run: |
+          # Print only the compact metadata, never the full JSON.
+          if [ -f data/geonorge_tilgjengelighet3_all.json ]; then
+            echo "Data manifest (truncated):"
+            head -c 800 data/geonorge_tilgjengelighet3_all.json
+            echo ""
+            echo "Record count: $(python3 -c 'import json; d=json.load(open("data/geonorge_tilgjengelighet3_all.json")); print(len(d))')"
+          else
+            echo "No geonorge_tilgjengelighet3_all.json produced."
+          fi
+
+      - name: Commit data
+        run: |
+          set -euo pipefail
+          git config user.name  "Lekesafari Data Bot"
+          git config user.email "data-bot@users.noreply.github.com"
+          git add data/geonorge_tilgjengelighet3_all.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No data changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "data: regenerate Geonorge Tilgjengelighet3 markers ($(date +%Y-%m-%d))"
+          # GITHUB_TOKEN is the built-in job token; used only for the commit-back.
+          git push "https://x-access-token:*** secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "HEAD:${{ github.ref_name }}"
