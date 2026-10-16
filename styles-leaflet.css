@@ -29,7 +29,7 @@
 
 /* Emoji markers - replace blue dot with emoji icon */
 .playground-marker-emoji {
-  font-size: 1.6rem;
+  font-size: 3.2rem;  /* 200% of the original 1.6rem */
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   text-align: center;
   line-height: 1.1;

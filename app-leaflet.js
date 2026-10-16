@@ -218,9 +218,11 @@ const POI_EMOJI = {
   FriluftHytterTilrettelagt: '🏠',
 };
 
-// Return the emoji icon for a playground marker, or a generic pin if the
-// POI type has no emoji.
+// Return the emoji icon for a playground marker.
+// - OSM source markers always display the 🛝 slide emoji.
+// - Other sources use their POI type emoji; fallback to a generic pin.
 function getMarkerEmoji(p) {
+  if (p.source === 'osm') return '🛝';
   const label = p.poiType ? POI_EMOJI[p.poiType] : null;
   return label || '📍';
 }
@@ -229,8 +231,9 @@ function getMarkerIcon(p) {
   return L.divIcon({
     html: `<div class="playground-marker-emoji">${getMarkerEmoji(p)}</div>`,
     className: 'playground-marker-container emoji-marker',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
+    // 200% size (doubled from the original 32px)
+    iconSize: [64, 64],
+    iconAnchor: [32, 64],
   });
 }
 
