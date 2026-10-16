@@ -143,14 +143,6 @@ function mergeWithSeed(live, seed, bounds) {
 function loadFromViewport() {
   if (state.isLoading) return;
 
-  // The static layer is NOT viewport-filtered — it is the full nationwide
-  // dataset, identical for every viewport. So once it has loaded there is
-  // nothing to reload on pan/zoom, and rebuilding ~2850 markers on every
-  // moveend made panning very janky. Live enrichment (loadForViewport) is
-  // viewport-dependent, but its adapters are currently stubs; if they are
-  // re-enabled, move that work here behind a zoom/viewport check.
-  if (state.staticPlaygrounds.length > 0) return;
-
   state.isLoading = true;
 
   const bounds = map.getBounds();
@@ -167,7 +159,7 @@ function loadFromViewport() {
 
   // Static GeoJSON is the PRIMARY source: loaded at ALL zooms, same-origin,
   // never viewport-filtered so the list/markers never vanish on pan.
-  // Live Overpass only enriches the viewport at zoom >= 9.
+  // Live Overpass + Geonorge WMS enrich it at zoom >= 9.
   loadStatic().then(result => {
     const staticPlaygrounds = result.playgrounds || [];
     state.staticPlaygrounds = staticPlaygrounds;
@@ -177,11 +169,13 @@ function loadFromViewport() {
     renderPlaygroundList();
     syncMapMarkers();
 
+    // Load the live viewport enrichment (WMS GetFeatureInfo) regardless of
+    // whether static data was already loaded. The static layer is always the
+    // same nationwide dataset, but the live WMS enrichment must run on every
+    // viewport change so markers near the current view (e.g. Burudvann) appear.
     if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
       loadForViewport(bounds).then(({ playgrounds: live, errors }) => {
         // Enrich: merge live viewport data over the static baseline.
-        // Dedupe is critical — the live viewport can return records that
-        // are already in the static set, and concat alone would double them.
         state.playgrounds = dedupePlaygrounds(staticPlaygrounds.concat(live));
         state.sourceErrors = errors || state.sourceErrors;
         state.isLoading = false;
@@ -198,9 +192,6 @@ function loadFromViewport() {
   }).catch(err => {
     state.isLoading = false;
     console.warn('Static load failed:', err);
-    // Fallback: keep whatever the static layer produced (may be []), so we
-    // never show a fully-empty map without surfacing the error. Clear the
-    // flag so the next viewport change retries the fetch.
     state.staticPlaygrounds = [];
     renderPlaygroundList();
   });
