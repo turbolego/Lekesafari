@@ -54644,82 +54644,6 @@
   }
  },
  {
-  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48103",
-  "name": "🚽",
-  "emoji": "🚽",
-  "location": {
-   "lat": 61.586682,
-   "lng": 5.033614
-  },
-  "source": "geonorge-tilgjengelighet3",
-  "sourceId": "FriluftTurvei/48103",
-  "description": "Noko bratt bakke",
-  "poiType": "FriluftTurvei",
-  "imageRefs": [],
-  "imagePages": [],
-  "accessibility": {
-   "wheelchair": "yes",
-   "stroller": "unknown"
-  }
- },
- {
-  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48104",
-  "name": "🚽",
-  "emoji": "🚽",
-  "location": {
-   "lat": 60.267024,
-   "lng": 5.075955
-  },
-  "source": "geonorge-tilgjengelighet3",
-  "sourceId": "FriluftTurvei/48104",
-  "description": "",
-  "poiType": "FriluftTurvei",
-  "imageRefs": [],
-  "imagePages": [],
-  "accessibility": {
-   "wheelchair": "yes",
-   "stroller": "unknown"
-  }
- },
- {
-  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48105",
-  "name": "🚽",
-  "emoji": "🚽",
-  "location": {
-   "lat": 59.841196,
-   "lng": 10.773619
-  },
-  "source": "geonorge-tilgjengelighet3",
-  "sourceId": "FriluftTurvei/48105",
-  "description": "",
-  "poiType": "FriluftTurvei",
-  "imageRefs": [],
-  "imagePages": [],
-  "accessibility": {
-   "wheelchair": "yes",
-   "stroller": "unknown"
-  }
- },
- {
-  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48107",
-  "name": "🚽",
-  "emoji": "🚽",
-  "location": {
-   "lat": 59.917526,
-   "lng": 10.748797
-  },
-  "source": "geonorge-tilgjengelighet3",
-  "sourceId": "FriluftTurvei/48107",
-  "description": "Godt underlag ved treningsapparat.",
-  "poiType": "FriluftTurvei",
-  "imageRefs": [],
-  "imagePages": [],
-  "accessibility": {
-   "wheelchair": "yes",
-   "stroller": "unknown"
-  }
- },
- {
   "id": "geonorge-tilgjengelighet3-FriluftTurvei-48108",
   "name": "🚽",
   "emoji": "🚽",
@@ -54787,6 +54711,82 @@
   "source": "geonorge-tilgjengelighet3",
   "sourceId": "FriluftTurvei/48111",
   "description": "Naturlig ledelinje, grus - gress/vegetasjon.",
+  "poiType": "FriluftTurvei",
+  "imageRefs": [],
+  "imagePages": [],
+  "accessibility": {
+   "wheelchair": "yes",
+   "stroller": "unknown"
+  }
+ },
+ {
+  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48112",
+  "name": "🚽",
+  "emoji": "🚽",
+  "location": {
+   "lat": 62.733039,
+   "lng": 7.094762
+  },
+  "source": "geonorge-tilgjengelighet3",
+  "sourceId": "FriluftTurvei/48112",
+  "description": "Asfaltert del av turveg. Passasje forbi bom er 105 cm.",
+  "poiType": "FriluftTurvei",
+  "imageRefs": [],
+  "imagePages": [],
+  "accessibility": {
+   "wheelchair": "yes",
+   "stroller": "unknown"
+  }
+ },
+ {
+  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48113",
+  "name": "🚽",
+  "emoji": "🚽",
+  "location": {
+   "lat": 63.750555,
+   "lng": 11.292669
+  },
+  "source": "geonorge-tilgjengelighet3",
+  "sourceId": "FriluftTurvei/48113",
+  "description": "",
+  "poiType": "FriluftTurvei",
+  "imageRefs": [],
+  "imagePages": [],
+  "accessibility": {
+   "wheelchair": "yes",
+   "stroller": "unknown"
+  }
+ },
+ {
+  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48114",
+  "name": "🚽",
+  "emoji": "🚽",
+  "location": {
+   "lat": 59.917787,
+   "lng": 10.748435
+  },
+  "source": "geonorge-tilgjengelighet3",
+  "sourceId": "FriluftTurvei/48114",
+  "description": "",
+  "poiType": "FriluftTurvei",
+  "imageRefs": [],
+  "imagePages": [],
+  "accessibility": {
+   "wheelchair": "yes",
+   "stroller": "unknown"
+  }
+ },
+ {
+  "id": "geonorge-tilgjengelighet3-FriluftTurvei-48115",
+  "name": "🚽",
+  "emoji": "🚽",
+  "location": {
+   "lat": 61.229317,
+   "lng": 6.102822
+  },
+  "source": "geonorge-tilgjengelighet3",
+  "sourceId": "FriluftTurvei/48115",
+  "description": "Tilkomstvei til bustadfelt",
   "poiType": "FriluftTurvei",
   "imageRefs": [],
   "imagePages": [],
