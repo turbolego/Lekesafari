@@ -23,6 +23,16 @@ async function waitForData(page) {
   }, null, { timeout: 30000 });
 }
 
+// Wait until WMS POI markers have loaded (source === 'wms-tilgjengelighet').
+async function waitForWmsMarkers(page) {
+  await page.waitForFunction(() => {
+    const count = [...state.markerObjects.values()].filter(
+      p => p && p.playground && p.playground.source === 'wms-tilgjengelighet'
+    ).length;
+    return count > 0;
+  }, null, { timeout: 30000 });
+}
+
 async function resultCount(page) {
   return parseInt(await page.textContent('#result-count'), 10);
 }
@@ -58,6 +68,7 @@ test.describe('Geonorge WMS (Tilgjengelighet3) markers', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await waitForData(page);
+    await waitForWmsMarkers(page);
   });
 
   test('map renders Geonorge WMS POI markers as blue circle markers', async ({ page }) => {
