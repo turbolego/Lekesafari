@@ -653,6 +653,8 @@ async function loadGeonorgeStatic(bounds) {
           name: rec.name,
           emoji: rec.emoji,
           location: { lat: rec.location.lat, lng: rec.location.lng },
+          lat: rec.location.lat,
+          lng: rec.location.lng,
           source: 'geonorge-tilgjengelighet3',
           sourceId: rec.sourceId,
           description: rec.description || '',
@@ -663,6 +665,17 @@ async function loadGeonorgeStatic(bounds) {
           verified: true,
           lastVerified: new Date().toISOString().slice(0, 10),
           size: rec.size || 'small',
+          // Default fields expected by normalizePlayground / filterPlaygrounds
+          age: { min: 0, max: 16 },
+          opening: '',
+          equipment: [],
+          rating: { average: 0, count: 0 },
+          fenced: false,
+          toilets: false,
+          parking: { free: true, paid: false },
+          dogs: { allowed: true, leash: false },
+          municipality: '',
+          sources: [{ type: 'geonorge-tilgjengelighet3', id: rec.sourceId, retrievedAt: new Date().toISOString().slice(0, 10) }],
         };
         // Merge the shared normalized shape via normalizePlayground so the
         // rest of the app (filterPlaygrounds, syncMapMarkers, openPopup) sees
