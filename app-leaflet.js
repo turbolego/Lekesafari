@@ -214,26 +214,27 @@ function loadFromViewport() {
       });
     }
 
-    // Load the live viewport enrichment (WMS GetFeatureInfo) regardless of
-    // whether static data was already loaded. The static layer is always the
-    // same nationwide dataset, but the live WMS enrichment must run on every
-    // viewport change so markers near the current view (e.g. Burudvann) appear.
-    if (zoom >= CONFIG.MIN_LIVE_ZOOM) {
-      loadForViewport(bounds).then(({ playgrounds: live, errors }) => {
-        // Enrich: merge live viewport data over the static baseline.
-        state.playgrounds = dedupePlaygrounds(staticPlaygrounds.concat(live));
-        state.sourceErrors = errors || state.sourceErrors;
-        state.isLoading = false;
-        renderPlaygroundList();
-        syncMapMarkers();
+    // Load Geonorge Tilgjengelighet3 data from JSON at ALL zooms.
+    // The JSON file (data/geonorge_tilgjengelighet3_all.json) replaces the
+    // on-demand WMS fetch (loadWmsTilgjengelighet in sources.js).
+    // Images in popups are fetched from the API on-demand (see openPopup).
+    if (typeof loadGeonorgeStatic === 'function') {
+      loadGeonorgeStatic(bounds).then(geoRes => {
+        if (geoRes && geoRes.playgrounds && geoRes.playgrounds.length > 0) {
+          state.playgrounds = dedupePlaygrounds(staticPlaygrounds.concat(geoRes.playgrounds));
+          state.sourceErrors = geoRes.error ? [geoRes.error] : state.sourceErrors;
+          renderPlaygroundList();
+          syncMapMarkers();
+        }
       }).catch(err => {
-        state.isLoading = false;
-        renderPlaygroundList();
-        console.warn('Live viewport load failed:', err);
+        console.warn('Geonorge static load failed:', err);
       });
-    } else {
-      state.isLoading = false;
     }
+
+    // Live viewport enrichment is no longer needed — map markers come from
+    // data/geonorge_tilgjengelighet3_all.json (loaded above), and images are
+    // loaded on-demand via fetchImagesForPopup() when a popup opens.
+    state.isLoading = false;
   }).catch(err => {
     state.isLoading = false;
     console.warn('Static load failed:', err);
