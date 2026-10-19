@@ -735,9 +735,4 @@ html, body, .app-shell, .map-wrap { height: 100%; margin: 0; }
   line-height: 1.1;
 }
 
-.playground-marker-container {
-  display: block;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: #fff;
-}
+.playground-marker-container.hidden { display: none; }

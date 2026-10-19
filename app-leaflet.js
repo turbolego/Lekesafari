@@ -64,27 +64,6 @@ L.control.zoom({ position: 'bottomright' }).addTo(map);
 const playgroundLayer = L.layerGroup().addTo(map);
 window.playgroundLayer = playgroundLayer;
 
-// Geonorge WMS layer (raster)
-const geonorgeLayer = L.tileLayer.wms('https://wms.geonorge.no/skwms1/wms.tilgjengelighet3', {
-  layers: 'tilgjengelighet',
-  format: 'image/png',
-  transparent: true,
-  attribution: 'Geonorge',
-});
-// Initially hidden – toggle with button
-let geonorgeVisible = false;
-const geonorgeToggle = document.getElementById('geonorge-toggle');
-if (geonorgeToggle) {
-  geonorgeToggle.addEventListener('click', () => {
-    geonorgeVisible = !geonorgeVisible;
-    if (geonorgeVisible) {
-      geonorgeLayer.addTo(map);
-    } else {
-      map.removeLayer(geonorgeLayer);
-    }
-  });
-}
-
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const sidebar = document.getElementById('sidebar');
 if (sidebarToggle && sidebar) {
@@ -213,25 +192,7 @@ function loadFromViewport() {
         console.warn('Geonorge static load failed:', err);
       });
     }
-
-    // Load Geonorge Tilgjengelighet3 data from JSON at ALL zooms.
-    // The JSON file (data/geonorge_tilgjengelighet3_all.json) replaces the
-    // on-demand WMS fetch (loadWmsTilgjengelighet in sources.js).
-    // Images in popups are fetched from the API on-demand (see openPopup).
-    if (typeof loadGeonorgeStatic === 'function') {
-      loadGeonorgeStatic(bounds).then(geoRes => {
-        if (geoRes && geoRes.playgrounds && geoRes.playgrounds.length > 0) {
-          state.playgrounds = dedupePlaygrounds(staticPlaygrounds.concat(geoRes.playgrounds));
-          state.sourceErrors = geoRes.error ? [geoRes.error] : state.sourceErrors;
-          renderPlaygroundList();
-          syncMapMarkers();
-        }
-      }).catch(err => {
-        console.warn('Geonorge static load failed:', err);
-      });
-    }
-
-    // Live viewport enrichment is no longer needed — map markers come from
+  }).catch(err => {
     // data/geonorge_tilgjengelighet3_all.json (loaded above), and images are
     // loaded on-demand via fetchImagesForPopup() when a popup opens.
     state.isLoading = false;
@@ -360,11 +321,8 @@ function updateMarkerVisibility() {
 
   state.markerObjects.forEach(({ marker, playground: p }) => {
     const visible = filterFn(p);
-    if (visible) {
-      playgroundLayer.addLayer(marker);
-    } else {
-      playgroundLayer.removeLayer(marker);
-    }
+    marker._leaflet_id = visible ? 'visible' : 'hidden';
+    marker.getElement().classList.toggle('hidden', !visible);
   });
 }
 
