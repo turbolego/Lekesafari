@@ -114,8 +114,8 @@ async function fetchImagesForPopup(p) {
   if (p && Array.isArray(p.imageRefs) && p.imageRefs.length > 0) {
     return p.imageRefs.map(img => ({
       url: img,
-      alt: p.name || 'Lekeplass',
       page: img,
+      alt: p.name || 'Lekeplass',
     }));
   }
 
