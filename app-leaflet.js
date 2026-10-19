@@ -402,17 +402,15 @@ function buildPopupContent(p) {
     ? '<span class="verified-badge">✓ Verifisert</span>'
     : '';
 
-  // Only show images for OSM + WMS sources (the static OSM-baked layer and the
-  // Geonorge WMS adapter both carry resolved direct image URLs in imageRefs;
-  // other/legacy sources had hallucinated images and are excluded). imagePages
-  // holds the original page link per image so we can render a link below the
-  // embedded <img>. Alt text is OSM/Geonorge-supplied, so renderImageHTML
-  // escapes it before it is interpolated into an HTML string.
-  const hasImages = (p.source === 'osm' || p.source === 'wms-tilgjengelighet');
+  // Only show images for OSM + WMS + Geonorge Tilgjengelighet3 sources.
+  // The Geonorge WMS adapter carries resolved direct image URLs in imageRefs.
+  const hasImages = p.source === 'osm' || p.source === 'wms-tilgjengelighet' || p.source === 'geonorge-tilgjengelighet3';
+  // imageRefs stores raw URLs; convert to {url, page, alt} objects for renderImageHTML.
   const imgSrc = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : (p.images || []);
   const pages = (p.imagePages && p.imagePages.length) ? p.imagePages : (imgSrc.map(() => null));
-  const imagesHtml = (hasImages && imgSrc.length)
-    ? imgSrc.map((img, i) => renderImageHTML({ ...img, page: pages[i] })).join('')
+  const imageRefs = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : [];
+  const imagesHtml = (hasImages && imageRefs.length)
+    ? imageRefs.map((img, i) => renderImageHTML({ url: img, page: pages[i] || img, alt: p.name || 'Lekeplass' })).join('')
     : '';
 
 
