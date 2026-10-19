@@ -297,28 +297,54 @@ function getMarkerColor(source) {
 function syncMapMarkers() {
   // Always render ALL markers from the full workflow dataset.
   // Filters only hide some; they never remove the base set.
-  playgroundLayer.clearLayers();
-  state.markerLookup.clear();
-  state.markerObjects.clear();
-
   const list = state.playgrounds || [];
   if (!list.length) {
     console.warn('No playgrounds to render on map');
     return;
   }
 
+  // Build a map of existing markers by id for efficient updates
+  const existing = new Map();
+  playgroundLayer.eachLayer(m => {
+    if (m.__playgroundId) {
+      existing.set(m.__playgroundId, m);
+    }
+  });
+
+  // Update or create markers
   list.forEach(p => {
     if (!p.location || p.location.lat == null || p.location.lng == null) return;
-    const marker = L.marker([p.location.lat, p.location.lng], {
-      icon: getMarkerIcon(p),
-      zIndexOffset: 1000,
-    });
+    const id = p.id;
+    const existingMarker = existing.get(id);
 
-    marker.on('click', () => openPopup(p, marker));
-    playgroundLayer.addLayer(marker);
-    state.markerLookup.set(p.id, marker);
-    state.markerObjects.set(p.id, { marker, playground: p });
+    if (existingMarker) {
+      // Update marker position (fast, no DOM recreation)
+      existingMarker.setLatLng([p.location.lat, p.location.lng]);
+      existingMarker.setIcon(getMarkerIcon(p));
+      existingMarker.off('click');
+      existingMarker.on('click', () => openPopup(p, existingMarker));
+    } else {
+      // New marker - create and add
+      const marker = L.marker([p.location.lat, p.location.lng], {
+        icon: getMarkerIcon(p),
+        zIndexOffset: 1000,
+      });
+      marker.__playgroundId = id;
+      marker.on('click', () => openPopup(p, marker));
+      playgroundLayer.addLayer(marker);
+      state.markerLookup.set(id, marker);
+      state.markerObjects.set(id, { marker, playground: p });
+    }
   });
+
+  // Remove markers that are no longer in the list
+  for (const [id, marker] of existing.entries()) {
+    if (!list.find(p => p.id === id)) {
+      playgroundLayer.removeLayer(marker);
+      state.markerLookup.delete(id);
+      state.markerObjects.delete(id);
+    }
+  }
 
   // Apply the active filter to show/hide markers immediately.
   updateMarkerVisibility();
@@ -687,21 +713,25 @@ function filterPlaygrounds(plays, filters) {
 // Event Listeners
 // -------------------------------------------------------------
 // Moveend for viewport updates
+let loadTimeout = null;
 map.on('moveend', () => {
-  const c = map.getCenter();
-  const z = map.getZoom();
-  const last = state.lastView;
-  // Load if view changed (any change triggers reload)
-  if (!last || last.zoom !== z || last.lng !== c.lng || last.lat !== c.lat) {
-    loadFromViewport();
-  }
+  // Debounce: only reload after 300ms of no panning
+  clearTimeout(loadTimeout);
+  loadTimeout = setTimeout(() => {
+    const c = map.getCenter();
+    const z = map.getZoom();
+    const last = state.lastView;
+    // Load if view changed (any change triggers reload)
+    if (!last || last.zoom !== z || last.lng !== c.lng || last.lat !== c.lat) {
+      loadFromViewport();
+    }
+  }, 300);
 });
 
 // Zoom change
 map.on('zoomend', () => {
   loadFromViewport();
 });
-
 // Geolocation button
 document.getElementById('locate-btn').addEventListener('click', () => {
   if (!navigator.geolocation) return;
