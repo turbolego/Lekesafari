@@ -447,15 +447,36 @@ function openPopup(p, marker) {
       // Rebuild popup with images when they arrive.
       const imgHtml = imgs.map(img => renderImageHTML(img)).join('');
       const content = popupContent.replace('</div>', imgHtml + '</div>');
-      marker.setContent(content);
-      marker.update();
+      const popup = marker.getPopup();
+      if (popup) {
+        popup.setContent(content);
+        popup.update();
+      } else {
+        marker.bindPopup(content, {
+          maxWidth: 300,
+          closeButton: true,
+          closeOnClick: true,
+          autoClose: false,
+          className: 'playground-popup',
+        }).openPopup();
+      }
     }).catch(err => {
       console.warn('Geonorge image fetch failed:', err);
-      // Swap placeholder for a link card if images fail to load.
       const imgHtml = '<div style="padding:1rem 0;font-size:0.75rem;color:#777;">No images available</div>';
       const content = popupContent.replace('</div>', imgHtml + '</div>');
-      marker.setContent(content);
-      marker.update();
+      const popup = marker.getPopup();
+      if (popup) {
+        popup.setContent(content);
+        popup.update();
+      } else {
+        marker.bindPopup(content, {
+          maxWidth: 300,
+          closeButton: true,
+          closeOnClick: true,
+          autoClose: false,
+          className: 'playground-popup',
+        }).openPopup();
+      }
     });
   }
 }
