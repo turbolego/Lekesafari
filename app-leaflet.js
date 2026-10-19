@@ -108,6 +108,17 @@ let state = {
 // (same method as the live WMS adapter for OSM markers). Called on-demand
 // when a playground's popup opens. Returns {url, alt} objects.
 async function fetchImagesForPopup(p) {
+  // Geonorge Tilgjengelighet3 markers already store image URLs in imageRefs
+  // (resolved from the WMS GML bildefil1/2/3 fields). Use those directly —
+  // no need to call the non-existent api/images/{id} endpoint on GitHub Pages.
+  if (p && Array.isArray(p.imageRefs) && p.imageRefs.length > 0) {
+    return p.imageRefs.map(img => ({
+      url: img,
+      alt: p.name || 'Lekeplass',
+      page: img,
+    }));
+  }
+
   const id = p.sourceId || p.id;
   if (!id) return [];
 
@@ -115,7 +126,6 @@ async function fetchImagesForPopup(p) {
     const r = await fetch(`api/images/${encodeURIComponent(id)}`, { cache: 'no-store' });
     if (!r.ok) return [];
     const data = await r.json();
-    // API returns [{url, alt, page}] or empty array
     return (data || []).map(img => ({
       url: img.url || '',
       alt: img.alt || p.name || 'Lekeplass',
