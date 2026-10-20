@@ -388,7 +388,7 @@ function renderImageHTML(img) {
 }
 
 
-function buildPopupContent(p) {
+function buildPopupContent(p, currentIndex = 0) {
   const src = p.source || 'osm';
   const ratingLine = p.rating?.count
     ? `Rating: ${p.rating.average} (${p.rating.count})`
@@ -403,16 +403,26 @@ function buildPopupContent(p) {
     : '';
 
   // Only show images for OSM + WMS + Geonorge Tilgjengelighet3 sources.
-  // The Geonorge WMS adapter carries resolved direct image URLs in imageRefs.
   const hasImages = p.source === 'osm' || p.source === 'wms-tilgjengelighet' || p.source === 'geonorge-tilgjengelighet3';
   // imageRefs stores raw URLs; convert to {url, page, alt} objects for renderImageHTML.
   const imgSrc = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : (p.images || []);
   const pages = (p.imagePages && p.imagePages.length) ? p.imagePages : (imgSrc.map(() => null));
   const imageRefs = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : [];
-  const imagesHtml = (hasImages && imageRefs.length)
-    ? imageRefs.map((img, i) => renderImageHTML({ url: img, page: pages[i] || img, alt: p.name || 'Lekeplass' })).join('')
+  const totalImages = imageRefs.length;
+
+  // Only show the single current image.
+  const currentImageHtml = totalImages > 0
+    ? renderImageHTML({ url: imageRefs[currentIndex], page: pages[currentIndex] || imageRefs[currentIndex], alt: p.name || 'Lekeplass' })
     : '';
 
+  // Navigation controls when more than one image exists.
+  const navHtml = totalImages > 1
+    ? `<div class="image-nav">
+        <button class="image-nav-btn" data-dir="-1">⬅ Forrige</button>
+        <span class="image-nav-counter">1/${totalImages}</span>
+        <button class="image-nav-btn" data-dir="1">Neste ➡</button>
+      </div>`
+    : '';
 
   const osmUrl = getOsmUrl(p);
   const osmLink = osmUrl
@@ -430,13 +440,44 @@ function buildPopupContent(p) {
     <div style="font-size:0.75rem;color:#777;margin-top:0.3rem;">
       ${esc(eqNames)}
     </div>
-    ${imagesHtml}
+    ${currentImageHtml}
+    ${navHtml}
     ${osmLink}
   `;
 }
 
+// Photo state per playground so navigation can track current image index.
+const photoState = {};
+
+// Global click handler for image navigation buttons inside popups.
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.image-nav-btn');
+  if (!btn) return;
+  const container = btn.closest('.playground-popup');
+  if (!container) return;
+  const playgroundId = container.dataset.playgroundId;
+  const state = photoState[playgroundId];
+  if (!state || !state.imageRefs) return;
+  const dir = parseInt(btn.dataset.dir, 10);
+  const total = state.imageRefs.length;
+  const newIndex = (state.currentIndex + dir + total) % total;
+  state.currentIndex = newIndex;
+  const p = state.playgroundData;
+  if (!p) return;
+  const popup = container._leaflet_id ? L.popup._popups[container._leaflet_id] : container;
+  if (popup && popup.setContent) {
+    const content = buildPopupContent(p, newIndex);
+    popup.setContent(content);
+    popup.update();
+  }
+}, true);
+
 function openPopup(p, marker) {
-  const popupContent = buildPopupContent(p);
+  // Store photo state so navigation can track current image index.
+  if (!photoState) photoState = {};
+  photoState[p.id] = { playgroundData: p, imageRefs: p.imageRefs || [], currentIndex: 0 };
+
+  const popupContent = buildPopupContent(p, photoState[p.id].currentIndex);
 
   marker.bindPopup(popupContent, {
     maxWidth: 300,
@@ -446,11 +487,13 @@ function openPopup(p, marker) {
     className: 'playground-popup',
   }).openPopup();
 
-  // For Geonorge Tilgjengelighet3 markers: imageRefs are already embedded in
-  // the JSON data (from WMS bildefil1/2/3 fields) and passed through by
-  // sources.js's loadGeonorgeStatic(). buildPopupContent() already renders
-  // those images, so we do NOT call fetchImagesForPopup() (which would try to
-  // hit the non-existent api/images/{id} endpoint and cause 404 errors).
+  // Store playgroundId on the popup container for navigation.
+  const popupEl = marker._popup && marker._popup.getElement ? marker._popup.getElement() : null;
+  if (popupEl) {
+    popupEl.dataset.playgroundId = p.id;
+  }
+
+  // For Geonorge Tilgjengelighet3 markers:
   if (p.source === 'geonorge-tilgjengelighet3') {
     if (p.imageRefs && p.imageRefs.length > 0) {
       return; // images already in popupContent, nothing further to do

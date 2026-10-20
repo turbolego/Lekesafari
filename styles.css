@@ -622,6 +622,41 @@ body {
   border-radius: 3px;
 }
 
+/* Image navigation in popup */
+.image-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 0.5rem;
+  background: var(--bg-color);
+}
+
+.image-nav-btn {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #cfd8dc;
+  border-radius: 4px;
+  background: #f5f9ff;
+  color: #1a73e8;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.image-nav-btn:hover {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+}
+
+.image-nav-counter {
+  font-size: 0.75rem;
+  color: #666;
+  min-width: 4rem;
+  text-align: center;
+}
+
 /* Source badge row in modal */
 .source-row {
   padding: 0 1.5rem 1rem;
