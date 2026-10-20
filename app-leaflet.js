@@ -411,8 +411,11 @@ function buildPopupContent(p, currentIndex = 0) {
   const totalImages = imageRefs.length;
 
   // Only show the single current image.
+  const currentImage = (p.imageRefs && p.imageRefs.length) ? p.imageRefs[currentIndex] : null;
+  const url = typeof currentImage === 'string' ? currentImage : (currentImage?.url || '');
+  const alt = typeof currentImage === 'object' ? (currentImage.alt || p.name || 'Lekeplass') : (p.name || 'Lekeplass');
   const currentImageHtml = totalImages > 0
-    ? renderImageHTML({ url: imageRefs[currentIndex].url, page: imageRefs[currentIndex].url, alt: imageRefs[currentIndex].alt || p.name || 'Lekeplass' })
+    ? renderImageHTML({ url, page: url, alt })
     : '';
 
   // Navigation controls when more than one image exists.
