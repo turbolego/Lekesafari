@@ -464,13 +464,27 @@ document.addEventListener('click', (e) => {
   state.currentIndex = newIndex;
   const p = state.playgroundData;
   if (!p) return;
-  const popup = container._leaflet_id ? L.popup._popups[container._leaflet_id] : container;
+  // Find the Leaflet popup associated with this playground container.
+  const popup = findPlaygroundPopup(playgroundId);
   if (popup && popup.setContent) {
     const content = buildPopupContent(p, newIndex);
     popup.setContent(content);
     popup.update();
   }
 }, true);
+
+// Find the Leaflet popup for a given playground ID by scanning opened popups.
+function findPlaygroundPopup(playgroundId) {
+  if (typeof L !== 'undefined' && L.popup && L.popup._popup && L.popup._popup.length) {
+    for (const popup of L.popup._popup) {
+      const el = popup && popup.getElement ? popup.getElement() : null;
+      if (el && el.dataset && el.dataset.playgroundId === playgroundId) {
+        return popup;
+      }
+    }
+  }
+  return null;
+}
 
 function openPopup(p, marker) {
   // Store photo state so navigation can track current image index.
