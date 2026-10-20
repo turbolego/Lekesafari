@@ -405,14 +405,14 @@ function buildPopupContent(p, currentIndex = 0) {
   // Only show images for OSM + WMS + Geonorge Tilgjengelighet3 sources.
   const hasImages = p.source === 'osm' || p.source === 'wms-tilgjengelighet' || p.source === 'geonorge-tilgjengelighet3';
   // imageRefs stores raw URLs; convert to {url, page, alt} objects for renderImageHTML.
+  // Link goes to the direct thumbnail (imageRefs), not the share-page URL.
   const imgSrc = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : (p.images || []);
-  const pages = (p.imagePages && p.imagePages.length) ? p.imagePages : (imgSrc.map(() => null));
   const imageRefs = (p.imageRefs && p.imageRefs.length) ? p.imageRefs : [];
   const totalImages = imageRefs.length;
 
   // Only show the single current image.
   const currentImageHtml = totalImages > 0
-    ? renderImageHTML({ url: imageRefs[currentIndex], page: pages[currentIndex] || imageRefs[currentIndex], alt: p.name || 'Lekeplass' })
+    ? renderImageHTML({ url: imageRefs[currentIndex], page: imageRefs[currentIndex], alt: p.name || 'Lekeplass' })
     : '';
 
   // Navigation controls when more than one image exists.
