@@ -197,6 +197,22 @@ def parse_gml_features(gml_text):
     return features
 
 
+def resolve_image(filename, alt="Lekeplass"):
+    """Resolve a Geonorge image filename to a full URL.
+
+    Geonorge serves images at the Kartverket data repository:
+      https://data.kartverket.no/tilgjengelighet/tilgjengelighet/{filename}
+    (NOT the older SharedWeb viewer URL, which is deprecated.)
+    """
+    if not filename:
+        return None
+    filename = filename.split("?")[0].strip()
+    if not filename:
+        return None
+    url = f"https://data.kartverket.no/tilgjengelighet/tilgjengelighet/{filename}"
+    return {"url": url, "page": url, "alt": alt}
+
+
 def normalize_geonorge_feature(feat):
     """Convert a raw WMS feature into the shared Playground shape."""
     props = feat["props"]
@@ -243,6 +259,17 @@ def normalize_geonorge_feature(feat):
 
     emoji = OBJTYPE_EMOJI.get(obj_type, "📍")
 
+    # Resolve image references from the WMS GML <bildefil1/2/3> fields.
+    imageRefs = []
+    imagePages = []
+    for img_file in feat.get("images") or []:
+        if not img_file:
+            continue
+        resolved = resolve_image(img_file, f"{obj_type}-{props.get('objid')}")
+        if resolved:
+            imageRefs.append(resolved["url"])
+            imagePages.append(resolved)
+
     rec = {
         "id": f"geonorge-tilgjengelighet3-{feat['objtype']}-{feat['props'].get('objid') or feat['props'].get('lokalid') or 'unknown'}",
         "name": name,
@@ -252,8 +279,8 @@ def normalize_geonorge_feature(feat):
         "sourceId": f"{obj_type}/{props.get('objid') or props.get('lokalid')}",
         "description": description,
         "poiType": obj_type,
-        "imageRefs": [],
-        "imagePages": [],
+        "imageRefs": imageRefs,
+        "imagePages": imagePages,
         "accessibility": {
             "wheelchair": wheelchair,
             "stroller": "unknown",
