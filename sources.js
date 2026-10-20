@@ -640,8 +640,10 @@ async function loadGeonorgeStatic(bounds) {
           sourceId: rec.sourceId,
           description: rec.description || '',
           poiType: rec.poiType,
-          imageRefs: [],        // no image URLs embedded; API for popup images
-          imagePages: [],
+          // imageRefs/imagePages are embedded in the JSON (from WMS bildefil1/2/3
+          // fields), so we pass them through without resetting to empty arrays.
+          imageRefs: rec.imageRefs || [],
+          imagePages: rec.imagePages || [],
           accessibility: rec.accessibility || { wheelchair: 'unknown', stroller: 'unknown' },
           verified: true,
           lastVerified: new Date().toISOString().slice(0, 10),
