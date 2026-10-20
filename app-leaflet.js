@@ -446,11 +446,15 @@ function openPopup(p, marker) {
     className: 'playground-popup',
   }).openPopup();
 
-  // For Geonorge Tilgjengelighet3 markers: images are NOT in the static JSON
-  // (imageRefs is empty). Fetch them from the API on popup open (on-demand
-  // pattern, same as the live WMS adapter for OSM markers). While images
-  // load, show a placeholder so the popup doesn't look broken.
+  // For Geonorge Tilgjengelighet3 markers: imageRefs are already embedded in
+  // the JSON data (from WMS bildefil1/2/3 fields) and passed through by
+  // sources.js's loadGeonorgeStatic(). buildPopupContent() already renders
+  // those images, so we do NOT call fetchImagesForPopup() (which would try to
+  // hit the non-existent api/images/{id} endpoint and cause 404 errors).
   if (p.source === 'geonorge-tilgjengelighet3') {
+    if (p.imageRefs && p.imageRefs.length > 0) {
+      return; // images already in popupContent, nothing further to do
+    }
     fetchImagesForPopup(p).then(imgs => {
       // Rebuild popup with images when they arrive.
       const imgHtml = imgs.map(img => renderImageHTML(img)).join('');
