@@ -1,0 +1,24 @@
+{
+  "name": "lekesafari",
+  "version": "1.0.0",
+  "description": "Kart over lekeplasser i Norge. En statisk PWA (Leaflet) uten byggesteg — deployes rett til GitHub Pages på `turbolego.github.io/Lekesafari/`.",
+  "main": "app-leaflet.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/turbolego/Lekesafari.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/turbolego/Lekesafari/issues"
+  },
+  "homepage": "https://github.com/turbolego/Lekesafari#readme",
+  "dependencies": {
+    "leaflet.markercluster": "^1.5.3"
+  }
+}
