@@ -206,9 +206,10 @@
     </div>
   </aside>
 
-  <!-- Load Leaflet first, then marker cluster, then app -->
+  <!-- Load Leaflet first, then marker cluster, then sources (defines WMS_POI_TYPES and other constants), then app -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="static/leaflet.markercluster.js"></script>
+  <script src="sources.js?v=7"></script>
   <script src="app-leaflet.js?v=13"></script>
   <script>
     // Register PWA Service Worker. Relative path: the site is served from the
