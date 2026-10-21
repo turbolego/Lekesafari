@@ -413,7 +413,7 @@ function buildPopupContent(p, currentIndex = 0) {
   // Only show the single current image.
   const currentImage = (p.imageRefs && p.imageRefs.length) ? p.imageRefs[currentIndex] : null;
   const url = typeof currentImage === 'string' ? currentImage : (currentImage?.url || '');
-  const alt = typeof currentImage === 'object' ? (currentImage.alt || p.name || 'Lekeplass') : (p.name || 'Lekeplass');
+  const alt = (currentImage && typeof currentImage === 'object') ? (currentImage.alt || p.name || 'Lekeplass') : (p.name || 'Lekeplass');
   const currentImageHtml = totalImages > 0
     ? renderImageHTML({ url, page: url, alt })
     : '';
