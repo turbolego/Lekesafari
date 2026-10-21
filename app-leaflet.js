@@ -61,8 +61,31 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Zoom control at bottom-right
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-const playgroundLayer = L.layerGroup().addTo(map);
-window.playgroundLayer = playgroundLayer;
+// --- Marker Cluster Group (Leaflet.markercluster v1.5) ---
+// 12,141 emoji markers = 12,141 DOM nodes -> severe memory + performance
+// cost. Clustering merges nearby markers into a few dozen cluster icons,
+// cutting render/paint cost by ~95% and keeping markers interactive.
+// Marker click opens the same popup as before.
+const clusterGroup = L.markerClusterGroup({
+  iconCreateFunction: function(cluster) {
+    let count = cluster.getChildCount();
+    let size = 'small';
+    if (count >= 20) size = 'large';
+    else if (count >= 5) size = 'medium';
+    const emoji = count === 1 ? '📍' : (count + ' 📍');
+    return L.divIcon({
+      html: `<div class="playground-marker-emoji">${emoji}</div>`,
+      className: 'playground-marker-container emoji-marker',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      className: 'marker-cluster marker-cluster-' + size,
+    });
+  },
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+  zoomToBoundsOnClick: true,
+}).addTo(map);
+window.playgroundClusterGroup = clusterGroup;
 
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const sidebar = document.getElementById('sidebar');
@@ -276,7 +299,7 @@ function syncMapMarkers() {
 
   // Build a map of existing markers by id for efficient updates
   const existing = new Map();
-  playgroundLayer.eachLayer(m => {
+  clusterGroup.eachLayer(m => {
     if (m.__playgroundId) {
       existing.set(m.__playgroundId, m);
     }
@@ -302,7 +325,7 @@ function syncMapMarkers() {
       });
       marker.__playgroundId = id;
       marker.on('click', () => openPopup(p, marker));
-      playgroundLayer.addLayer(marker);
+      clusterGroup.addLayer(marker);
       state.markerLookup.set(id, marker);
       state.markerObjects.set(id, { marker, playground: p });
     }
@@ -311,7 +334,7 @@ function syncMapMarkers() {
   // Remove markers that are no longer in the list
   for (const [id, marker] of existing.entries()) {
     if (!list.find(p => p.id === id)) {
-      playgroundLayer.removeLayer(marker);
+      clusterGroup.removeLayer(marker);
       state.markerLookup.delete(id);
       state.markerObjects.delete(id);
     }
