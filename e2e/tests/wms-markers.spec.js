@@ -10,11 +10,13 @@
 const { test, expect } = require('@playwright/test');
 
 // Wait until the static dataset has populated the result count.
+// Wait for data to stabilize since async loading continues after initial render.
 async function waitForData(page) {
   await page.waitForFunction(() => {
     const n = parseInt(document.getElementById('result-count')?.textContent || '0', 10);
     return n > 0;
   }, null, { timeout: 30000 });
+  await page.waitForTimeout(500);
 }
 
 // Wait until the marker objects have been initialized (source === 'geonorge-tilgjengelighet3').
@@ -125,7 +127,7 @@ test.describe('Geonorge Tilgjengelighet3 markers (JSON-based)', () => {
     // Pan the map to a known Geonorge location
     await page.evaluate(() => {
       const map = window.map;
-      if (map) {
+      if (map && typeof map.panTo === 'function') {
         map.panTo([60.5, 8.5], { animate: true });
       }
     });
