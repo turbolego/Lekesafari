@@ -62,6 +62,10 @@ map.on('tileerror', (event) => {
   console.warn('OpenStreetMap tile failed:', event.tile?.src || event.url);
 });
 
+// Expose for testing
+window.map = map;
+window.state = state;
+
 // Zoom control at bottom-right
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
