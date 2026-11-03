@@ -22,8 +22,8 @@ async function waitForData(page) {
 // Wait until the marker objects have been initialized (source === 'geonorge-tilgjengelighet3').
 async function waitForGeonorgeMarkers(page) {
   await page.waitForFunction(() => {
-    const count = [...state.markerObjects.values()].filter(
-      p => p && p.playground && p.playground.source === 'geonorge-tilgjengelighet3'
+    const count = [...window.state.markerObjects.values()].filter(
+      p => p && window.state && p.playground && p.playground.source === 'geonorge-tilgjengelighet3'
     ).length;
     return count > 0;
   }, null, { timeout: 60000 });
