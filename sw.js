@@ -1,5 +1,5 @@
 // Service worker for the GitHub Pages subpath deployment.
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const SHELL_CACHE = `lekesafari-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `lekesafari-data-${CACHE_VERSION}`;
 const TILE_CACHE = `lekesafari-tiles-${CACHE_VERSION}`;
