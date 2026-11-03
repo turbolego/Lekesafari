@@ -39,7 +39,7 @@ async function waitUntilPanned(page, targetLat, targetLng, opts = {}) {
     ([lat, lng]) => {
       const map = window.map;
       if (!map) return false;
-      const c = map.getCenter();
+      const c = window.map.getCenter();
       return (
         Math.abs(c.lat - lat) < 0.05 &&
         Math.abs(c.lng - lng) < 0.05
@@ -54,7 +54,7 @@ async function waitUntilPanned(page, targetLat, targetLng, opts = {}) {
 // rebuild (syncMapMarkers creates new instances).
 async function tagMarkerInstances(page) {
   await page.evaluate(() => {
-    for (const { marker } of state.markerObjects.values()) marker.__probe = true;
+    for (const { marker } of window.state.markerObjects.values()) marker.__probe = true;
   });
 }
 
@@ -73,7 +73,7 @@ test.describe('Geonorge Tilgjengelighet3 markers (JSON-based)', () => {
     // The emoji should be present in the DOM for Geonorge markers.
     const emojis = await page.evaluate(() => {
       const markers = [];
-      for (const { marker } of state.markerObjects.values()) {
+      for (const { marker } of window.state.markerObjects.values()) {
         if (marker.__probe) markers.push(marker);
       }
       return markers;
@@ -109,7 +109,7 @@ test.describe('Geonorge Tilgjengelighet3 markers (JSON-based)', () => {
   test('marker icons show emoji (not a blue circle) for Geonorge POIs', async ({ page }) => {
     const emojis = await page.evaluate(() => {
       const markers = [];
-      for (const { marker } of state.markerObjects.values()) {
+      for (const { marker } of window.state.markerObjects.values()) {
         if (marker.__probe) markers.push(marker);
       }
       return markers;
@@ -127,8 +127,8 @@ test.describe('Geonorge Tilgjengelighet3 markers (JSON-based)', () => {
     // Pan the map to a known Geonorge location
     await page.evaluate(() => {
       const map = window.map;
-      if (map && typeof map.panTo === 'function') {
-        map.panTo([60.5, 8.5], { animate: true });
+      if (window.map && typeof window.map.panTo === 'function') {
+        window.map.panTo([60.5, 8.5], { animate: true });
       }
     });
     await page.waitForTimeout(2000);
@@ -136,7 +136,7 @@ test.describe('Geonorge Tilgjengelighet3 markers (JSON-based)', () => {
     const center = await page.evaluate(() => {
       const map = window.map;
       if (!map) return null;
-      const c = map.getCenter();
+      const c = window.map.getCenter();
       return { lat: c.lat, lng: c.lng };
     });
     expect(center).not.toBeNull();
@@ -156,7 +156,7 @@ test.describe('Geonorge Tilgjengelighet3 markers (JSON-based)', () => {
     expect(emojis).toBeGreaterThan(0);
 
     const { marker } = await page.evaluate(() => {
-      for (const { marker } of state.markerObjects.values()) {
+      for (const { marker } of window.state.markerObjects.values()) {
         if (marker.__probe) return { marker };
       }
       return { marker: null };
@@ -167,8 +167,8 @@ test.describe('Geonorge Tilgjengelighet3 markers (JSON-based)', () => {
       await page.waitForTimeout(500);
 
       const content = await page.evaluate(() => {
-        if (!map._popup || !map._popup.isOpen()) return null;
-        return map._popup.getContent();
+        if (!window.map._popup || !window.map._popup.isOpen()) return null;
+        return window.map._popup.getContent();
       });
 
       expect(typeof content).toBe('string');
