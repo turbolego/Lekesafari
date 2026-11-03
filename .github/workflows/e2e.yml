@@ -45,19 +45,10 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
 
-      - name: Serve deployed files
-        run: |
-          cd e2e
-          python3 -m http.server 4173 --bind 127.0.0.1 --directory .. &
-          echo "SERVER_PID=$!" >> $GITHUB_ENV
-          sleep 2
-
       - name: Run Playwright e2e tests
         run: |
           cd e2e
           npx playwright test --reporter=dot
-        env:
-          CHROME_PATH: /usr/bin/chromium-browser
 
       - name: Upload Playwright report
         if: always()
@@ -66,9 +57,3 @@ jobs:
           name: playwright-report
           path: e2e/playwright-report/
           retention-days: 7
-
-      - name: Check generated artifact
-        if: always()
-        run: |
-          echo "Server PID: $SERVER_PID"
-          kill $SERVER_PID 2>/dev/null || true

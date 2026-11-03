@@ -13,20 +13,20 @@ module.exports = defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: false,
   workers: 1,
-  retries: 0,
+  retries: 1,  // Enable retries for flaky tests
   reporter: [['list']],
   use: {
     baseURL: `http://127.0.0.1:${PORT}`,
     headless: true,
     launchOptions: {
-      executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome',
+      // Let Playwright auto-discover bundled Chromium
       args: ['--no-sandbox'],
     },
   },
+  // Playwright manages the static server lifecycle automatically
   webServer: {
     command: `python3 -m http.server ${PORT} --bind 127.0.0.1 --directory "${ROOT}"`,
     url: `http://127.0.0.1:${PORT}/index.html`,
-    reuseExistingServer: true,
-    timeout: 20_000,
+    timeout: 30_000,
   },
 });

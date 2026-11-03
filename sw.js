@@ -5,7 +5,7 @@ const DATA_CACHE = `lekesafari-data-${CACHE_VERSION}`;
 const TILE_CACHE = `lekesafari-tiles-${CACHE_VERSION}`;
 const IMAGE_CACHE = `lekesafari-images-${CACHE_VERSION}`;
 
-const SHELL_ASSETS = [
+const PRECACHE_ASSETS = [
   './',
   './index.html',
   './index-leaflet.html',
@@ -93,7 +93,7 @@ async function staleWhileRevalidate(request, cacheName) {
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(SHELL_CACHE)
-      .then(cache => cache.addAll(SHELL_ASSETS))
+      .then(cache => cache.addAll(PRECACHE_ASSETS))
       .catch(error => console.warn('Shell precache failed:', error))
   );
   self.skipWaiting();
