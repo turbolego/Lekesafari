@@ -3,11 +3,15 @@
 const { test, expect } = require('@playwright/test');
 
 // Wait until the static dataset has populated the result count.
+// The app loads data asynchronously (static GeoJSON + Geonorge WMS),
+// so we need to wait for the count to stabilize to avoid race conditions.
 async function waitForData(page) {
   await page.waitForFunction(() => {
     const n = parseInt(document.getElementById('result-count')?.textContent || '0', 10);
     return n > 0;
   }, null, { timeout: 30000 });
+  // Wait for data to stabilize - async loading continues after initial render
+  await page.waitForTimeout(500);
 }
 
 async function resultCount(page) {
