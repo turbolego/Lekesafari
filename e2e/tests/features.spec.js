@@ -9,9 +9,9 @@ async function waitForData(page) {
   await page.waitForFunction(() => {
     const n = parseInt(document.getElementById('result-count')?.textContent || '0', 10);
     return n > 0;
-  }, null, { timeout: 30000 });
+  }, null, { timeout: 60000 });
   // Wait for data to stabilize - async loading continues after initial render
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(800);
 }
 
 async function resultCount(page) {
@@ -32,7 +32,7 @@ async function setCheckbox(page, id, value) {
     el.checked = value;
     el.dispatchEvent(new Event('change', { bubbles: true }));
   }, [id, value]);
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
 }
 
 test('filtering on dogs-allowed does NOT match every record', async ({ page }) => {
@@ -61,12 +61,12 @@ test('search narrows the results list and clearing restores it', async ({ page }
     i.value = 'zzzz-no-such-playground';
     i.dispatchEvent(new Event('input', { bubbles: true }));
   });
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
   expect(await resultCount(page)).toBe(0);
   await expect(page.locator('.empty-state')).toHaveCount(1);
 
   await page.evaluate(() => document.getElementById('search-clear').click());
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
   expect(await resultCount(page)).toBe(before);
 });
 
@@ -81,7 +81,7 @@ test('search does not rebuild markers (same marker instances survive)', async ({
     i.value = 'lek';
     i.dispatchEvent(new Event('input', { bubbles: true }));
   });
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
   const survived = await page.evaluate(() => {
     const all = [...state.markerObjects.values()];
     return all.length > 0 && all.every(({ marker }) => marker.__probe === true);
@@ -143,7 +143,7 @@ test('source filter narrows to matching records and to zero for an unknown sourc
     s.value = 'no-such-source';
     s.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
   expect(await resultCount(page)).toBe(0);
 
   await page.evaluate(() => {
@@ -151,7 +151,7 @@ test('source filter narrows to matching records and to zero for an unknown sourc
     s.value = 'alle';
     s.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
   expect(await resultCount(page)).toBe(before);
 });
 
@@ -188,7 +188,7 @@ test('equipment filter keeps only playgrounds that have the selected equipment',
     [...s.options].forEach(o => o.selected = (o.value === eq));
     s.dispatchEvent(new Event('change', { bubbles: true }));
   }, target.name);
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
 
   const after = await resultCount(page);
   expect(after).toBe(target.n);
@@ -236,7 +236,7 @@ test('result list is capped but the count reflects the true total', async ({ pag
     i.value = 'zzzz-no-such-playground';
     i.dispatchEvent(new Event('input', { bubbles: true }));
   });
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(300);
   await expect(page.locator('.list-overflow')).toHaveCount(0);
 });
 

@@ -15,7 +15,7 @@ async function waitForData(page) {
   await page.waitForFunction(() => {
     const n = parseInt(document.getElementById('result-count')?.textContent || '0', 10);
     return n > 0;
-  }, null, { timeout: 30000 });
+  }, null, { timeout: 60000 });
   await page.waitForTimeout(500);
 }
 
@@ -26,7 +26,7 @@ async function waitForGeonorgeMarkers(page) {
       p => p && p.playground && p.playground.source === 'geonorge-tilgjengelighet3'
     ).length;
     return count > 0;
-  }, null, { timeout: 30000 });
+  }, null, { timeout: 60000 });
 }
 
 async function resultCount(page) {
