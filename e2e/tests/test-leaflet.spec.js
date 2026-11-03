@@ -3,6 +3,8 @@ const { test, expect } = require('@playwright/test');
 test('check Leaflet initialization', async ({ page }) => {
   await page.goto('http://127.0.0.1:4173/index.html');
   await page.waitForLoadState('load');
+  // Wait for page structure
+  await page.waitForSelector('#result-count', { timeout: 60000 });
   
   const checks = await page.evaluate(() => {
     const result = {};
