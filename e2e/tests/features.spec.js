@@ -78,7 +78,7 @@ test('search does not rebuild markers (same marker instances survive)', async ({
   // Tag the existing Leaflet marker objects, then check the tags survive a
   // search. A rebuild (syncMapMarkers) would create new instances and drop them.
   await page.evaluate(() => {
-    for (const { marker } of state.markerObjects.values()) marker.__probe = true;
+    for (const { marker } of window.state.markerObjects.values()) marker.__probe = true;
   });
   await page.evaluate(() => {
     const i = document.getElementById('search-input');
@@ -87,7 +87,7 @@ test('search does not rebuild markers (same marker instances survive)', async ({
   });
   await page.waitForTimeout(300);
   const survived = await page.evaluate(() => {
-    const all = [...state.markerObjects.values()];
+    const all = [...window.state.markerObjects.values()];
     return all.length > 0 && all.every(({ marker }) => marker.__probe === true);
   });
   expect(survived).toBe(true);
@@ -167,7 +167,7 @@ test('equipment filter keeps only playgrounds that have the selected equipment',
   // <option> has records.
   const target = await page.evaluate(() => {
     const counts = new Map();
-    for (const p of state.playgrounds) {
+    for (const p of window.state.playgrounds) {
       for (const e of p.equipment || []) counts.set(e.name, (counts.get(e.name) || 0) + 1);
     }
     let best = null;
@@ -178,7 +178,7 @@ test('equipment filter keeps only playgrounds that have the selected equipment',
   // If a future bake yields no equipment tags at all, assert that explicitly
   // rather than failing on a filter that has nothing to match.
   if (!target) {
-    expect(await page.evaluate(() => state.playgrounds.some(p => (p.equipment || []).length > 0)))
+    expect(await page.evaluate(() => window.state.playgrounds.some(p => (p.equipment || []).length > 0)))
       .toBe(false);
     test.skip(true, 'no records carry equipment tags in this dataset');
     return;
@@ -198,7 +198,7 @@ test('equipment filter keeps only playgrounds that have the selected equipment',
   expect(after).toBe(target.n);
   expect(after).toBeLessThan(before);
   const allHave = await page.evaluate((eq) =>
-    state.filteredPlaygrounds.every(p => (p.equipment || []).some(e => e.name === eq)), target.name);
+    window.state.filteredPlaygrounds.every(p => (p.equipment || []).some(e => e.name === eq)), target.name);
   expect(allHave).toBe(true);
 });
 
@@ -206,7 +206,7 @@ test('clicking a result row opens the popup on its marker (delegated listener)',
   // Guards the move to ONE delegated listener on the list container: a broken
   // delegation would leave rows inert.
   const target = await page.evaluate(() => {
-    const first = state.filteredPlaygrounds[0];
+    const first = window.state.filteredPlaygrounds[0];
     return { id: first.id, name: first.name };
   });
   await page.evaluate((id) => {
@@ -216,9 +216,9 @@ test('clicking a result row opens the popup on its marker (delegated listener)',
   }, target.id);
   await page.waitForTimeout(400);
   const opened = await page.evaluate(() =>
-    !!(map._popup && map._popup.isOpen() && map._popup._source));
+    !!(window.map._popup && window.map._popup.isOpen() && window.map._popup._source));
   expect(opened).toBe(true);
-  const text = await page.evaluate(() => map._popup.getContent());
+  const text = await page.evaluate(() => window.map._popup.getContent());
   expect(text).toContain(target.name);
 });
 
