@@ -6,7 +6,7 @@
   "packageRules": [
     {
       "matchPackageNames": ["node"],
-      "allowedVersions": "18.x|20.x"
+      "allowedVersions": "18.x|20.x|22.x|24.x|26.x"
     }
   ]
 }
