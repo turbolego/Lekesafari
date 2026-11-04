@@ -452,7 +452,7 @@ function buildPopupContent(p, currentIndex = 0) {
   const currentImage = (p.imageRefs && p.imageRefs.length) ? p.imageRefs[currentIndex] : null;
   const url = typeof currentImage === 'string' ? currentImage : (currentImage?.url || '');
   const alt = (currentImage && typeof currentImage === 'object') ? (currentImage.alt || p.name || 'Lekeplass') : (p.name || 'Lekeplass');
-  const page = typeof currentImage === 'object' ? (currentImage.page || url) : url;
+  const page = (currentImage && typeof currentImage === 'object') ? (currentImage.page || url) : url;
   const currentImageHtml = totalImages > 0
     ? renderImageHTML({ url, page, alt })
     : '';
