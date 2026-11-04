@@ -3,19 +3,28 @@
 const { test, expect } = require('@playwright/test');
 
 // Wait until the page is ready with results.
-// The app loads data asynchronously from multiple sources.
-// If external APIs fail, fallback to static GeoJSON which should still load.
+// Critical: this MUST wait for data to actually load, not just show 0.
 async function waitForData(page) {
-  // First wait for the page structure to be ready
-  await page.waitForSelector('#result-count', { timeout: 60000 });
-  // Wait for some results - give time for static data to load
+  // Wait for the result-count element to exist and have stable content
   await page.waitForFunction(() => {
     const el = document.getElementById('result-count');
-    const n = el ? parseInt(el.textContent || '0', 10) : 0;
-    return n >= 0;  // Accept 0 as valid (API failures yield 0 results)
+    if (!el) return false;
+    const text = el.textContent || '0';
+    const n = parseInt(text, 10);
+    // Wait until count is stable for at least 500ms
+    if (!window._countHistory) window._countHistory = [];
+    window._countHistory.push(n);
+    if (window._countHistory.length > 5) window._countHistory.shift();
+    const stable = window._countHistory.length >= 3 && 
+      window._countHistory.every(v => v === n);
+    return stable;
   }, null, { timeout: 60000 });
-  // Wait for loading indicator to disappear
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1000);  // Extra buffer for filter reactions
+}
+
+// Wait for initial page load
+async function waitForPageLoad(page) {
+  await page.waitForSelector('#result-count', { timeout: 60000 });
 }
 
 async function resultCount(page) {
@@ -24,7 +33,7 @@ async function resultCount(page) {
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await waitForData(page);
+  await waitForPageLoad(page);
 });
 
 // Drive controls through the DOM and fire the events the app listens for.
