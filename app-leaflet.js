@@ -495,6 +495,7 @@ const photoState = {};
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.image-nav-btn');
   if (!btn) return;
+  e.stopPropagation(); // Prevent Leaflet closeOnClick from closing the popup
   const container = btn.closest('.playground-popup');
   if (!container) return;
   const playgroundId = container.dataset.playgroundId;
