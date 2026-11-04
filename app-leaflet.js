@@ -62,10 +62,6 @@ map.on('tileerror', (event) => {
   console.warn('OpenStreetMap tile failed:', event.tile?.src || event.url);
 });
 
-// Expose for testing
-window.map = map;
-window.state = state;
-
 // Zoom control at bottom-right
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -126,6 +122,10 @@ let state = {
   // up).
   wmsTypeFilter: new Set(),
 };
+
+// Expose for testing (must come AFTER state declaration)
+window.map = map;
+window.state = state;
 
 // WMS_POI_TYPES is declared in sources.js (loaded before this script via
 // <script src="sources.js">); it holds the 7 Geonorge tilgjengelighet3

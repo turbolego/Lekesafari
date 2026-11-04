@@ -10,13 +10,13 @@ test('check wms markers', async ({ page }) => {
   const checks = await page.evaluate(() => {
     const result = {};
     // Check WMS markers
-    const wmsMarkers = [...state.markerObjects.values()]
+    const wmsMarkers = [...window.state.markerObjects.values()]
       .filter(p => p && p.playground && p.playground.source === 'wms-tilgjengelighet');
     result.wmsMarkerCount = wmsMarkers.length;
     
-    // Check if map is at Burudvann
-    const mapZoom = map ? map.getZoom() : null;
-    const mapCenter = map ? map.getCenter() : null;
+    // Check if window.map is at Burudvann
+    const mapZoom = window.map ? window.map.getZoom() : null;
+    const mapCenter = window.map ? window.map.getCenter() : null;
     result.mapZoom = mapZoom;
     result.mapCenter = mapCenter;
     

@@ -10,9 +10,9 @@ test('check Leaflet initialization', async ({ page }) => {
     const result = {};
     result.LLoaded = typeof L !== 'undefined';
     result.LVersion = typeof L !== 'undefined' ? L.version : '';
-    result.mapInstance = typeof map !== 'undefined' ? map : null;
-    result.mapContainer = typeof map !== 'undefined' ? map._container : null;
-    result.playgroundLayer = null; // playgroundLayer no longer used - markers are in state.markerObjects
+    result.window.mapInstance = typeof window.map !== 'undefined' ? window.map : null;
+    result.window.mapContainer = typeof window.map !== 'undefined' ? window.map._container : null;
+    result.playgroundLayer = null; // playgroundLayer no longer used - markers are in window.state.markerObjects
     result.leafletPaneCount = document.querySelectorAll('.leaflet-marker-icon').length;
     // Leaflet marker icons are now emoji divIcons.
     result.emojiMarkerCount = document.querySelectorAll('.playground-marker-emoji').length;

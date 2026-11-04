@@ -8,10 +8,10 @@ test('check Leaflet initialization', async ({ page }) => {
     const result = {};
     result.LLoaded = typeof L !== 'undefined';
     result.LVersion = typeof L !== 'undefined' ? L.version : '';
-    result.mapInstance = typeof map !== 'undefined' ? map : null;
-    result.mapContainer = typeof map !== 'undefined' ? map._container : null;
+    result.window.mapInstance = typeof window.map !== 'undefined' ? window.map : null;
+    result.window.mapContainer = typeof window.map !== 'undefined' ? window.map._container : null;
     result.playgroundLayer = typeof playgroundLayer !== 'undefined' ? playgroundLayer : null;
-    result.leafletPane = document.querySelector('.leaflet-map-pane');
+    result.leafletPane = document.querySelector('.leaflet-window.map-pane');
     // Leaflet marker icons are now emoji divIcons, not SVG circle markers.
     result.leafletPaneCount = document.querySelectorAll('.leaflet-marker-icon').length;
     result.emojiMarkerCount = document.querySelectorAll('.playground-marker-emoji').length;

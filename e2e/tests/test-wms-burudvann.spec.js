@@ -18,13 +18,13 @@ test('WMS markers load at Burudvann', async ({ page }) => {
   
   // Wait for WMS markers to load
   const wmsMarkers = await page.waitForFunction(() => {
-    return [...state.markerObjects.values()]
+    return [...window.state.markerObjects.values()]
       .filter(p => p && p.playground && p.playground.source === 'wms-tilgjengelighet')
       .length > 0;
   }, null, { timeout: 30000 });
   
   const count = await page.evaluate(() => {
-    return [...state.markerObjects.values()]
+    return [...window.state.markerObjects.values()]
       .filter(p => p && p.playground && p.playground.source === 'wms-tilgjengelighet')
       .length;
   });

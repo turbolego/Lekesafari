@@ -53,7 +53,7 @@ jobs:
         id: bake
         run: |
           set -euo pipefail
-          python3 tools/fetch_geonorge_tilgjengelhet3.py 2> bake.err || {
+          python3 tools/fetch_geonorge_tilgjengelighet3.py 2> bake.err || {
             echo "Bake exited non-zero; showing tail of stderr:"
             tail -n 40 bake.err || true
             exit 1

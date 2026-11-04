@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-test('check map and markers', async ({ page }) => {
+test('check window.map and markers', async ({ page }) => {
   await page.goto('http://127.0.0.1:4173/index.html');
   await page.waitForLoadState('load');
   
@@ -13,8 +13,8 @@ test('check map and markers', async ({ page }) => {
     // Leaflet marker icons are now emoji divIcons, not SVG circle markers.
     result.circleMarkerCount = result.leafletMarkerCount;
     result.emojiMarkerCount = document.querySelectorAll('.playground-marker-emoji').length;
-    result.mapZoom = map.getZoom();
-    result.mapCenter = map.getCenter();
+    result.window.mapZoom = window.map.getZoom();
+    result.window.mapCenter = window.map.getCenter();
     return result;
   });
   console.log('CHECKS:', JSON.stringify(checks, null, 2));

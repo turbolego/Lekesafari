@@ -7,12 +7,12 @@ test('page loads and markers render', async ({ page }) => {
   const checks = await page.evaluate(() => {
     const result = {};
     result.leafletLoaded = typeof L !== 'undefined';
-    result.mapInWindow = !!window.map;
-    result.stateInWindow = typeof state !== 'undefined';
-    result.stateMap = typeof state !== 'undefined' ? state.map : undefined;
-    result.staticPlaygrounds = typeof state !== 'undefined' ? state.staticPlaygrounds.length : undefined;
-    result.markerObjects = typeof state !== 'undefined' ? state.markerObjects.size : undefined;
-    result.markerCount = typeof state !== 'undefined' ? state.markerObjects.size : undefined;
+    result.window.mapInWindow = !!window.map;
+    result.window.stateInWindow = typeof window.state !== 'undefined';
+    result.window.stateMap = typeof window.state !== 'undefined' ? window.state.window.map : undefined;
+    result.staticPlaygrounds = typeof window.state !== 'undefined' ? window.state.staticPlaygrounds.length : undefined;
+    result.markerObjects = typeof window.state !== 'undefined' ? window.state.markerObjects.size : undefined;
+    result.markerCount = typeof window.state !== 'undefined' ? window.state.markerObjects.size : undefined;
     // Leaflet marker icons are now emoji divIcons, not SVG circle markers.
     result.emojiMarkerCount = document.querySelectorAll('.playground-marker-emoji').length;
     result.leafletVersion = typeof L !== 'undefined' ? L.version : undefined;
