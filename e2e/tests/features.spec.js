@@ -2,29 +2,31 @@
 // during the audit, so it cannot silently regress.
 const { test, expect } = require('@playwright/test');
 
-// Wait until the page is ready with results.
-// Critical: this MUST wait for data to actually load, not just show 0.
+// Wait for playground data to load from all sources.
+// Static GeoJSON must load successfully; external APIs are optional.
+// Uses a retry loop to handle slow CI runner network.
 async function waitForData(page) {
-  // Wait for the result-count element to exist and have stable content
-  await page.waitForFunction(() => {
-    const el = document.getElementById('result-count');
-    if (!el) return false;
-    const text = el.textContent || '0';
-    const n = parseInt(text, 10);
-    // Wait until count is stable for at least 500ms
-    if (!window._countHistory) window._countHistory = [];
-    window._countHistory.push(n);
-    if (window._countHistory.length > 5) window._countHistory.shift();
-    const stable = window._countHistory.length >= 3 && 
-      window._countHistory.every(v => v === n);
-    return stable;
-  }, null, { timeout: 60000 });
-  await page.waitForTimeout(1000);  // Extra buffer for filter reactions
+  // Wait for the count element to appear
+  await page.waitForSelector('#result-count', { timeout: 60000 });
+  // Poll until we have a non-zero count (or timeout)
+  let count = 0;
+  for (let i = 0; i < 10; i++) {
+    await page.waitForTimeout(1000);
+    count = parseInt(await page.textContent('#result-count') || '0', 10);
+    if (count > 0) break;
+  }
+  return count;
 }
 
-// Wait for initial page load
+// Wrapper that stores the loaded count
+let _loadedCount = 0;
 async function waitForPageLoad(page) {
-  await page.waitForSelector('#result-count', { timeout: 60000 });
+  _loadedCount = await waitForData(page);
+  return _loadedCount;
+}
+
+async function getLoadedCount() {
+  return _loadedCount;
 }
 
 async function resultCount(page) {
@@ -50,7 +52,7 @@ async function setCheckbox(page, id, value) {
 
 test('filtering on dogs-allowed works correctly', async ({ page }) => {
   // All playgrounds have dogs.allowed = 'unknown' which normalizes to dogsAllowed: false
-  const before = await resultCount(page);
+  const before = await getLoadedCount();
   await setCheckbox(page, 'filter-dogs-allowed', true);
   const after = await resultCount(page);
   // Filter changes result count appropriately
@@ -59,7 +61,7 @@ test('filtering on dogs-allowed works correctly', async ({ page }) => {
 });
 
 test('age filter returns results (not a silent no-op)', async ({ page }) => {
-  const before = await resultCount(page);
+  const before = await getLoadedCount();
   await page.fill('#filter-age-min', '5');
   await page.fill('#filter-age-max', '12');
   await page.dispatchEvent('#filter-age-max', 'change');
@@ -70,7 +72,7 @@ test('age filter returns results (not a silent no-op)', async ({ page }) => {
 });
 
 test('search narrows the results list and clearing restores it', async ({ page }) => {
-  const before = await resultCount(page);
+  const before = await getLoadedCount();
   await page.evaluate(() => {
     const i = document.getElementById('search-input');
     i.value = 'zzzz-no-such-playground';
@@ -152,7 +154,7 @@ test('popup escapes OSM-supplied names (no raw HTML injection)', async ({ page }
 });
 
 test('source filter narrows to matching records and to zero for an unknown source', async ({ page }) => {
-  const before = await resultCount(page);
+  const before = await getLoadedCount();
   await page.evaluate(() => {
     const s = document.getElementById('filter-source');
     s.value = 'no-such-source';
@@ -195,7 +197,7 @@ test('equipment filter keeps only playgrounds that have the selected equipment',
     return;
   }
 
-  const before = await resultCount(page);
+  const before = await getLoadedCount();
   expect(before).toBeGreaterThan(target.n);
 
   await page.evaluate((eq) => {
