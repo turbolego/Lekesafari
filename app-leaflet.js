@@ -499,7 +499,7 @@ document.addEventListener('click', (e) => {
   if (!container) return;
   const playgroundId = container.dataset.playgroundId;
   const state = photoState[playgroundId];
-  if (!state || !state.imageRefs) return;
+  if (!state || !state.imageRefs || state.imageRefs.length === 0) return;
   const dir = parseInt(btn.dataset.dir, 10);
   const total = state.imageRefs.length;
   const newIndex = (state.currentIndex + dir + total) % total;
@@ -555,6 +555,10 @@ function openPopup(p, marker) {
       return; // images already in popupContent, nothing further to do
     }
     fetchImagesForPopup(p).then(imgs => {
+      // Update photoState with fetched images
+      if (photoState[p.id]) {
+        photoState[p.id].imageRefs = imgs;
+      }
       // Rebuild popup with images when they arrive.
       const imgHtml = imgs.map(img => renderImageHTML(img)).join('');
       const content = popupContent.replace('</div>', imgHtml + '</div>');
