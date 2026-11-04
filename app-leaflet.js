@@ -515,15 +515,11 @@ document.addEventListener('click', (e) => {
   }
 }, true);
 
-// Find the Leaflet popup for a given playground ID by scanning opened popups.
+// Find the Leaflet popup for a given playground ID by using the marker lookup.
 function findPlaygroundPopup(playgroundId) {
-  if (typeof L !== 'undefined' && L.popup && L.popup._popup && L.popup._popup.length) {
-    for (const popup of L.popup._popup) {
-      const el = popup && popup.getElement ? popup.getElement() : null;
-      if (el && el.dataset && el.dataset.playgroundId === playgroundId) {
-        return popup;
-      }
-    }
+  const markerObj = state.markerObjects.get(playgroundId);
+  if (markerObj && markerObj.marker) {
+    return markerObj.marker.getPopup();
   }
   return null;
 }
