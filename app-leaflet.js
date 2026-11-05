@@ -513,7 +513,9 @@ document.addEventListener('click', (e) => {
   if (!p) return;
   // Find the Leaflet popup associated with this playground container.
   const popup = findPlaygroundPopup(playgroundId);
-  if (popup && popup.setContent) {
+  const markerObj = state.markerObjects.get(playgroundId);
+  if (popup && markerObj && markerObj.marker) {
+    const marker = markerObj.marker;
     const content = buildPopupContent(p, newIndex);
     // Close and reopen popup to ensure proper state
     popup.close();
