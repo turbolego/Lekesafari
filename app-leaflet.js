@@ -515,8 +515,16 @@ document.addEventListener('click', (e) => {
   const popup = findPlaygroundPopup(playgroundId);
   if (popup && popup.setContent) {
     const content = buildPopupContent(p, newIndex);
-    popup.setContent(content);
-    popup.update();
+    // Close and reopen popup to ensure proper state
+    popup.close();
+    marker.closePopup();
+    marker.bindPopup(content, {
+      maxWidth: 300,
+      closeButton: true,
+      closeOnClick: true,
+      autoClose: false,
+      className: 'playground-popup',
+    }).openPopup();
   }
 }, true);
 
