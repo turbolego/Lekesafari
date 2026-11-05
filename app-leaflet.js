@@ -527,6 +527,11 @@ document.addEventListener('click', (e) => {
       autoClose: false,
       className: 'playground-popup',
     }).openPopup();
+    // Ensure data-playground-id is preserved on popup element for navigation
+    const popupEl = marker._popup && marker._popup.getElement ? marker._popup.getElement() : null;
+    if (popupEl) {
+      popupEl.dataset.playgroundId = p.id;
+    }
   }
 }, true);
 
