@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/turbolego/Lekesafari#readme",
   "dependencies": {
-    "leaflet.markercluster": "^1.5.3"
+    "leaflet.markercluster": "^2.0.0"
   }
 }
