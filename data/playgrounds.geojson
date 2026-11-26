@@ -1,9 +1,9 @@
 {
   "type": "FeatureCollection",
   "metadata": {
-    "generated": "2026-11-25",
+    "generated": "2026-11-26",
     "source": "osm + seed",
-    "recordCount": 1637
+    "recordCount": 1639
   },
   "features": [
     {
@@ -1968,12 +1968,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1104057424",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -3505,12 +3505,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1130442441",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -3558,12 +3558,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/11374414095",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -3611,12 +3611,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/11420713189",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -3664,12 +3664,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/11420713237",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -3717,12 +3717,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/11420713238",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -4247,12 +4247,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1207910957",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -4300,12 +4300,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1211106680",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -4512,12 +4512,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1244923646",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -4830,12 +4830,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1290613818",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -5148,12 +5148,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/13074444001",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -7346,6 +7346,59 @@
       "properties": {
         "name": "Utkjent lekeplass",
         "source": "osm",
+        "sourceId": "node/1433744645",
+        "images": [],
+        "age": {
+          "min": 0,
+          "max": 16
+        },
+        "opening": "",
+        "equipment": [],
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "accessibility": {
+          "wheelchair": "unknown",
+          "stroller": "unknown"
+        },
+        "fenced": false,
+        "toilets": false,
+        "parking": {
+          "free": true,
+          "paid": false
+        },
+        "dogs": {
+          "allowed": true,
+          "leash": false
+        },
+        "municipality": "",
+        "verified": false,
+        "lastVerified": "2026-11-26",
+        "sources": [
+          {
+            "type": "osm",
+            "id": "node/1433744645",
+            "retrievedAt": "2026-11-26"
+          }
+        ],
+        "imageRefs": [],
+        "imagePages": [],
+        "id": "osm-node-1433744645"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.7133062,
+          58.9599118
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Utkjent lekeplass",
+        "source": "osm",
         "sourceId": "node/1444798187",
         "images": [],
         "age": {
@@ -8540,12 +8593,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1613455656",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -12939,12 +12992,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/1775546680",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -24917,12 +24970,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3350231337",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -24970,12 +25023,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3368081144",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -25023,12 +25076,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3368088112",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -25076,12 +25129,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3368210043",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -25129,12 +25182,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3373436767",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -25182,12 +25235,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3373453372",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -25977,12 +26030,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3688185703",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -26083,12 +26136,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/370265831",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -26136,12 +26189,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/370265884",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -26242,12 +26295,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/371884775",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -26560,12 +26613,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/372622528",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -26613,12 +26666,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/372622531",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28150,12 +28203,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/389050395",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28256,12 +28309,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3892339580",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28309,12 +28362,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/3892339581",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28574,12 +28627,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/4048733976",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28627,12 +28680,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/424290943",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28733,12 +28786,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/426886205",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28851,12 +28904,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/428747536",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -28957,12 +29010,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/431345987",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -29010,12 +29063,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/431363087",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -29381,12 +29434,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/442408139",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -29434,12 +29487,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/442408225",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -29911,12 +29964,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/452492671",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -29964,12 +30017,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/452492672",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -30017,12 +30070,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/452492673",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -30123,12 +30176,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/459432605",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -30865,12 +30918,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/474820120",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -30971,12 +31024,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/479720332",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -31094,6 +31147,59 @@
         "coordinates": [
           10.4139138,
           63.4287838
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Utkjent lekeplass",
+        "source": "osm",
+        "sourceId": "node/481435012",
+        "images": [],
+        "age": {
+          "min": 0,
+          "max": 16
+        },
+        "opening": "",
+        "equipment": [],
+        "rating": {
+          "average": 0,
+          "count": 0
+        },
+        "accessibility": {
+          "wheelchair": "unknown",
+          "stroller": "unknown"
+        },
+        "fenced": false,
+        "toilets": false,
+        "parking": {
+          "free": true,
+          "paid": false
+        },
+        "dogs": {
+          "allowed": true,
+          "leash": false
+        },
+        "municipality": "",
+        "verified": false,
+        "lastVerified": "2026-11-26",
+        "sources": [
+          {
+            "type": "osm",
+            "id": "node/481435012",
+            "retrievedAt": "2026-11-26"
+          }
+        ],
+        "imageRefs": [],
+        "imagePages": [],
+        "id": "osm-node-481435012"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.7128944,
+          58.9603215
         ]
       }
     },
@@ -33356,12 +33462,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/571732537",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -33409,12 +33515,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/571732649",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -33939,12 +34045,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/6186229960",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -35217,12 +35323,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/674532932",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -35270,12 +35376,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/674532951",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -35535,12 +35641,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/6953750557",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -40517,12 +40623,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/7629611836",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -45552,12 +45658,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "node/9227005877",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -46771,12 +46877,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1002815768",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -47513,12 +47619,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1013781685",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -49633,12 +49739,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1036305830",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -49686,12 +49792,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1036305831",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -49739,12 +49845,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1036305833",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -49792,12 +49898,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1036305834",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -49845,12 +49951,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1036305836",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -49898,12 +50004,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1036305837",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -53767,12 +53873,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1058222073",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54085,12 +54191,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1077930305",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54138,12 +54244,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1077930306",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54191,12 +54297,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1077930307",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54244,12 +54350,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1077930353",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54403,12 +54509,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1082203331",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54456,12 +54562,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1082203352",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54509,12 +54615,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1082203356",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -54562,12 +54668,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1082203377",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -55092,12 +55198,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1089665129",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -55304,12 +55410,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1092290019",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -56152,12 +56258,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/110580356",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -56523,12 +56629,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/112748909",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -56576,12 +56682,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/112748915",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -56629,12 +56735,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1144673547",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -56682,12 +56788,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1144675828",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -56735,12 +56841,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1144794776",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -56894,12 +57000,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1149871421",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57000,12 +57106,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1154038780",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57106,12 +57212,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1155973090",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57371,12 +57477,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1162257007",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57530,12 +57636,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1163991117",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57583,12 +57689,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1163992475",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57848,12 +57954,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1170504857",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57901,12 +58007,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1170504861",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -57954,12 +58060,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1170525083",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -58007,12 +58113,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1170532854",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -58060,12 +58166,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1172707135",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -58113,12 +58219,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1173021480",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59067,12 +59173,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/121166185",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59120,12 +59226,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1212556560",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59173,12 +59279,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1212556569",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59226,12 +59332,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1213247790",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59279,12 +59385,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1214841793",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59438,12 +59544,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1227814131",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59491,12 +59597,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1227814132",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59597,12 +59703,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1231436443",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59650,12 +59756,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1235191433",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59756,12 +59862,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1240403452",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59915,12 +60021,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1245549105",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -59968,12 +60074,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1249721451",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60339,12 +60445,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1280357227",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60392,12 +60498,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1283582660",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60445,12 +60551,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1284465089",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60498,12 +60604,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1284465098",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60551,12 +60657,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1284465099",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60604,12 +60710,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1284465102",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60763,12 +60869,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1297334891",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60816,12 +60922,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1297334899",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60869,12 +60975,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1297334900",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60922,12 +61028,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1297334901",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -60975,12 +61081,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1297343299",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -61081,12 +61187,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1298751835",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -61134,12 +61240,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1298751851",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -61187,12 +61293,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1298751857",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -64579,12 +64685,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1343296329",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -64632,12 +64738,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1343296343",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -64685,12 +64791,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1343296344",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -64738,12 +64844,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1343296348",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -64791,12 +64897,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1350815124",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -64844,12 +64950,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1350815125",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -64867,7 +64973,7 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Tretoppen",
+        "name": "Utkjent lekeplass",
         "source": "osm",
         "sourceId": "way/1352425081",
         "images": [],
@@ -64896,13 +65002,13 @@
           "leash": false
         },
         "municipality": "",
-        "verified": true,
-        "lastVerified": "2026-10-11",
+        "verified": false,
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1352425081",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -65639,12 +65745,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1364802862",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -65851,12 +65957,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/138423297",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -65904,12 +66010,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/138423298",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -66116,12 +66222,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1411129452",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -66222,12 +66328,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1414046826",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -66275,12 +66381,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1416516263",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -66328,12 +66434,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1417050845",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -66593,12 +66699,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1431586581",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67335,12 +67441,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1524330676",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67388,12 +67494,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1524332096",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67441,12 +67547,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1524332097",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67494,12 +67600,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1524332098",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67547,12 +67653,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1530402143",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67600,12 +67706,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/1530402144",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67653,12 +67759,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/153276889",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -67812,12 +67918,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/163315468",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68448,12 +68554,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/185019426",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68501,12 +68607,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/185348473",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68607,12 +68713,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/186277776",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68660,12 +68766,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/186523730",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68713,12 +68819,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/186531048",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68819,12 +68925,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/188353335",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68872,12 +68978,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/188353336",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68925,12 +69031,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/188353337",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -68978,12 +69084,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/188353342",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -69031,12 +69137,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/189877755",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -69084,12 +69190,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/189877756",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -69137,12 +69243,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/189877757",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -69190,12 +69296,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/189877758",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -69826,12 +69932,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/213951171",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -69879,12 +69985,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/223219425",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -70144,12 +70250,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/236535632",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -70197,12 +70303,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/236535633",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -70409,12 +70515,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/254551018",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -70462,12 +70568,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/255354003",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -70515,12 +70621,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/256634448",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71257,12 +71363,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297185682",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71310,12 +71416,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297185998",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71363,12 +71469,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297186007",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71416,12 +71522,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297188264",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71469,12 +71575,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297188576",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71522,12 +71628,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297188898",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71575,12 +71681,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297202519",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71628,12 +71734,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/297202987",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71734,12 +71840,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/300060312",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71893,12 +71999,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/307232708",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -71999,12 +72105,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/31713007",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72052,12 +72158,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/32149943",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72105,12 +72211,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/32524984",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72158,12 +72264,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/32655233",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72173,7 +72279,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          5.7186498,
+          5.7187078,
           58.9773097
         ]
       }
@@ -72211,12 +72317,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/32866908",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72264,12 +72370,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/32867077",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72317,12 +72423,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/329871501",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72370,12 +72476,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/330200621",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72423,12 +72529,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/33092256",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72476,12 +72582,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/331292015",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72529,12 +72635,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/33188428",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -72582,12 +72688,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/33189486",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -73059,12 +73165,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/347252596",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -73165,12 +73271,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/35474086",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -73324,12 +73430,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/35972256",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -73430,12 +73536,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/36921090",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -73483,12 +73589,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/37002332",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -74702,12 +74808,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/468565683",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -74755,12 +74861,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/468565685",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -74808,12 +74914,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/468566806",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -75444,12 +75550,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/500458975",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -75656,12 +75762,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/504306928",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -75709,12 +75815,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/50893630",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -75762,12 +75868,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/521661147",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -75815,12 +75921,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/53573829",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -75921,12 +76027,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/549177812",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -75974,12 +76080,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/549178086",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76027,12 +76133,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/551160853",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76080,12 +76186,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/551502918",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76133,12 +76239,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/55640025",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76186,12 +76292,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/55640030",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76462,12 +76568,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/576074522",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76515,12 +76621,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/579850112",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76568,12 +76674,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/581631998",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76621,12 +76727,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/583363722",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76780,12 +76886,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/605840476",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76833,12 +76939,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/605901615",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -76939,12 +77045,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/608063410",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -77522,12 +77628,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/629096569",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -77999,12 +78105,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/657981820",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -78105,12 +78211,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/660740949",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -78423,12 +78529,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/675065794",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -78900,12 +79006,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/685998096",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -78953,12 +79059,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/685998101",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79006,12 +79112,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/685998121",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79059,12 +79165,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/685998132",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79112,12 +79218,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/685998191",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79218,12 +79324,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/697309815",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79271,12 +79377,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/698206741",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79324,12 +79430,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/698859872",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79536,12 +79642,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/707420543",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79642,12 +79748,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708319069",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79695,12 +79801,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708319070",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79748,12 +79854,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708480400",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79801,12 +79907,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708480411",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79854,12 +79960,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708510451",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79907,12 +80013,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708510459",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -79960,12 +80066,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708596292",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80013,12 +80119,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/708602301",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80066,12 +80172,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/710632288",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80119,12 +80225,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/710632289",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80172,12 +80278,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/710632311",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80225,12 +80331,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/710632312",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80278,12 +80384,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/710632997",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80331,12 +80437,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/711880261",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80384,12 +80490,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/711880265",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80490,12 +80596,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/714714517",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80543,12 +80649,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/714755436",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80596,12 +80702,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/717476934",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80649,12 +80755,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/717519237",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80861,12 +80967,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/750324962",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80914,12 +81020,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/750324963",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -80967,12 +81073,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/750324969",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81073,12 +81179,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/753761484",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81179,12 +81285,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/779175285",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81202,7 +81308,7 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Mosvangen lekeplass",
+        "name": "Utkjent lekeplass",
         "source": "osm",
         "sourceId": "way/781755085",
         "images": [],
@@ -81231,13 +81337,13 @@
           "leash": false
         },
         "municipality": "",
-        "verified": true,
-        "lastVerified": "2026-10-11",
+        "verified": false,
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/781755085",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81247,7 +81353,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          5.7152,
+          5.7151078,
           58.9528536
         ]
       }
@@ -81338,12 +81444,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/790426595",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81550,12 +81656,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/800304475",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81603,12 +81709,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/804259136",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81709,12 +81815,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/817408148",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -81815,12 +81921,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/82736414",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -82186,12 +82292,12 @@
         },
         "municipality": "",
         "verified": true,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/842333405",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -82557,12 +82663,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/859034859",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -82663,12 +82769,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/879498070",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -82716,12 +82822,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/88141930",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -82875,12 +82981,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/88524556",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -83034,12 +83140,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/89226313",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -83087,12 +83193,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/89232484",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -83140,12 +83246,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/893022575",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -83829,12 +83935,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/90187221",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -83882,12 +83988,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/907061663",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -83935,12 +84041,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/908199640",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -83988,12 +84094,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/908199645",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -85048,12 +85154,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/961118494",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -85101,12 +85207,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/961118502",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -85154,12 +85260,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/961118518",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -85207,12 +85313,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/961700815",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -85843,12 +85949,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/983151890",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -85896,12 +86002,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/983151891",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -85949,12 +86055,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/983151892",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -86002,12 +86108,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/983163992",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
@@ -86055,12 +86161,12 @@
         },
         "municipality": "",
         "verified": false,
-        "lastVerified": "2026-10-11",
+        "lastVerified": "2026-11-26",
         "sources": [
           {
             "type": "osm",
             "id": "way/983163995",
-            "retrievedAt": "2026-10-11"
+            "retrievedAt": "2026-11-26"
           }
         ],
         "imageRefs": [],
